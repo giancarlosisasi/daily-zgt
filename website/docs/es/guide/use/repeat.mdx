@@ -1,0 +1,71 @@
+---
+title: Repetir cada día
+description: Cómo se repite una prioridad cada día, cuándo agrega la app una copia y qué hacen una restauración y un borrado.
+---
+
+# Repetir cada día
+
+Una prioridad puede repetirse cada día. No la escribes de nuevo cada mañana.
+
+## Fija la repetición
+
+1. Abre la vista de detalle de la prioridad. Mira [Detalle y subtareas](/guide/use/detail-and-subtasks).
+2. En la fila **Repetir**, elige **Cada día**.
+
+La otra tecla es **No**. Es el valor inicial.
+
+## Cuándo llega una copia
+
+Una serie es una prioridad y sus copias. La app agrega una copia abierta a Hoy cuando las tres reglas son ciertas:
+
+1. La serie no tiene ninguna copia abierta.
+2. La prioridad de la serie que marcaste como hecha al final tiene **Cada día**.
+3. Marcaste esa prioridad como hecha en un día anterior a hoy (hora local).
+
+Así que si marcas una prioridad diaria como hecha hoy, la copia llega mañana.
+
+La app revisa las reglas cuando inicia, cuando cambia el día, cuando se vuelve la app activa y después de cada cambio en los datos. La copia va a Hoy, aunque la prioridad estuviera en Semana.
+
+La copia tiene:
+
+- El mismo título, nivel y nota.
+- Las subtareas de la prioridad, todas abiertas.
+- Una hora límite a la misma hora del día, en el día de hoy. Si esa hora ya pasó, el chip muestra `Vencida`.
+- **Cada día**, para que la serie siga.
+
+La copia no muestra el chip `De ayer`. Empieza hoy.
+
+Nunca hay dos copias abiertas de una misma serie.
+
+## Qué hace una restauración
+
+**Regresar** y **Deshacer** pueden traer de vuelta una prioridad que tiene una copia abierta.
+
+- Si no cambiaste la copia abierta, la app borra la copia. La prioridad que restauraste ocupa su lugar.
+- Si cambiaste la copia abierta, la app la conserva. La prioridad que restauraste sale de la serie, y su repetición pasa a **No**.
+
+Un cambio es cualquier edición de la copia: título, nivel, fecha límite, nota, lista, una subtarea o un movimiento. La casilla de una subtarea cuenta como un cambio.
+
+## Qué hace un borrado
+
+Si borras una prioridad abierta de una serie, la serie termina. La app pone **No** en cada prioridad de la serie. No llega ninguna copia nueva.
+
+Si borras una prioridad hecha, la serie sigue.
+
+## Detén la repetición
+
+Haz una de estas cosas:
+
+- Abre la prioridad abierta y elige **No** en la fila **Repetir**.
+- Borra la prioridad abierta.
+
+## En la base de datos
+
+La tabla `priority` tiene dos columnas para esto:
+
+| Columna | Valores |
+|---|---|
+| `repeat_rule` | `none` o `daily` |
+| `repeat_series_id` | `null` para una serie de una sola prioridad. Cada copia guarda el `id` de la primera prioridad de su serie. |
+
+Mira [Base de datos](/guide/data/database).

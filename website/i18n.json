@@ -1,0 +1,628 @@
+{
+  "hero.eyebrow": {
+    "en": "macOS 14 or later",
+    "es": "macOS 14 o superior"
+  },
+  "hero.title": {
+    "en": "Priorities and notes in the macOS menu bar.",
+    "es": "Prioridades y notas en la barra de menús de macOS."
+  },
+  "hero.lead": {
+    "en": "One list for today and one for the week. Only the checkbox marks a priority done, and it asks first.",
+    "es": "Una lista para hoy y otra para la semana. Solo la casilla marca una prioridad como hecha, y antes pide confirmación."
+  },
+  "hero.guide": {
+    "en": "Read the Guide",
+    "es": "Lee la guía"
+  },
+  "hero.build": {
+    "en": "See the build commands",
+    "es": "Ver los comandos de compilación"
+  },
+  "hero.fact.dark": {
+    "en": "Dark mode only",
+    "es": "Solo modo oscuro"
+  },
+  "hero.fact.local": {
+    "en": "No account, no server",
+    "es": "Sin cuenta, sin servidor"
+  },
+  "reel.reduced": {
+    "en": "Your system asks for reduced motion. These are the key frames of the reel, with no motion and no sound.",
+    "es": "Tu sistema pide reducir el movimiento. Estos son los cuadros clave del reel, sin movimiento y sin sonido."
+  },
+  "reel.eyebrow": {
+    "en": "Motion reel",
+    "es": "Reel animado"
+  },
+  "reel.label": {
+    "en": "Animated reel of Daily ZGT. It shows the target mark, the palette, the name, the checkbox that asks first, the panel, one priority from new to done, the due chip, two alerts and six numbers.",
+    "es": "Reel animado de Daily ZGT. Muestra la marca de la diana, la paleta, el nombre, la casilla que pregunta antes, el panel, una prioridad de nueva a hecha, el chip de fecha límite, dos alertas y seis números."
+  },
+  "reel.play": {
+    "en": "Play",
+    "es": "Reproducir"
+  },
+  "reel.pause": {
+    "en": "Pause",
+    "es": "Pausar"
+  },
+  "reel.soundOn": {
+    "en": "Sound on",
+    "es": "Activar sonido"
+  },
+  "reel.soundOff": {
+    "en": "Sound off",
+    "es": "Quitar sonido"
+  },
+  "reel.restart": {
+    "en": "Restart",
+    "es": "Reiniciar"
+  },
+  "reel.position": {
+    "en": "Reel position",
+    "es": "Posición del reel"
+  },
+  "reel.note": {
+    "en": "The music starts only after you click Sound on. The reel pauses when it is not on the screen.",
+    "es": "La música empieza solo cuando haces clic en Activar sonido. El reel se pausa cuando no está en la pantalla."
+  },
+  "reel.ch.mark": {
+    "en": "Mark",
+    "es": "Marca"
+  },
+  "reel.ch.palette": {
+    "en": "Palette",
+    "es": "Paleta"
+  },
+  "reel.ch.name": {
+    "en": "Name",
+    "es": "Nombre"
+  },
+  "reel.ch.ask": {
+    "en": "Checkbox",
+    "es": "Casilla"
+  },
+  "reel.ch.panel": {
+    "en": "Panel",
+    "es": "Panel"
+  },
+  "reel.ch.flow": {
+    "en": "Done",
+    "es": "Hecha"
+  },
+  "reel.ch.due": {
+    "en": "Due chip",
+    "es": "Chip"
+  },
+  "reel.ch.alert": {
+    "en": "Alerts",
+    "es": "Alertas"
+  },
+  "reel.ch.numbers": {
+    "en": "Numbers",
+    "es": "Números"
+  },
+  "reel.ch.lockup": {
+    "en": "End",
+    "es": "Cierre"
+  },
+  "reel.cap.tag": {
+    "en": "A macOS menu bar app",
+    "es": "App de barra de menús"
+  },
+  "reel.cap.ask": {
+    "en": "The checkbox asks first.",
+    "es": "La casilla pregunta antes."
+  },
+  "reel.cmp.list": {
+    "en": "A checklist",
+    "es": "Una lista"
+  },
+  "reel.cap.panel": {
+    "en": "Click. The panel opens.",
+    "es": "Clic. Abre el panel."
+  },
+  "reel.step.add": {
+    "en": "Add a priority.",
+    "es": "Añade una prioridad."
+  },
+  "reel.step.ask": {
+    "en": "The checkbox asks.",
+    "es": "La casilla pregunta."
+  },
+  "reel.step.undo": {
+    "en": "Deshacer: 5 s.",
+    "es": "Deshacer: 5 s."
+  },
+  "reel.cap.due": {
+    "en": "The chip follows the clock.",
+    "es": "El chip sigue al reloj."
+  },
+  "reel.cap.alert": {
+    "en": "Two alerts, with sound.",
+    "es": "Dos alertas, con sonido."
+  },
+  "reel.tile.tables": {
+    "en": "tables",
+    "es": "tablas"
+  },
+  "reel.tile.levels": {
+    "en": "levels",
+    "es": "niveles"
+  },
+  "reel.tile.lists": {
+    "en": "lists",
+    "es": "listas"
+  },
+  "reel.tile.alerts": {
+    "en": "alerts",
+    "es": "alertas"
+  },
+  "reel.tile.undo": {
+    "en": "Deshacer",
+    "es": "Deshacer"
+  },
+  "reel.tile.file": {
+    "en": "SQLite file",
+    "es": "archivo SQLite"
+  },
+  "reel.credit": {
+    "en": "macOS 14 or later",
+    "es": "macOS 14 o superior"
+  },
+  "desk.eyebrow": {
+    "en": "The panel",
+    "es": "El panel"
+  },
+  "desk.title": {
+    "en": "Scroll, or click the panel.",
+    "es": "Desplázate, o haz clic en el panel."
+  },
+  "desk.lead": {
+    "en": "This panel is live. Each step changes its state.",
+    "es": "Este panel funciona. Cada paso cambia su estado."
+  },
+  "desk.closed": {
+    "en": "The panel is closed. Click the icon in the menu bar.",
+    "es": "El panel está cerrado. Haz clic en el icono de la barra de menús."
+  },
+  "desk.open.title": {
+    "en": "Click the icon.",
+    "es": "Haz clic en el icono."
+  },
+  "desk.open.text": {
+    "en": "The panel opens under the icon. The number is the count of open priorities for today. The text next to it is the title of the next one.",
+    "es": "El panel se abre debajo del icono. El número es la cantidad de prioridades abiertas de hoy. El texto a su lado es el título de la siguiente."
+  },
+  "desk.ask.title": {
+    "en": "Click the checkbox.",
+    "es": "Haz clic en la casilla."
+  },
+  "desk.ask.text": {
+    "en": "A violet bar asks `¿Marcar como hecha?` The bar counts the open subtasks.",
+    "es": "Una barra violeta pregunta `¿Marcar como hecha?` La barra cuenta las subtareas abiertas."
+  },
+  "desk.done.title": {
+    "en": "Choose `Hecha`.",
+    "es": "Elige `Hecha`."
+  },
+  "desk.done.text": {
+    "en": "The row slides out. A bar shows `Deshacer` for 5 seconds.",
+    "es": "La fila se desliza hacia afuera. Una barra muestra `Deshacer` durante 5 segundos."
+  },
+  "desk.back.title": {
+    "en": "Open `Hechas`.",
+    "es": "Abre `Hechas`."
+  },
+  "desk.back.text": {
+    "en": "`Hechas` shows the priorities of the last 24 hours. `Regresar` moves a priority back to the open list and highlights it.",
+    "es": "`Hechas` muestra las prioridades de las últimas 24 horas. `Regresar` devuelve una prioridad a la lista abierta y la resalta."
+  },
+  "desk.notes.title": {
+    "en": "Switch to `Notas`.",
+    "es": "Cambia a `Notas`."
+  },
+  "desk.notes.text": {
+    "en": "One note for the day and one for the week. The app saves the note while you type.",
+    "es": "Una nota para el día y otra para la semana. La app guarda la nota mientras escribes."
+  },
+  "bento.eyebrow": {
+    "en": "Numbers",
+    "es": "Números"
+  },
+  "bento.title": {
+    "en": "Each number comes from the source code.",
+    "es": "Cada número sale del código fuente."
+  },
+  "bento.lead": {
+    "en": "The database schema, the Tecla tokens and the alert code give these values. The database also has the table `grdb_migrations`, which GRDB keeps.",
+    "es": "El esquema de la base de datos, los tokens de Tecla y el código de las alertas dan estos valores. La base de datos también tiene la tabla `grdb_migrations`, que mantiene GRDB."
+  },
+  "bento.tables": {
+    "en": "tables for your data",
+    "es": "tablas para tus datos"
+  },
+  "bento.columns": {
+    "en": "{n} columns",
+    "es": "{n} columnas"
+  },
+  "bento.levels": {
+    "en": "priority levels",
+    "es": "niveles de prioridad"
+  },
+  "bento.lists": {
+    "en": "lists: Hoy and Semana",
+    "es": "listas: Hoy y Semana"
+  },
+  "bento.alerts": {
+    "en": "alerts for each due time",
+    "es": "alertas por cada fecha límite"
+  },
+  "bento.undo": {
+    "en": "of Deshacer after Hecha",
+    "es": "de Deshacer después de Hecha"
+  },
+  "bento.file": {
+    "en": "SQLite file holds all the data",
+    "es": "archivo SQLite guarda todos los datos"
+  },
+  "bento.snooze": {
+    "en": "later, the alert comes again",
+    "es": "después, la alerta vuelve"
+  },
+  "bento.accounts": {
+    "en": "accounts",
+    "es": "cuentas"
+  },
+  "bento.accountsNote": {
+    "en": "No account and no server in v1.",
+    "es": "Sin cuenta y sin servidor en v1."
+  },
+  "due.eyebrow": {
+    "en": "Due chip",
+    "es": "Chip de fecha límite"
+  },
+  "due.title": {
+    "en": "The chip shows the time left to the due time.",
+    "es": "El chip muestra cuánto falta para la fecha límite."
+  },
+  "due.p3": {
+    "en": "A priority sorts by level first, then by due time. No due time goes last.",
+    "es": "Las prioridades se ordenan primero por nivel y después por fecha límite. Sin fecha límite va al final."
+  },
+  "due.label": {
+    "en": "Due time",
+    "es": "Fecha límite"
+  },
+  "due.now": {
+    "en": "Now",
+    "es": "Ahora"
+  },
+  "due.past": {
+    "en": "{n} min past",
+    "es": "pasaron {n} min"
+  },
+  "due.left": {
+    "en": "{n} min left",
+    "es": "faltan {n} min"
+  },
+  "due.rule1": {
+    "en": "The due time is past.",
+    "es": "La fecha límite ya pasó."
+  },
+  "due.rule2": {
+    "en": "The due time is in less than 2 hours.",
+    "es": "Faltan menos de 2 horas."
+  },
+  "due.rule3": {
+    "en": "The due time is more than 2 hours away.",
+    "es": "Faltan más de 2 horas."
+  },
+  "due.real": {
+    "en": "The same chip at its size in the panel.",
+    "es": "El mismo chip a su tamaño en el panel."
+  },
+  "alerts.eyebrow": {
+    "en": "Alerts",
+    "es": "Alertas"
+  },
+  "alerts.title": {
+    "en": "Two alerts for each due time, with sound.",
+    "es": "Dos alertas por cada fecha límite, con sonido."
+  },
+  "alerts.p1": {
+    "en": "The app sends one alert 30 minutes before the due time and one at the due time.",
+    "es": "La app envía una alerta 30 minutos antes de la fecha límite y otra al vencer."
+  },
+  "alerts.p2": {
+    "en": "`Abrir` opens the panel and highlights the priority. `Posponer 15 min` sets a new alert.",
+    "es": "`Abrir` abre el panel y resalta la prioridad. `Posponer 15 min` fija una alerta nueva."
+  },
+  "alerts.p3": {
+    "en": "Each alert is a row in the table `alert`. The column `status` shows its state.",
+    "es": "Cada alerta es una fila de la tabla `alert`. La columna `status` muestra su estado."
+  },
+  "alerts.before": {
+    "en": "30 min before",
+    "es": "30 min antes"
+  },
+  "alerts.atDue": {
+    "en": "At due time",
+    "es": "Al vencer"
+  },
+  "alerts.clock": {
+    "en": "Mac clock {time}. The chip reads {chip}.",
+    "es": "Reloj del Mac {time}. El chip dice {chip}."
+  },
+  "alerts.none": {
+    "en": "No alert yet.",
+    "es": "Aún no hay alerta."
+  },
+  "alerts.table": {
+    "en": "Table alert",
+    "es": "Tabla alert"
+  },
+  "alerts.replay": {
+    "en": "Replay the clock",
+    "es": "Repetir el reloj"
+  },
+  "notes.eyebrow": {
+    "en": "Notes",
+    "es": "Notas"
+  },
+  "notes.title": {
+    "en": "One note for the day. One note for the week.",
+    "es": "Una nota para el día. Una nota para la semana."
+  },
+  "notes.p1": {
+    "en": "Type in a note. The app saves it while you type.",
+    "es": "Escribe en una nota. La app la guarda mientras escribes."
+  },
+  "notes.p2": {
+    "en": "Each day and each week has its own row in the table `note`.",
+    "es": "Cada día y cada semana tiene su propia fila en la tabla `note`."
+  },
+  "notes.empty": {
+    "en": "No rows. Type in a note.",
+    "es": "Sin filas. Escribe en una nota."
+  },
+  "sqlite.eyebrow": {
+    "en": "SQLite",
+    "es": "SQLite"
+  },
+  "sqlite.title": {
+    "en": "All data is in one SQLite file.",
+    "es": "Todos los datos están en un archivo SQLite."
+  },
+  "sqlite.p1": {
+    "en": "Read the file with `sqlite3`. The first command lists the tables.",
+    "es": "Lee el archivo con `sqlite3`. El primer comando lista las tablas."
+  },
+  "sqlite.p2": {
+    "en": "The rows of the second command come from the live panel of this page. Mark a priority done there and read the rows again.",
+    "es": "Las filas del segundo comando vienen del panel de esta página. Marca ahí una prioridad como hecha y lee las filas otra vez."
+  },
+  "shortcut.eyebrow": {
+    "en": "Global shortcut",
+    "es": "Atajo global"
+  },
+  "shortcut.title": {
+    "en": "Add a priority from any app.",
+    "es": "Agrega una prioridad desde cualquier app."
+  },
+  "shortcut.p1": {
+    "en": "Press `⌃⌥⌘P`. A small window opens with one title field.",
+    "es": "Pulsa `⌃⌥⌘P`. Se abre una ventana pequeña con un campo de título."
+  },
+  "shortcut.p2": {
+    "en": "Press Enter to add the priority to Hoy with the level Media. Press Escape to close.",
+    "es": "Pulsa Enter para agregar la prioridad a Hoy con el nivel Media. Pulsa Escape para cerrar."
+  },
+  "shortcut.p3": {
+    "en": "The setting `Atajo global` changes the shortcut or clears it.",
+    "es": "El ajuste `Atajo global` cambia el atajo o lo borra."
+  },
+  "shortcut.keys": {
+    "en": "Control, Option, Command and P",
+    "es": "Control, Opción, Comando y P"
+  },
+  "shortcut.button": {
+    "en": "Press ⌃⌥⌘P, or click here",
+    "es": "Pulsa ⌃⌥⌘P, o haz clic aquí"
+  },
+  "shortcut.hint": {
+    "en": "Enter adds. Escape closes.",
+    "es": "Enter agrega. Escape cierra."
+  },
+  "shortcut.count": {
+    "en": "Hoy has {n} open priorities.",
+    "es": "Hoy tiene {n} prioridades abiertas."
+  },
+  "shortcut.added": {
+    "en": "Added {title} with the level Media.",
+    "es": "Se agregó {title} con el nivel Media."
+  },
+  "local.eyebrow": {
+    "en": "Data and network",
+    "es": "Datos y red"
+  },
+  "local.title": {
+    "en": "v1 keeps all data on your Mac.",
+    "es": "v1 guarda todos los datos en tu Mac."
+  },
+  "local.p1": {
+    "en": "v1 keeps all data in one SQLite file on the Mac, with no account and no server.",
+    "es": "v1 guarda todos los datos en un archivo SQLite del Mac, sin cuenta y sin servidor."
+  },
+  "local.p2": {
+    "en": "The planned Claude review sends a read-only export of the priorities to the Anthropic API. It does this only when you click `Revisar con Claude`.",
+    "es": "La revisión con Claude, planeada para v2, envía una exportación de solo lectura de las prioridades a la API de Anthropic. Solo lo hace cuando haces clic en `Revisar con Claude`."
+  },
+  "local.p3": {
+    "en": "You build the app from the source folder. There is no App Store build and no download.",
+    "es": "Tú compilas la app desde la carpeta del código fuente. No hay versión de App Store ni descarga."
+  },
+  "local.mac": {
+    "en": "Your Mac",
+    "es": "Tu Mac"
+  },
+  "local.appKind": {
+    "en": "menu bar app",
+    "es": "app de barra de menús"
+  },
+  "local.account": {
+    "en": "Account",
+    "es": "Cuenta"
+  },
+  "local.server": {
+    "en": "Server",
+    "es": "Servidor"
+  },
+  "local.store": {
+    "en": "App Store build",
+    "es": "Versión de App Store"
+  },
+  "local.none": {
+    "en": "none",
+    "es": "no hay"
+  },
+  "local.api": {
+    "en": "Anthropic API",
+    "es": "API de Anthropic"
+  },
+  "local.apiNote": {
+    "en": "v2, only on a click",
+    "es": "v2, solo con un clic"
+  },
+  "build.eyebrow": {
+    "en": "Build it",
+    "es": "Compílala"
+  },
+  "build.title": {
+    "en": "Three commands clone, install and start the app.",
+    "es": "Tres comandos clonan, instalan e inician la app."
+  },
+  "build.lead": {
+    "en": "Run them in a terminal. You need macOS 14 or later, Xcode 26 and XcodeGen.",
+    "es": "Ejecútalos en una terminal. Necesitas macOS 14 o superior, Xcode 26 y XcodeGen."
+  },
+  "build.cmd1": {
+    "en": "1. Clone the repository",
+    "es": "1. Clona el repositorio"
+  },
+  "build.cmd2": {
+    "en": "2. Install the app",
+    "es": "2. Instala la app"
+  },
+  "build.cmd3": {
+    "en": "3. Start the app",
+    "es": "3. Inicia la app"
+  },
+  "build.copy": {
+    "en": "Copy",
+    "es": "Copiar"
+  },
+  "build.copied": {
+    "en": "Copied",
+    "es": "Copiado"
+  },
+  "build.guide": {
+    "en": "Open the Guide",
+    "es": "Abre la guía"
+  },
+  "build.claude": {
+    "en": "Claude review and the API key",
+    "es": "Revisión con Claude y clave de API"
+  },
+  "languagesText": {
+    "es": "Idiomas"
+  },
+  "themeText": {
+    "es": "Tema"
+  },
+  "versionsText": {
+    "es": "Versiones"
+  },
+  "menuTitle": {
+    "es": "Menú"
+  },
+  "outlineTitle": {
+    "es": "EN ESTA PÁGINA"
+  },
+  "scrollToTopText": {
+    "es": "Volver arriba"
+  },
+  "lastUpdatedText": {
+    "es": "Última actualización"
+  },
+  "lastUpdatedAuthorText": {
+    "es": "por"
+  },
+  "prevPageText": {
+    "es": "Página anterior"
+  },
+  "nextPageText": {
+    "es": "Página siguiente"
+  },
+  "sourceCodeText": {
+    "es": "Código fuente"
+  },
+  "searchPlaceholderText": {
+    "es": "Buscar"
+  },
+  "searchPanelCancelText": {
+    "es": "Cancelar"
+  },
+  "searchNoResultsText": {
+    "es": "Sin resultados"
+  },
+  "searchSuggestedQueryText": {
+    "es": "Prueba con otras palabras"
+  },
+  "overview.filterNameText": {
+    "es": "Filtrar"
+  },
+  "overview.filterPlaceholderText": {
+    "es": "Buscar"
+  },
+  "overview.filterNoResultText": {
+    "es": "Sin resultados"
+  },
+  "openInText": {
+    "es": "Abrir en {{name}}"
+  },
+  "copyMarkdownText": {
+    "es": "Copiar Markdown"
+  },
+  "copyMarkdownLinkText": {
+    "es": "Copiar enlace de Markdown"
+  },
+  "editLinkText": {
+    "es": "Editar esta página"
+  },
+  "codeButtonGroupCopyButtonText": {
+    "es": "Copiar código"
+  },
+  "codeButtonGroupWrapButtonText": {
+    "es": "Ajustar las líneas del código"
+  },
+  "notFoundText": {
+    "es": "PÁGINA NO ENCONTRADA"
+  },
+  "takeMeHomeText": {
+    "es": "Ir al inicio"
+  },
+  "promptCopyText": {
+    "es": "Copiar"
+  },
+  "promptCopiedText": {
+    "es": "Copiado"
+  },
+  "promptExpandText": {
+    "es": "Expandir"
+  },
+  "promptCollapseText": {
+    "es": "Contraer"
+  }
+}

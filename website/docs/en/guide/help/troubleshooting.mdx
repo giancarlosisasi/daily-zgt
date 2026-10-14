@@ -1,0 +1,71 @@
+---
+title: Troubleshooting
+description: Fixes for a missing menu bar icon, missing alerts, a shortcut that does not work, start at login and a failed build.
+---
+
+# Troubleshooting
+
+## The icon does not show
+
+1. Check that the app runs.
+
+```bash
+pgrep -x DailyZGT
+```
+
+If the command prints nothing, the app is not running. Start it again. See [Build and run](/guide/getting-started/build-and-run).
+
+2. Look for the target icon at the right side of the menu bar. The app has no Dock icon. This is normal.
+3. If the menu bar is full, macOS can hide the last icons. On a Mac with a notch, icons can hide behind the notch. Quit another menu bar app to make room. You can also turn off the setting `Siguiente prioridad en la barra de menús`. Without the title, the item is shorter. See [Settings](/guide/use/settings).
+4. If the build did not finish, see [The build fails](#build-fails).
+
+## No alert shows \{#no-alert}
+
+1. Look at the bell button in the footer. If the bell has a slash, or a line shows `Las alertas están desactivadas.`, macOS alerts are off for the app. Click `Abrir ajustes` to open the notification settings of macOS. See [Alerts](/guide/use/alerts).
+2. Click the bell button **Probar alerta** in the footer. The test alert comes 5 seconds later. If no test alert shows, the problem is in macOS.
+3. Open **System Settings**, then **Notifications**, then **Daily ZGT**. Turn on **Allow notifications**. Make sure the alert style is not **None**. Turn on the sound.
+4. The app asks for the permission the first time you set a due date. If the app is not in the list, set a due date on a priority and answer the dialog.
+5. Check that no Focus mode is on. A Focus mode can silence alerts.
+6. Check that the priority has a due date in the future. A priority with no due date gets no alert. A due time in less than 30 minutes gets only the alert at the due time.
+
+## The shortcut does not open the capture window
+
+1. Check that the app runs. The shortcut works only while the app runs.
+2. Open the settings with the gear key. Look at the row `Atajo global`. If the text says `Sin atajo: la ventana de captura no se abre desde otras apps.`, the shortcut is cleared. Click the field and press new keys.
+3. Another app can use the same keys. Click the field and press different keys.
+
+See [Capture window](/guide/use/capture).
+
+## Start at login does not stay on
+
+1. Open the settings with the gear key. If the row `Abrir al iniciar sesión` shows `Falta tu aprobación en Ajustes del Sistema.`, click `Abrir ajustes`. Approve Daily ZGT in the login items page of System Settings.
+2. If the row shows `macOS no aceptó el cambio.`, switch the setting off and on again.
+
+## The build fails \{#build-fails}
+
+1. Run `xcodegen generate` again. The Xcode project is not in git. It can be missing or old.
+
+```bash
+xcodegen generate
+```
+
+2. Check that `xcodebuild` uses Xcode 26.
+
+```bash
+xcodebuild -version
+xcode-select -p
+```
+
+3. Check your network. The first build downloads the Swift packages GRDB and KeyboardShortcuts.
+4. Delete the folder `build/` and build again. It only holds build output.
+
+```bash
+rm -rf build
+xcodegen generate
+```
+
+5. Check that your Mac runs macOS 14 or later.
+
+## The database file does not exist
+
+The app creates the file the first time it starts. Start the app once. Then list the tables again. See [Database](/guide/data/database).

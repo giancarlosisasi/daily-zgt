@@ -1,0 +1,58 @@
+---
+title: Alertas
+description: El permiso, las alertas 30 minutos antes y al vencer, las acciones Abrir y Posponer 15 min, la alerta de prueba y la línea de alertas apagadas.
+---
+
+# Alertas
+
+Una prioridad con hora límite recibe dos alertas.
+
+- Una alerta 30 minutos antes de la hora límite. Su título es `Vence en 30 min`.
+- Una alerta a la hora límite. Su título es `Prioridad vencida`.
+
+El texto de la alerta es el título de la prioridad. Cada alerta suena con el sonido predeterminado del sistema. macOS muestra la alerta cuando el panel está cerrado.
+
+La app fija solo las alertas que aún están en el futuro. Una hora límite dentro de menos de 30 minutos recibe solo la alerta a la hora límite. Una hora límite en el pasado no recibe ninguna.
+
+Una prioridad sin fecha límite no recibe alertas. Una prioridad hecha no recibe alertas.
+
+## Permiso
+
+La app pide el permiso de notificaciones la primera vez que fijas una fecha límite. La primera vez que pulsas el botón de campana también lo pide, si la app no lo pidió antes. La app lo pide una sola vez. Haz clic en **Permitir** en el diálogo de macOS.
+
+Si haces clic en **No permitir**, macOS no muestra alertas. La app muestra entonces que las alertas están apagadas. Para cambiarlo después, mira [Cuando las alertas están apagadas](#alerts-off) y [Solución de problemas](/guide/help/troubleshooting).
+
+## Acciones
+
+La alerta tiene dos acciones.
+
+- **Abrir** abre el panel en la pestaña **Prioridades**, muestra la lista de la prioridad, se desplaza hasta ella y la resalta.
+- **Posponer 15 min** fija una alerta nueva dentro de 15 minutos. Necesita que la prioridad tenga fecha límite.
+
+## Prueba las alertas
+
+Haz clic en el botón de campana **Probar alerta** en el pie del panel. La app envía una alerta de prueba 5 segundos después. Su título es `Prioridad vencida` y su texto es `Revisa tu lista de hoy`. Tiene las mismas acciones que una alerta real.
+
+## Cuando las alertas están apagadas \{#alerts-off}
+
+Las alertas están apagadas cuando no permitiste las notificaciones en macOS. La app lo muestra en tres lugares.
+
+- El botón de campana del pie muestra una campana con una raya. El texto de ayuda del botón es `Las alertas están desactivadas.` El botón no envía alerta de prueba.
+- El formulario **Nueva prioridad** muestra una campana con una raya y la línea `Las alertas están desactivadas.` en lugar de la nota, cuando fijas una fecha límite.
+- La fila **Alerta** de la vista de detalle muestra la misma línea, cuando la prioridad tiene fecha límite.
+
+Cada línea tiene el enlace `Abrir ajustes`. Abre los ajustes de notificaciones de macOS. Activa ahí las notificaciones de Daily ZGT. La app vuelve entonces a mostrar la campana normal.
+
+## Cómo la app mantiene las alertas correctas
+
+La app escribe cada alerta en la tabla `alert`. Cada fila tiene un `kind`, una hora `fire_at` y un `status`.
+
+| Columna | Valores |
+|---|---|
+| `kind` | `before_30m`, `at_due`, `snooze` |
+| `status` | `scheduled`, `delivered`, `snoozed`, `cancelled` |
+
+- Cuando cambias la fecha límite, la app mueve la alerta.
+- Cuando marcas una prioridad como hecha o la eliminas, la app cancela la alerta.
+- Cuando haces clic en **Posponer 15 min**, la app agrega una fila con el `kind` `snooze`. La fila de la alerta que respondiste pasa al `status` `snoozed`.
+- Cuando la app inicia, compara la tabla con las solicitudes pendientes de macOS. Corrige cualquier diferencia.

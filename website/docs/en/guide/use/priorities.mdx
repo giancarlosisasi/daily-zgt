@@ -1,0 +1,175 @@
+---
+title: Priorities
+description: The lists Hoy and Semana, levels, due chips, De ayer, the limit of 5, the confirmation before done, Deshacer, Hechas, Historial and the footer count.
+---
+
+# Priorities
+
+The tab **Prioridades** shows your priorities. The tab **Notas** shows your notes. See [Notes](/guide/use/notes).
+
+## Two lists
+
+The scope tabs switch the list.
+
+- **Hoy · N** is the list of today. N is the count of open priorities.
+- **Semana · N** is the list of this week.
+
+The date shows on the right of the scope tabs, for example `Lunes 12 oct` or `Semana 42 · 12–18 oct`.
+
+The app remembers the open tab and the open list. It opens on the same ones the next time.
+
+## The menu bar
+
+The menu bar shows three things, from left to right:
+
+1. The target icon.
+2. The count of open priorities of Hoy. It shows `0` when Hoy has none.
+3. The title of the next open priority of Hoy. This is the first priority in the sort order.
+
+The title is cut at 24 characters. A longer title shows its first 23 characters and `…`. The setting `Siguiente prioridad en la barra de menús` turns the title off. See [Settings](/guide/use/settings).
+
+## A row
+
+Each row has these parts, from left to right:
+
+1. A caret. It opens the subtasks and the input to add one.
+2. A checkbox. It starts the confirmation to mark the priority done.
+3. The title.
+4. A meta line under the title.
+
+The meta line shows, in this order:
+
+1. The level bars.
+2. The due chip.
+3. The chip `De ayer` or `Desde vie 9`, in Hoy only.
+4. The subtask progress, for example `1/3`.
+5. A note icon, when the priority has a note.
+
+A trash button shows when the pointer is over the row. It removes the priority at once. It asks no confirmation.
+
+Click the title or the meta line to open the detail view. See [Detail and subtasks](/guide/use/detail-and-subtasks).
+
+## Levels
+
+| Level | Label | Bars | Color |
+|---|---|---|---|
+| High | Alta | 3 | red `#ff4d5e` |
+| Medium | Media | 2 | orange `#ff9a1f` |
+| Low | Baja | 1 | gray `#8f8d9a` |
+
+## Due chip
+
+The chip shows when the priority is due. It updates each minute.
+
+| Chip | Meaning | Color |
+|---|---|---|
+| `Vencida` | The due time is past. | red |
+| `En 36 min`, `En 1 h 20 min` | The due time is in less than 2 hours. | orange |
+| `Hoy 16:00`, `vie 18:00` | The due time is later. | gray |
+
+A priority with no due date shows no chip.
+
+## The chip De ayer
+
+An open priority of Hoy stays in Hoy when the day changes. The app does not move it.
+
+- The day after, the row shows the gray chip `De ayer`.
+- After more days, the chip shows the weekday and the day of the month, for example `Desde vie 9`.
+- The date is the day of the last `created` or `moved` event that put the priority in Hoy.
+- A priority that came to Hoy today shows no chip.
+- The detail view shows the same chip.
+
+## Sort order
+
+Open priorities sort by level first: high, medium, low. Priorities with the same level sort by due time. A priority with no due time goes last. Priorities with the same level and the same due time keep the order in which you added them.
+
+## Add a priority
+
+1. Click the dashed button **Nueva prioridad**.
+2. Type the title in the field `¿Qué es prioritario?`.
+3. Choose the level: **Alta**, **Media** or **Baja**. The form starts with **Media**.
+4. Set a due date and time if you want one. Click `Sin fecha` in the row **Fecha límite**. The field starts at the next full hour. Change the date and the time. The x button next to the date clears it.
+5. Press Enter, or click **Añadir**.
+
+The form shows the hint `Alerta con sonido 30 min antes y al vencer` when a due date is set. If macOS alerts are off, it shows the line `Las alertas están desactivadas.` instead. See [Alerts](/guide/use/alerts).
+
+After you add a priority, its row is highlighted in yellow and the list scrolls to it.
+
+Press Escape to close the form. The form keeps the text that you typed. Click **Cancelar** to close the form and clear it.
+
+## The limit of 5
+
+The setting `Máximo 5 prioridades abiertas en Hoy` is off by default. See [Settings](/guide/use/settings).
+
+When the setting is on and Hoy has 5 open priorities:
+
+- The form in Hoy does not add the priority. It stays open and shows `Hoy ya tiene 5 prioridades abiertas.`
+- The row **Lista** in the detail view does not move a priority from Semana to Hoy. It shows the same text.
+- The [capture window](/guide/use/capture) does not add the priority. It shows the same text.
+
+The limit never blocks these actions:
+
+- **Deshacer**.
+- **Regresar**, in Hechas and in Historial.
+- The daily copy of a repeating priority. See [Daily repeat](/guide/use/repeat).
+
+These actions can bring Hoy above 5. The limit never removes a priority. It does not apply to Semana.
+
+## Mark a priority done
+
+Only the checkbox marks a priority done, and it asks first.
+
+1. Click the checkbox. A violet bar shows `¿Marcar como hecha?`.
+2. If the priority has open subtasks, the bar adds `Queda 1 subtarea abierta.` or `Quedan N subtareas abiertas.`
+3. Click **Hecha** to confirm. Click **Cancelar**, or click the checkbox again, to cancel.
+
+After you click **Hecha**, the row slides out. A bar shows `Hecha: <title>` with the button **Deshacer**. The bar stays for 5 seconds. Click **Deshacer** in that time to bring the priority back. The bar stays when you change the tab. In **Notas**, it shows above the note.
+
+## Hechas and Regresar
+
+The section **Hechas (N)** shows the priorities of the open list (Hoy or Semana) that you marked done in the last 24 hours. N is their count. The section is closed by default. Click it to open it. The app remembers if it is open or closed.
+
+The section does not show when the list has no done priority. If all done priorities are older than 24 hours, it shows `Hechas (0)`.
+
+Each done row has two buttons:
+
+- **Regresar** moves the priority back to the open list and highlights the row in yellow for 1400 ms.
+- A trash button, when the pointer is over the row. It removes the done priority at once.
+
+## Historial
+
+After 24 hours, a done priority leaves **Hechas**. A row **Historial** shows at the end of the open **Hechas**. Its number is the count of older done priorities. The row shows only when there is at least one.
+
+Click **Historial** to open the history. The history replaces the list.
+
+- The button **‹ Historial** returns to the list. A click on a tab also returns.
+- The name of the list (Hoy or Semana) shows on the right.
+- The priorities are in groups by day, newest first. The title of a group is `Hoy`, `Ayer` or a date such as `Lunes 12 oct`.
+- Each row has **Regresar** and the trash button.
+- `Nada en el historial.` shows when the history is empty.
+
+## Empty lists
+
+- `Todo listo en esta lista` shows with a check mark when the list has no open priority and at least one priority done in the last 24 hours.
+- `Nada pendiente en esta lista.` shows when the list has no open priority and none done in the last 24 hours.
+
+## Footer
+
+The footer has four parts.
+
+- The count of done priorities, for example `1 de 5 hechas hoy` or `1 de 5 hechas esta semana`.
+- A bell button, **Probar alerta**. It sends a test alert. When alerts are off, the bell has a slash. See [Alerts](/guide/use/alerts).
+- A gear button. It opens the settings. See [Settings](/guide/use/settings).
+- The button **Salir**. It quits the app.
+
+The count follows the open list:
+
+- In Hoy, `N de M hechas hoy`. N is the count of priorities of Hoy done since 00:00 of the local day.
+- In Semana, `N de M hechas esta semana`. N is the count of priorities of Semana done since the start of the ISO week (Monday, 00:00).
+- M is N plus the open priorities of the list.
+
+The count does not use the 24-hour window of **Hechas**. **Regresar** and **Deshacer** lower N. The footer shows in every view of the panel.
+
+## Panel size
+
+The panel is 360 pt wide. Its height follows its content. The area of open rows scrolls after 330 pt. The colors, the fonts and the shapes of the panel come from Tecla.

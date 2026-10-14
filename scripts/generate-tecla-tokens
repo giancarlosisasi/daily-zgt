@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+import hashlib
+import json
+import keyword
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SOURCE = ROOT / "design-system-prototypes" / "tokens" / "tecla.json"
+OUTPUT = ROOT / "DailyZGT" / "App" / "TeclaTokens.swift"
+SWIFT_KEYWORDS = {"default", "in", "is", "as", "do", "for", "if", "let", "var", "case", "func", "enum", "self", "static"}
+
+
+def name(key):
+    text = key if not key[0].isdigit() else "s" + key
+    return "`%s`" % text if text in SWIFT_KEYWORDS or keyword.iskeyword(text) else text
+
+
+def number(value):
+    return repr(float(value)) if isinstance(value, float) else str(value)
+
+
+def color(value):
+    digits = value["hex"].lstrip("#").upper()
+    if len(digits) != 6:
+        raise SystemExit("color %r is not #rrggbb" % value["hex"])
+    return "TeclaColor(hex: 0x%s, alpha: %s)" % (digits, number(float(value["alpha"])))
+
+
+def is_color(value):
+    return isinstance(value, dict) and set(value) == {"hex", "alpha"}
+
+
+def colors(values):
+    return ["static let %s = %s" % (name(key), color(value)) for key, value in values.items()]
+
+
+def sizes(values):
+    return ["static let %s: CGFloat = %s" % (name(key), number(value)) for key, value in values.items()]
+
+
+def doubles(values):
+    return ["static let %s: Double = %s" % (name(key), number(float(value))) for key, value in values.items()]
+
+
+def fonts(values):
+    lines = []
+    for key, value in values.items():
+        weights = ", ".join(str(weight) for weight in value["weights"])
+        width = number(float(value["width"])) if "width" in value else "nil"
+        lines.append(
+            "static let %s = TeclaFontFamily(family: %s, weights: [%s], width: %s, file: %s)"
+            % (name(key), json.dumps(value["family"]), weights, width, json.dumps(value["file"]))
+        )
+    lines.append("static let all = [%s]" % ", ".join(name(key) for key in values))
+    return lines
+
+
+def text_styles(values, families):
+    lines = []
+    for key, value in values.items():
+        if value["font"] not in families:
+            raise SystemExit("type.%s uses the unknown font %r" % (key, value["font"]))
+        lines.append(
+            "static let %s = TeclaTextStyle(size: %s, lineHeight: %s, trackingEm: %s, weight: %s, family: Fonts.%s)"
+            % (
+                name(key),
+                number(value["size"]),
+                number(float(value["lineHeight"])),
+                number(float(value["trackingEm"])),
+                value["weight"],
+                name(value["font"]),
+            )
+        )
+    return lines
+
+
+def key_values(values):
+    lines = []
+    for key, value in values.items():
+        if is_color(value):
+            lines.append("static let %s = %s" % (name(key), color(value)))
+        else:
+            lines.append("static let %s: CGFloat = %s" % (name(key), number(float(value))))
+    return lines
+
+
+def shadows(values):
+    lines = []
+    for key, layers in values.items():
+        items = ", ".join(
+            "TeclaShadow(x: %s, y: %s, blur: %s, color: %s)"
+            % (number(layer["x"]), number(layer["y"]), number(layer["blur"]), color(layer["color"]))
+            for layer in layers
+        )
+        lines.append("static let %s = [%s]" % (name(key), items))
+    return lines
+
+
+def easings(values):
+    lines = []
+    for key, value in values.items():
+        x1, y1, x2, y2 = (number(float(point)) for point in value["cubicBezier"])
+        lines.append(
+            "static let %s = TeclaEasing(x1: %s, y1: %s, x2: %s, y2: %s, duration: %s)"
+            % (name(key), x1, y1, x2, y2, number(float(value["duration"])))
+        )
+    return lines
+
+
+def springs(values):
+    return [
+        "static let %s = TeclaSpring(response: %s, dampingFraction: %s)"
+        % (name(key), number(float(value["response"])), number(float(value["dampingFraction"])))
+        for key, value in values.items()
+    ]
+
+
+def group(title, lines):
+    return ["    enum %s {" % title] + ["        " + line for line in lines] + ["    }"]
+
+
+def render(raw):
+    tokens = json.loads(raw)
+    known = {
+        "name", "source", "appearance", "units", "color", "palette", "panel", "font", "type",
+        "space", "radius", "size", "key", "shadow", "duration", "easing", "spring",
+    }
+    unknown = set(tokens) - known
+    if unknown:
+        raise SystemExit("tecla.json has sections that the generator does not know: %s" % sorted(unknown))
+    groups = [
+        group("Colors", colors(tokens["color"])),
+        group("Palette", colors(tokens["palette"])),
+        group("Panel", colors(tokens["panel"])),
+        group("Fonts", fonts(tokens["font"])),
+        group("TextStyles", text_styles(tokens["type"], tokens["font"])),
+        group("Space", sizes(tokens["space"])),
+        group("Radius", sizes(tokens["radius"])),
+        group("Size", sizes(tokens["size"])),
+        group("Key", key_values(tokens["key"])),
+        group("Shadows", shadows(tokens["shadow"])),
+        group("Durations", doubles(tokens["duration"])),
+        group("Easings", easings(tokens["easing"])),
+        group("Springs", springs(tokens["spring"])),
+    ]
+    lines = [
+        "import CoreGraphics",
+        "",
+        "enum TeclaTokens {",
+        "    static let name = %s" % json.dumps(tokens["name"]),
+        "    static let sourceDigest = %s" % json.dumps(hashlib.sha256(raw).hexdigest()),
+    ]
+    for block in groups:
+        lines.append("")
+        lines.extend(block)
+    lines.append("}")
+    body = "\n".join(lines) + "\n"
+    output_digest = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    lines.insert(5, "    static let outputDigest = %s" % json.dumps(output_digest))
+    return "\n".join(lines) + "\n"
+
+
+def main():
+    expected = render(SOURCE.read_bytes())
+    if "--check" in sys.argv[1:]:
+        current = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
+        if current != expected:
+            print("%s does not match %s. Run scripts/generate-tecla-tokens." % (OUTPUT.name, SOURCE.name))
+            return 1
+        print("%s matches %s." % (OUTPUT.name, SOURCE.name))
+        return 0
+    OUTPUT.write_text(expected, encoding="utf-8")
+    print("Wrote %s." % OUTPUT.relative_to(ROOT))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

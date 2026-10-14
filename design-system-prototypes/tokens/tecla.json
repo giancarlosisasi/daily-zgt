@@ -1,0 +1,637 @@
+{
+  "name": "Tecla",
+  "source": "design-system-prototypes/design-systems/ds-tecla.html",
+  "appearance": "dark",
+  "units": {
+    "size": "pt",
+    "duration": "s",
+    "trackingEm": "em: multiply by the font size"
+  },
+  "color": {
+    "ground": {
+      "hex": "#17171a",
+      "alpha": 1.0
+    },
+    "surface": {
+      "hex": "#222226",
+      "alpha": 1.0
+    },
+    "surface2": {
+      "hex": "#303036",
+      "alpha": 1.0
+    },
+    "line": {
+      "hex": "#ffffff",
+      "alpha": 0.13
+    },
+    "line2": {
+      "hex": "#ffffff",
+      "alpha": 0.55
+    },
+    "text": {
+      "hex": "#f4f3f7",
+      "alpha": 1.0
+    },
+    "text2": {
+      "hex": "#a9a7b4",
+      "alpha": 1.0
+    },
+    "accent": {
+      "hex": "#ffbe0b",
+      "alpha": 1.0
+    },
+    "fill": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "onFill": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "band": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "onBand": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "focus": {
+      "hex": "#ffbe0b",
+      "alpha": 1.0
+    },
+    "knob": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "mbBg": {
+      "hex": "#0c0c0e",
+      "alpha": 1.0
+    },
+    "key": {
+      "hex": "#3a3a42",
+      "alpha": 1.0
+    },
+    "keySide": {
+      "hex": "#0c0c0e",
+      "alpha": 1.0
+    },
+    "keyT": {
+      "hex": "#f4f3f7",
+      "alpha": 1.0
+    },
+    "fillSide": {
+      "hex": "#4f1aa8",
+      "alpha": 1.0
+    },
+    "onBlue": {
+      "hex": "#06112a",
+      "alpha": 1.0
+    },
+    "mbText": {
+      "hex": "#f5f5f7",
+      "alpha": 1.0
+    },
+    "tileShade": {
+      "hex": "#000000",
+      "alpha": 0.18
+    }
+  },
+  "palette": {
+    "violet": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "blue": {
+      "hex": "#3a86ff",
+      "alpha": 1.0
+    },
+    "yellow": {
+      "hex": "#ffbe0b",
+      "alpha": 1.0
+    },
+    "orange": {
+      "hex": "#fb5607",
+      "alpha": 1.0
+    },
+    "rose": {
+      "hex": "#ff006e",
+      "alpha": 1.0
+    }
+  },
+  "panel": {
+    "bg": {
+      "hex": "#222226",
+      "alpha": 1.0
+    },
+    "solid": {
+      "hex": "#222226",
+      "alpha": 1.0
+    },
+    "line": {
+      "hex": "#ffffff",
+      "alpha": 0.13
+    },
+    "text": {
+      "hex": "#f4f3f7",
+      "alpha": 1.0
+    },
+    "strong": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "text2": {
+      "hex": "#dad9e1",
+      "alpha": 1.0
+    },
+    "ghost": {
+      "hex": "#c8c6d1",
+      "alpha": 1.0
+    },
+    "muted": {
+      "hex": "#a3a1ad",
+      "alpha": 1.0
+    },
+    "dim": {
+      "hex": "#8f8d9a",
+      "alpha": 1.0
+    },
+    "accent": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "onAccent": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "link": {
+      "hex": "#6ba6ff",
+      "alpha": 1.0
+    },
+    "focus": {
+      "hex": "#3a86ff",
+      "alpha": 0.8
+    },
+    "captureFocus": {
+      "hex": "#ffbe0b",
+      "alpha": 1.0
+    },
+    "track": {
+      "hex": "#000000",
+      "alpha": 0.3
+    },
+    "track2": {
+      "hex": "#000000",
+      "alpha": 0.3
+    },
+    "seg": {
+      "hex": "#45454e",
+      "alpha": 1.0
+    },
+    "segT": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "hover": {
+      "hex": "#ffffff",
+      "alpha": 0.05
+    },
+    "hover2": {
+      "hex": "#ffffff",
+      "alpha": 0.09
+    },
+    "hl": {
+      "hex": "#ffbe0b",
+      "alpha": 0.24
+    },
+    "cb": {
+      "hex": "#8f8d9a",
+      "alpha": 1.0
+    },
+    "lvOff": {
+      "hex": "#ffffff",
+      "alpha": 0.18
+    },
+    "card": {
+      "hex": "#ffffff",
+      "alpha": 0.05
+    },
+    "in": {
+      "hex": "#000000",
+      "alpha": 0.28
+    },
+    "div": {
+      "hex": "#ffffff",
+      "alpha": 0.09
+    },
+    "dash": {
+      "hex": "#ffffff",
+      "alpha": 0.2
+    },
+    "undo": {
+      "hex": "#38383f",
+      "alpha": 1.0
+    },
+    "toastBg": {
+      "hex": "#2c2c31",
+      "alpha": 1.0
+    },
+    "high": {
+      "hex": "#ff4d5e",
+      "alpha": 1.0
+    },
+    "medium": {
+      "hex": "#ff9a1f",
+      "alpha": 1.0
+    },
+    "low": {
+      "hex": "#8f8d9a",
+      "alpha": 1.0
+    },
+    "lateT": {
+      "hex": "#ff7c89",
+      "alpha": 1.0
+    },
+    "lateBg": {
+      "hex": "#ff4d5e",
+      "alpha": 0.17
+    },
+    "soonT": {
+      "hex": "#ffb14d",
+      "alpha": 1.0
+    },
+    "soonBg": {
+      "hex": "#ff9a1f",
+      "alpha": 0.16
+    },
+    "laterT": {
+      "hex": "#c8c6d1",
+      "alpha": 1.0
+    },
+    "laterBg": {
+      "hex": "#ffffff",
+      "alpha": 0.08
+    },
+    "done": {
+      "hex": "#b996ff",
+      "alpha": 1.0
+    },
+    "doneBg": {
+      "hex": "#8338ec",
+      "alpha": 0.17
+    },
+    "doneLine": {
+      "hex": "#8338ec",
+      "alpha": 0.6
+    },
+    "doneTitle": {
+      "hex": "#efe6ff",
+      "alpha": 1.0
+    },
+    "doneText": {
+      "hex": "#c3a4ff",
+      "alpha": 1.0
+    },
+    "doneFill": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "onDone": {
+      "hex": "#ffffff",
+      "alpha": 1.0
+    },
+    "key": {
+      "hex": "#3d3d45",
+      "alpha": 1.0
+    },
+    "keySide": {
+      "hex": "#0c0c0e",
+      "alpha": 1.0
+    },
+    "accentSide": {
+      "hex": "#4f1aa8",
+      "alpha": 1.0
+    },
+    "titleUnderline": {
+      "hex": "#ffffff",
+      "alpha": 0.55
+    },
+    "pressTint": {
+      "hex": "#ffffff",
+      "alpha": 0.09
+    }
+  },
+  "font": {
+    "display": {
+      "family": "Gabarito",
+      "weights": [
+        700,
+        800
+      ],
+      "file": "Gabarito[wght].ttf",
+      "source": "https://github.com/google/fonts/tree/main/ofl/gabarito",
+      "license": "OFL-1.1"
+    },
+    "text": {
+      "family": "Onest",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "file": "Onest[wght].ttf",
+      "source": "https://github.com/google/fonts/tree/main/ofl/onest",
+      "license": "OFL-1.1"
+    },
+    "mono": {
+      "family": "Martian Mono",
+      "weights": [
+        400,
+        500,
+        700
+      ],
+      "width": 112.5,
+      "file": "MartianMono[wdth,wght].ttf",
+      "source": "https://github.com/google/fonts/tree/main/ofl/martianmono",
+      "license": "OFL-1.1"
+    }
+  },
+  "type": {
+    "display": {
+      "size": 72,
+      "lineHeight": 0.95,
+      "trackingEm": -0.035,
+      "weight": 800,
+      "font": "display"
+    },
+    "title": {
+      "size": 44,
+      "lineHeight": 1.05,
+      "trackingEm": -0.03,
+      "weight": 800,
+      "font": "display"
+    },
+    "heading": {
+      "size": 28,
+      "lineHeight": 1.15,
+      "trackingEm": -0.02,
+      "weight": 700,
+      "font": "display"
+    },
+    "subhead": {
+      "size": 20,
+      "lineHeight": 1.3,
+      "trackingEm": -0.01,
+      "weight": 700,
+      "font": "display"
+    },
+    "body": {
+      "size": 16,
+      "lineHeight": 1.55,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "text"
+    },
+    "small": {
+      "size": 14,
+      "lineHeight": 1.5,
+      "trackingEm": 0.005,
+      "weight": 400,
+      "font": "text"
+    },
+    "panelTitle": {
+      "size": 16,
+      "lineHeight": 1.25,
+      "trackingEm": 0.0,
+      "weight": 700,
+      "font": "text"
+    },
+    "panel": {
+      "size": 13,
+      "lineHeight": 1.35,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "text"
+    },
+    "panelLabel": {
+      "size": 12,
+      "lineHeight": 1.35,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "text"
+    },
+    "panelMeta": {
+      "size": 11,
+      "lineHeight": 1.35,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "text"
+    },
+    "panelChip": {
+      "size": 11,
+      "lineHeight": 1.35,
+      "trackingEm": 0.0,
+      "weight": 600,
+      "font": "text"
+    },
+    "panelCapture": {
+      "size": 14,
+      "lineHeight": 1.0,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "text"
+    },
+    "code": {
+      "size": 13,
+      "lineHeight": 1.6,
+      "trackingEm": 0.0,
+      "weight": 400,
+      "font": "mono"
+    }
+  },
+  "space": {
+    "1": 4,
+    "2": 8,
+    "3": 16,
+    "4": 24,
+    "5": 32,
+    "6": 48,
+    "7": 64,
+    "8": 96
+  },
+  "radius": {
+    "small": 8,
+    "control": 10,
+    "card": 20,
+    "panel": 16,
+    "row": 9,
+    "chip": 6,
+    "panelControl": 8,
+    "checkbox": 5,
+    "bar": 11,
+    "input": 8,
+    "track": 10,
+    "segment": 8,
+    "toast": 16,
+    "ghost": 6,
+    "remove": 5
+  },
+  "size": {
+    "levelBarWidth": 4,
+    "levelBarRadius": 1.5,
+    "levelBarGap": 1.5,
+    "checkboxLine": 1.5,
+    "undoLine": 2
+  },
+  "key": {
+    "sideHeight": 4.0,
+    "travel": 3.0,
+    "pressScale": 0.99,
+    "controlPressScale": 0.97,
+    "bigSideHeight": 8.0,
+    "bigTravel": 6.0,
+    "panelSideHeight": 2.0,
+    "panelTravel": 2.0,
+    "face": {
+      "hex": "#3d3d45",
+      "alpha": 1.0
+    },
+    "side": {
+      "hex": "#0c0c0e",
+      "alpha": 1.0
+    },
+    "accentFace": {
+      "hex": "#8338ec",
+      "alpha": 1.0
+    },
+    "accentSide": {
+      "hex": "#4f1aa8",
+      "alpha": 1.0
+    },
+    "selectedFace": {
+      "hex": "#45454e",
+      "alpha": 1.0
+    }
+  },
+  "shadow": {
+    "key": [
+      {
+        "x": 0,
+        "y": 4,
+        "blur": 0,
+        "color": {
+          "hex": "#0c0c0e",
+          "alpha": 1.0
+        }
+      }
+    ],
+    "panelKey": [
+      {
+        "x": 0,
+        "y": 2,
+        "blur": 0,
+        "color": {
+          "hex": "#0c0c0e",
+          "alpha": 1.0
+        }
+      }
+    ],
+    "panelAccentKey": [
+      {
+        "x": 0,
+        "y": 2,
+        "blur": 0,
+        "color": {
+          "hex": "#4f1aa8",
+          "alpha": 1.0
+        }
+      }
+    ],
+    "panel": [
+      {
+        "x": 0,
+        "y": 6,
+        "blur": 0,
+        "color": {
+          "hex": "#0c0c0e",
+          "alpha": 1.0
+        }
+      },
+      {
+        "x": 0,
+        "y": 22,
+        "blur": 50,
+        "color": {
+          "hex": "#000000",
+          "alpha": 0.5
+        }
+      }
+    ],
+    "alert": [
+      {
+        "x": 0,
+        "y": 14,
+        "blur": 40,
+        "color": {
+          "hex": "#000000",
+          "alpha": 0.45
+        }
+      }
+    ]
+  },
+  "duration": {
+    "press": 0.1,
+    "key": 0.08,
+    "fast": 0.18,
+    "base": 0.22,
+    "slow": 0.32,
+    "panelOpen": 0.2,
+    "alert": 0.35,
+    "highlight": 1.4,
+    "undo": 5.0
+  },
+  "easing": {
+    "out": {
+      "cubicBezier": [
+        0.2,
+        0.8,
+        0.2,
+        1.0
+      ],
+      "duration": 0.22
+    },
+    "in": {
+      "cubicBezier": [
+        0.8,
+        0.2,
+        0.8,
+        0.2
+      ],
+      "duration": 0.22
+    },
+    "press": {
+      "cubicBezier": [
+        0.0,
+        0.0,
+        0.58,
+        1.0
+      ],
+      "duration": 0.08
+    }
+  },
+  "spring": {
+    "default": {
+      "response": 0.22,
+      "dampingFraction": 1.0
+    },
+    "momentum": {
+      "response": 0.45,
+      "dampingFraction": 0.72
+    },
+    "press": {
+      "response": 0.1,
+      "dampingFraction": 1.0
+    }
+  }
+}

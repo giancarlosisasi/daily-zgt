@@ -1,0 +1,287 @@
+@import '../../design-system-prototypes/tokens/tecla.css';
+@import './fonts.css';
+
+html:root {
+  --dz-dot: color-mix(in srgb, var(--color-line) 55%, transparent);
+  --dz-soft-shadow: color-mix(in srgb, var(--color-key-side) 45%, transparent);
+
+  --rp-font-family-base: var(--font-text);
+  --rp-font-family-mono: var(--font-mono);
+
+  --rp-c-brand: var(--color-accent);
+  --rp-c-brand-light: var(--color-accent);
+  --rp-c-brand-lighter: var(--color-accent);
+  --rp-c-brand-dark: var(--color-accent);
+  --rp-c-brand-darker: var(--band-key-accent-side);
+  --rp-c-brand-tint: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --rp-c-link: var(--color-accent);
+
+  --rp-c-bg: var(--color-ground);
+  --rp-c-bg-soft: var(--color-surface);
+  --rp-c-bg-mute: var(--color-surface-2);
+  --rp-c-bg-alt: var(--color-mb-bg);
+  --rp-c-divider: var(--color-line);
+  --rp-c-divider-light: var(--color-line);
+  --rp-c-text-0: var(--color-text);
+  --rp-c-text-1: var(--color-text);
+  --rp-c-text-2: var(--color-text-2);
+  --rp-c-text-3: var(--color-text-2);
+  --rp-c-text-4: var(--color-text-2);
+  --rp-c-text-code: var(--color-text);
+  --rp-c-text-code-bg: var(--color-surface);
+  --rp-c-text-code-border: var(--color-line);
+  --rp-c-gray: var(--color-text-2);
+  --rp-c-gray-light-1: var(--color-text-2);
+  --rp-c-gray-light-2: var(--color-text-2);
+  --rp-c-gray-light-3: var(--color-line-2);
+  --rp-c-gray-light-4: var(--color-line);
+  --rp-c-gray-light-5: var(--color-line);
+
+  --rp-shadow-1: var(--elevation-1);
+  --rp-shadow-2: var(--elevation-1);
+  --rp-shadow-3: var(--elevation-2);
+  --rp-shadow-4: var(--elevation-2);
+  --rp-shadow-5: var(--elevation-2);
+  --rp-radius: var(--radius-ctl);
+  --rp-radius-small: var(--radius-s);
+  --rp-radius-large: var(--radius-card);
+
+  --rp-code-font-size: var(--fs-code);
+  --rp-code-title-bg: var(--color-surface-2);
+  --rp-code-block-color: var(--panel-text);
+  --rp-code-block-bg: var(--panel-bg);
+  --rp-code-block-border: 1px solid var(--panel-line);
+  --rp-code-block-shadow: none;
+
+  --shiki-foreground: var(--panel-text);
+  --shiki-token-constant: var(--panel-link);
+  --shiki-token-string: var(--panel-soon-t);
+  --shiki-token-comment: var(--panel-dim);
+  --shiki-token-keyword: var(--panel-late-t);
+  --shiki-token-parameter: var(--panel-medium);
+  --shiki-token-function: var(--panel-done);
+  --shiki-token-string-expression: var(--panel-done-text);
+  --shiki-token-punctuation: var(--panel-ghost);
+  --shiki-token-link: var(--color-accent);
+  --shiki-token-deleted: var(--panel-late-t);
+  --shiki-token-inserted: var(--panel-done);
+
+  --rp-container-note-border: var(--color-line);
+  --rp-container-note-text: var(--color-text);
+  --rp-container-note-bg: var(--color-surface);
+  --rp-container-note-code-bg: var(--color-surface-2);
+  --rp-container-tip-border: var(--color-line);
+  --rp-container-tip-text: var(--color-text);
+  --rp-container-tip-bg: var(--color-surface);
+  --rp-container-tip-code-bg: var(--color-surface-2);
+  --rp-container-info-border: var(--color-line);
+  --rp-container-info-text: var(--color-text);
+  --rp-container-info-bg: var(--color-surface);
+  --rp-container-info-code-bg: var(--color-surface-2);
+  --rp-container-important-border: var(--color-line);
+  --rp-container-important-text: var(--color-text);
+  --rp-container-important-bg: var(--color-surface);
+  --rp-container-important-code-bg: var(--color-surface-2);
+  --rp-container-warning-border: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  --rp-container-warning-text: var(--color-accent);
+  --rp-container-warning-bg: var(--color-surface);
+  --rp-container-warning-code-bg: var(--color-surface-2);
+  --rp-container-danger-border: var(--panel-late-t);
+  --rp-container-danger-text: var(--panel-late-t);
+  --rp-container-danger-bg: var(--panel-late-bg);
+  --rp-container-danger-code-bg: var(--color-surface-2);
+  --rp-container-details-border: var(--color-line);
+  --rp-container-details-text: var(--color-text);
+  --rp-container-details-bg: var(--color-surface);
+  --rp-container-details-code-bg: var(--color-surface-2);
+
+  color-scheme: dark;
+}
+
+html {
+  font-family: var(--font-text);
+}
+
+body {
+  background-image: radial-gradient(var(--dz-dot) 1px, transparent 1.2px);
+  background-size: 16px 16px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-fill);
+  color: var(--color-on-fill);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+}
+
+html:root .rp-nav {
+  border-bottom-color: transparent;
+  box-shadow: 0 2px 0 var(--color-key-side);
+}
+
+html:root .rp-nav__title__link {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--tracking-subhead);
+}
+
+.rp-doc h1,
+.rp-doc h2,
+.rp-doc h3,
+.rp-doc h4,
+.rp-doc h5,
+.rp-doc h6 {
+  font-family: var(--font-display);
+  color: var(--color-text);
+}
+
+.rp-doc h1 {
+  font-size: clamp(var(--fs-heading), 6vw, var(--fs-title));
+  line-height: var(--lh-title);
+  letter-spacing: var(--tracking-title);
+  font-weight: var(--weight-title);
+}
+
+.rp-doc h2 {
+  font-size: var(--fs-heading);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--weight-heading);
+}
+
+.rp-doc h3 {
+  font-size: var(--fs-subhead);
+  line-height: var(--lh-subhead);
+  letter-spacing: var(--tracking-subhead);
+  font-weight: var(--weight-subhead);
+}
+
+.rp-doc th {
+  font-family: var(--font-text);
+  color: var(--color-text);
+}
+
+.rp-doc :not(pre) > code {
+  font-size: var(--fs-code);
+}
+
+html:root .rp-search-button,
+html:root .rp-sidebar-item--active,
+html:root .rp-sidebar-item--active:hover,
+html:root .rp-nav-menu__item--active > .rp-nav-menu__item__container,
+html:root .rp-nav__others .rp-nav-menu__item > .rp-nav-menu__item__container,
+html:root .rp-suggest-item--current .rp-suggest-item__link {
+  background-color: var(--color-key);
+  color: var(--color-key-t);
+  box-shadow: var(--elevation-1);
+}
+
+html:root .rp-search-button,
+html:root .rp-nav-menu__item--active > .rp-nav-menu__item__container,
+html:root .rp-nav__others .rp-nav-menu__item > .rp-nav-menu__item__container {
+  height: 36px;
+  margin-bottom: var(--key-side-height);
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-ctl);
+  backdrop-filter: none;
+  font-weight: 600;
+}
+
+html:root .rp-search-button__hotkey {
+  background-color: var(--color-key-side);
+  color: var(--color-text-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-panel-meta);
+}
+
+html:root .rp-sidebar-item--active {
+  margin-bottom: calc(var(--key-side-height) + 2px);
+  font-weight: 600;
+}
+
+html:root .rp-sidebar-item--group-item.rp-sidebar-item--active .rp-sidebar-item__left::before {
+  content: none;
+}
+
+html:root .rp-hover-group {
+  border: 0;
+  border-radius: var(--radius-ctl);
+  background: var(--color-surface);
+  box-shadow: var(--elevation-2);
+}
+
+html:root .rp-steps > :is(h2, h3, h4, h5, h6)::before {
+  border: 0;
+  border-radius: var(--radius-s);
+  outline: 0;
+  background-color: var(--color-fill);
+  color: var(--color-on-fill);
+  box-shadow:
+    0 var(--key-side-height) 0 var(--color-fill-side),
+    0 0 0 6px var(--color-ground);
+  font-family: var(--font-display);
+  font-size: var(--fs-body);
+  font-weight: var(--weight-display);
+}
+
+html:root .rp-search-panel__mask {
+  background: color-mix(in srgb, var(--color-mb-bg) 70%, transparent);
+}
+
+html:root .rp-search-panel__modal {
+  border-radius: var(--radius-card);
+  box-shadow: var(--elevation-2);
+}
+
+html:root .rp-search-panel__input-form,
+html:root .rp-search-panel__input {
+  background-color: var(--color-ground);
+}
+
+html:root .rp-search-panel__input {
+  color: var(--color-text);
+  font-family: var(--font-text);
+}
+
+html:root .rp-suggest-item .rp-suggest-item__link {
+  margin-bottom: var(--key-side-height);
+}
+
+html:root .rp-suggest-item:not(.rp-suggest-item--current) .rp-suggest-item__link {
+  box-shadow: none;
+}
+
+html:root .rp-suggest-item--current .rp-suggest-item__container .rp-suggest-item__icon,
+html:root .rp-suggest-item--current .rp-suggest-item__container .rp-suggest-item__content .rp-suggest-item__statement,
+html:root .rp-suggest-item--current .rp-suggest-item__container .rp-suggest-item__content .rp-suggest-item__title {
+  color: var(--color-key-t);
+}
+
+html:root .rp-suggest-item--current .rp-suggest-item__container .rp-suggest-item__content .rp-suggest-item__mark {
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:root .rp-search-button {
+    transition:
+      transform var(--duration-key) var(--ease-press),
+      box-shadow var(--duration-key) var(--ease-press);
+  }
+
+  html:root .rp-search-button:active {
+    transform: translateY(var(--key-travel)) scale(var(--key-press-scale));
+    box-shadow: 0 calc(var(--key-side-height) - var(--key-travel)) 0 var(--color-key-side);
+  }
+}

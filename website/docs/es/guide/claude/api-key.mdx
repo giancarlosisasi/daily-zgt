@@ -1,0 +1,100 @@
+---
+title: Revisión con Claude y clave de API de Anthropic
+description: La revisión con Claude está planeada para v2. Llama a la API de Mensajes de Anthropic con tu propia clave de API.
+---
+
+import { Steps } from '@rspress/core/theme';
+
+# Revisión con Claude y clave de API de Anthropic
+
+:::warning Planeado para v2
+La revisión con Claude **no está en v1**. La app v1 no tiene el botón **Revisar con Claude** ni el campo de la clave. Esta página muestra lo que planea v2 y cómo preparar tu clave.
+:::
+
+## Qué planea v2
+
+- v2 agrega un campo en los ajustes, **Clave de API de Anthropic**, y un botón, **Revisar con Claude**.
+- El botón envía una exportación de solo lectura de la base de datos a la API de Mensajes de Anthropic. La petición es `POST https://api.anthropic.com/v1/messages`, por HTTPS.
+- El modelo es `claude-opus-5-5`.
+- La respuesta aparece en una tarjeta morada.
+- No hay servidor. La app habla directo con la API de Anthropic.
+- Sin clave, el botón abre el campo de los ajustes.
+- Es la única función que envía datos fuera de tu Mac. Solo envía datos cuando haces clic en el botón.
+
+## Dónde vive la clave
+
+- La app guarda la clave en el Llavero de macOS.
+- La clave nunca va en el archivo SQLite, en la tabla `app_state` ni en el repositorio.
+- La variable de shell `ANTHROPIC_API_KEY` no llega a una app que inicia desde Finder. El campo de los ajustes es la forma de darle la clave a la app.
+
+## Prepara la clave
+
+<Steps>
+
+### Crea una cuenta en la Claude Console
+
+Ve a [platform.claude.com](https://platform.claude.com) e inicia sesión, o crea una cuenta. La dirección antigua, console.anthropic.com, lleva al mismo lugar.
+
+### Agrega crédito de facturación
+
+Las llamadas a la API cuestan dinero. Abre [Settings → Billing](https://platform.claude.com/settings/billing) en la Console y agrega crédito. La Console muestra en esa página un tope de gasto mensual. Allí puedes fijar un límite propio más bajo.
+
+### Crea la clave
+
+1. Abre [Settings → API keys](https://platform.claude.com/settings/keys).
+2. Haz clic en **Create key**. Ponle un nombre a la clave.
+3. Copia la clave. La Console muestra la clave completa, que empieza con `sk-ant-`, una sola vez. Si la pierdes, crea una clave nueva.
+
+### Pega la clave en la app
+
+1. Abre los ajustes de Daily ZGT con el botón de engranaje del pie. Los ajustes de v1 todavía no tienen un campo para la clave.
+2. Pega la clave en el campo **Clave de API de Anthropic**.
+
+### Ejecuta la revisión
+
+Haz clic en **Revisar con Claude**. La app envía la exportación y muestra la respuesta.
+
+</Steps>
+
+## Comprueba la clave desde la Terminal
+
+Puedes probar la clave antes de pegarla en la app. Esta llamada usa el mismo endpoint que la app.
+
+Fija la clave en la sesión actual de tu terminal. Reemplaza el texto entre paréntesis angulares con tu clave. No escribas la clave en un archivo.
+
+```bash
+export ANTHROPIC_API_KEY="<tu clave>"
+```
+
+Envía una petición corta.
+
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 64,
+    "messages": [{"role": "user", "content": "hi"}]
+  }'
+```
+
+- Una respuesta JSON con un campo `content` significa que la clave funciona.
+- El error `authentication_error` (HTTP 401) indica un problema con la clave. La clave puede ser incorrecta, estar revocada o haber vencido.
+- El error `billing_error` (HTTP 402) indica un problema con tus datos de facturación.
+
+Al terminar, cierra la ventana de la terminal. La variable termina con la sesión.
+
+## Quita la clave
+
+- En la app: abre los ajustes y borra el campo **Clave de API de Anthropic**.
+- En macOS: abre **Acceso a Llaveros** y busca `dailyzgt` y `anthropic`. Borra el elemento que guarda la clave. El plan no da nombre al elemento del Llavero.
+- En la Console: abre [Settings → API keys](https://platform.claude.com/settings/keys) y quita la clave allí. La clave deja de funcionar en todas partes.
+
+## Mantén la clave en privado
+
+- Nunca hagas commit de la clave.
+- Nunca pongas la clave en el repositorio, en `project.yml` ni en ningún archivo que git siga.
+- Nunca pegues la clave en un chat, un ticket ni una captura de pantalla.
+- Si una clave se filtra, quítala en la Console y crea una nueva.

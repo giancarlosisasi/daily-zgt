@@ -1,0 +1,33 @@
+---
+title: Notes
+description: The note of the day and the note of the week.
+---
+
+# Notes
+
+The tab **Notas** has one text for the day and one text for the week.
+
+- The scope tab **Hoy** shows `Notas de hoy`.
+- The scope tab **Semana** shows `Notas de la semana`.
+
+The text field has the placeholder `Escribe una nota`. The hint under it says `Se guarda al escribir.` The app saves the note while you type, 400 ms after you stop. It also saves when you change the tab or when the panel loses focus. There is no save button.
+
+If the save fails, the hint changes to `No se pudo guardar la nota.`
+
+## Each period has its own note
+
+Each day keeps its own note. Each week keeps its own note. `Notas de hoy` always shows the note of the current local day. When the day changes, the field shows the empty note of the new day. The old note stays in the database.
+
+The app stores the notes in the table `note`:
+
+| Column | Example |
+|---|---|
+| `scope` | `day` or `week` |
+| `period` | `2026-10-12` for a day, `2026-W42` for a week |
+| `body` | The text |
+
+The pair `scope` and `period` is unique, so a day or a week has at most one note.
+
+If another program changes the note in the database, the field shows the new text. The field does not change while you have an edit that is not saved.
+
+See [Database](/guide/data/database) to read the notes with `sqlite3`.

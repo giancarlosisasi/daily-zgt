@@ -1,0 +1,33 @@
+---
+title: Notas
+description: La nota del día y la nota de la semana.
+---
+
+# Notas
+
+La pestaña **Notas** tiene un texto para el día y un texto para la semana.
+
+- La pestaña de alcance **Hoy** muestra `Notas de hoy`.
+- La pestaña de alcance **Semana** muestra `Notas de la semana`.
+
+El campo de texto tiene el texto de ayuda `Escribe una nota`. La indicación bajo el campo dice `Se guarda al escribir.` La app guarda la nota mientras escribes, 400 ms después de que paras. También guarda cuando cambias de pestaña o cuando el panel pierde el foco. No hay botón de guardar.
+
+Si el guardado falla, la indicación cambia a `No se pudo guardar la nota.`
+
+## Cada periodo tiene su propia nota
+
+Cada día guarda su propia nota. Cada semana guarda su propia nota. `Notas de hoy` siempre muestra la nota del día local actual. Cuando cambia el día, el campo muestra la nota vacía del día nuevo. La nota anterior sigue en la base de datos.
+
+La app guarda las notas en la tabla `note`:
+
+| Columna | Ejemplo |
+|---|---|
+| `scope` | `day` o `week` |
+| `period` | `2026-10-12` para un día, `2026-W42` para una semana |
+| `body` | El texto |
+
+El par `scope` y `period` es único, así que un día o una semana tiene como máximo una nota.
+
+Si otro programa cambia la nota en la base de datos, el campo muestra el texto nuevo. El campo no cambia mientras tienes una edición sin guardar.
+
+Mira [Base de datos](/guide/data/database) para leer las notas con `sqlite3`.

@@ -1,0 +1,70 @@
+name: DailyZGT
+options:
+  bundleIdPrefix: com.giancarlosisasi
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    exactVersion: 7.11.1
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    exactVersion: 3.1.0
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    GENERATE_INFOPLIST_FILE: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  DailyZGT:
+    type: application
+    platform: macOS
+    sources:
+      - DailyZGT
+    dependencies:
+      - package: GRDB
+      - package: KeyboardShortcuts
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt
+        PRODUCT_NAME: DailyZGT
+        INFOPLIST_KEY_CFBundleDisplayName: Daily ZGT
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: NO
+  DailyZGTTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - DailyZGTTests
+      - path: design-system-prototypes/tokens/tecla.json
+        buildPhase: resources
+      - path: DailyZGT/App/TeclaTokens.swift
+        buildPhase:
+          copyFiles:
+            destination: resources
+    dependencies:
+      - target: DailyZGT
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt.tests
+schemes:
+  DailyZGT:
+    build:
+      targets:
+        DailyZGT: all
+        DailyZGTTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - DailyZGTTests

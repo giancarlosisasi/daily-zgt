@@ -1,0 +1,100 @@
+---
+title: Claude review and the Anthropic API key
+description: The Claude review is planned for v2. It calls the Anthropic Messages API with your own API key.
+---
+
+import { Steps } from '@rspress/core/theme';
+
+# Claude review and the Anthropic API key
+
+:::warning Planned for v2
+The Claude review is **not in v1**. The v1 app has no **Revisar con Claude** button and no key field. This page shows what v2 plans and how to prepare your key.
+:::
+
+## What v2 plans
+
+- v2 adds a settings field, **Clave de API de Anthropic**, and a button, **Revisar con Claude**.
+- The button sends a read-only export of the database to the Anthropic Messages API. The request is `POST https://api.anthropic.com/v1/messages`, over HTTPS.
+- The model is `claude-opus-5-5`.
+- The answer shows in a purple card.
+- There is no server. The app talks to the Anthropic API directly.
+- With no key, the button opens the settings field.
+- This is the only feature that sends data out of your Mac. It sends data only when you click the button.
+
+## Where the key lives
+
+- The app keeps the key in the macOS Keychain.
+- The key never goes in the SQLite file, in the table `app_state` or in the repository.
+- The shell variable `ANTHROPIC_API_KEY` does not reach an app that starts from Finder. The settings field is the way to give the key to the app.
+
+## Set up the key
+
+<Steps>
+
+### Create a Claude Console account
+
+Go to [platform.claude.com](https://platform.claude.com) and sign in, or create an account. The old address, console.anthropic.com, goes to the same place.
+
+### Add billing credit
+
+API calls cost money. Open [Settings → Billing](https://platform.claude.com/settings/billing) in the Console and add credit. The Console shows a monthly spend cap on that page. You can set a lower limit of your own there.
+
+### Create the key
+
+1. Open [Settings → API keys](https://platform.claude.com/settings/keys).
+2. Click **Create key**. Name the key.
+3. Copy the key. The Console shows the full key, which starts with `sk-ant-`, only once. If you lose it, create a new key.
+
+### Paste the key in the app
+
+1. Open the settings of Daily ZGT with the gear key in the footer. The v1 settings have no field for the key yet.
+2. Paste the key in the field **Clave de API de Anthropic**.
+
+### Run the review
+
+Click **Revisar con Claude**. The app sends the export and shows the answer.
+
+</Steps>
+
+## Check the key from Terminal
+
+You can test the key before you paste it in the app. This call uses the same endpoint as the app.
+
+Set the key in your current terminal session. Replace the text in angle brackets with your key. Do not write the key in a file.
+
+```bash
+export ANTHROPIC_API_KEY="<your key>"
+```
+
+Send a short request.
+
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 64,
+    "messages": [{"role": "user", "content": "hi"}]
+  }'
+```
+
+- A JSON answer with a `content` field means the key works.
+- The error `authentication_error` (HTTP 401) means a problem with the key. The key can be wrong, revoked or expired.
+- The error `billing_error` (HTTP 402) means a problem with your billing details.
+
+When you finish, close the terminal window. The variable ends with the session.
+
+## Remove the key
+
+- In the app: open the settings and clear the field **Clave de API de Anthropic**.
+- In macOS: open **Keychain Access** and search for `dailyzgt` and `anthropic`. Delete the item that holds the key. The plan does not name the Keychain item.
+- In the Console: open [Settings → API keys](https://platform.claude.com/settings/keys) and remove the key there. The key then stops working everywhere.
+
+## Keep the key private
+
+- Never commit the key.
+- Never put the key in the repository, in `project.yml`, or in any file that git tracks.
+- Never paste the key in a chat, a ticket or a screenshot.
+- If a key leaks, remove it in the Console and create a new one.

@@ -1,0 +1,42 @@
+---
+title: Introduction
+description: What Daily ZGT is, what it does in v1, and the rules of the product.
+---
+
+# Introduction
+
+Daily ZGT is a macOS menu bar app. It keeps the priorities and the notes of the day and the week.
+
+The app lives in the menu bar. It has no Dock icon and no main window. You click the menu bar icon, and a dark panel opens. Next to the icon, the app shows the count of open priorities of Hoy. It can also show the title of the next one.
+
+## Product rules
+
+- The app is dark mode only.
+- The text in the app is Spanish.
+- The look and the fonts (Gabarito, Onest and Martian Mono) come from the Tecla design system.
+- Only the checkbox marks a priority done, and it asks first.
+- The app keeps all data in one SQLite file on your Mac, with no account and no server.
+- The Claude review is planned for v2. It is not built. It is the only feature that sends data out of your Mac, and only when you click its button.
+
+## What v1 does
+
+- Two lists of priorities: **Hoy** (today) and **Semana** (this week). See [Priorities](/guide/use/priorities).
+- Three levels for each priority: high, medium and low.
+- An optional due date and time, shown as a chip.
+- A chip, `De ayer` or `Desde vie 9`, on an open priority that stays in Hoy after the day changes.
+- An optional limit of 5 open priorities in Hoy.
+- **Hechas** keeps the priorities done in the last 24 hours. **Historial** keeps the older ones.
+- Subtasks and a note for each priority. See [Detail and subtasks](/guide/use/detail-and-subtasks).
+- A daily repeat for a priority. See [Daily repeat](/guide/use/repeat).
+- One note for each day and one note for each week. See [Notes](/guide/use/notes).
+- An alert with sound 30 minutes before the due time and at the due time. See [Alerts](/guide/use/alerts).
+- A global shortcut that opens a capture window from any app. See [Capture window](/guide/use/capture).
+- A settings view behind the gear key. See [Settings](/guide/use/settings).
+
+## Status of v1
+
+v1 is built. It has no Claude review. That feature is planned for v2. See [Claude review and the API key](/guide/claude/api-key).
+
+## How you get the app
+
+There is no App Store build and no download. You build the app on your own Mac from the source folder. Start with [Requirements](/guide/getting-started/requirements).

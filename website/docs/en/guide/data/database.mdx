@@ -1,0 +1,110 @@
+---
+title: Database
+description: Where the SQLite file is, the six tables, the two migrations, how to read them with sqlite3 and how to back them up.
+---
+
+# Database
+
+All data is in one SQLite file. The app creates it the first time it starts.
+
+```text
+~/Library/Application Support/DailyZGT/daily-zgt.sqlite
+```
+
+The app uses WAL mode. While the app runs, you can see two more files next to the database, with the endings `-wal` and `-shm`.
+
+## Read it with sqlite3
+
+macOS includes `sqlite3`. List the tables.
+
+```bash
+sqlite3 "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" ".tables"
+```
+
+Read the open priorities. The option `-readonly` makes sure that you change nothing.
+
+```bash
+sqlite3 -readonly "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" \
+  "select title, level, list, due_at from priority where done_at is null"
+```
+
+Read the notes.
+
+```bash
+sqlite3 -readonly "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" \
+  "select scope, period, body from note"
+```
+
+Read the settings that the app keeps in the database.
+
+```bash
+sqlite3 -readonly "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" \
+  "select key, value from app_state"
+```
+
+:::warning
+Do not edit the database while the app runs. Use `-readonly` for queries.
+:::
+
+## The six tables
+
+Dates are ISO 8601 text in local time, with no time zone offset, for example `2026-10-12T16:00:00`.
+
+| Table | What it holds |
+|---|---|
+| `priority` | 12 columns: `id`, `title`, `note`, `level` (`high`, `medium`, `low`), `list` (`today`, `week`), `due_at` (null means no due date), `done_at` (null means open), `position`, `created_at`, `updated_at`, `repeat_rule` (`none`, `daily`) and `repeat_series_id` (null means a series of one) |
+| `subtask` | `id`, `priority_id`, `title`, `done_at`, `position`, `created_at`. The rows go when their priority goes. |
+| `note` | `scope` (`day`, `week`), `period` (`2026-10-12` or `2026-W42`), `body`, `updated_at`. One row for each scope and period. |
+| `alert` | `id`, `priority_id`, `kind` (`before_30m`, `at_due`, `snooze`), `fire_at`, `status` (`scheduled`, `delivered`, `snoozed`, `cancelled`). The rows go when their priority goes. |
+| `priority_event` | `id`, `priority_id`, `at`, `type` (`created`, `edited`, `moved`, `done`, `restored`, `subtask_done`). This is the history. |
+| `app_state` | `key`, `value` (JSON text). See the list of keys below. |
+
+The `app_state` keys are:
+
+| Key | What it holds |
+|---|---|
+| `open_tab` | The open tab, `priorities` or `notes` |
+| `open_scope` | The open list, `today` or `week` |
+| `done_open` | `true` when **Hechas** is open |
+| `today_limit` | `true` when the limit of 5 is on. The default is `false`. |
+| `menu_bar_title` | `true` when the menu bar shows the title. The default is `true`. |
+| `alert_permission_asked` | `true` after the app asked for the notification permission |
+
+A key that is not in the table has its default value.
+
+The start at login setting and the global shortcut are not in the database. See [Settings](/guide/use/settings).
+
+## Migrations
+
+The app changes the schema with two migrations, in this order:
+
+1. `001_create_tables` makes the six tables.
+2. `002_add_repeat_to_priority` adds the columns `repeat_rule` and `repeat_series_id` to `priority`. See [Daily repeat](/guide/use/repeat).
+
+The app runs a migration once. The command `.tables` also lists a seventh table, `grdb_migrations`. GRDB, the SQLite library of the app, uses it to track the migrations that ran. Do not edit it. Read it with this command:
+
+```bash
+sqlite3 -readonly "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" \
+  "select identifier from grdb_migrations"
+```
+
+## Changes from outside
+
+The app watches the file `daily-zgt.sqlite-wal`. When another program writes to the database, the panel shows the change. For example, a change to a note shows in the note field. Still, do not write to the database while the app runs.
+
+## Back up
+
+Copy the file while the app is stopped.
+
+1. Stop the app. See [Build and run](/guide/getting-started/build-and-run).
+2. Copy the database file to a safe folder.
+
+```bash
+cp "$HOME/Library/Application Support/DailyZGT/daily-zgt.sqlite" ~/daily-zgt-backup.sqlite
+```
+
+If files with the endings `-wal` and `-shm` exist next to the database, copy them too.
+
+To restore, stop the app and copy the backup over the database file.
+
+The backup does not hold the start at login setting or the global shortcut.

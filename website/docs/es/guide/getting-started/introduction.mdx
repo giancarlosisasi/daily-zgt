@@ -1,0 +1,42 @@
+---
+title: Introducción
+description: Qué es Daily ZGT, qué hace en v1 y las reglas del producto.
+---
+
+# Introducción
+
+Daily ZGT es una app de barra de menús de macOS. Guarda las prioridades y las notas del día y de la semana.
+
+La app vive en la barra de menús. No tiene icono en el Dock ni ventana principal. Haces clic en el icono de la barra de menús y se abre un panel oscuro. Junto al icono, la app muestra la cantidad de prioridades abiertas de Hoy. También puede mostrar el título de la siguiente.
+
+## Reglas del producto
+
+- La app solo tiene modo oscuro.
+- El texto de la app está en español.
+- El aspecto y las fuentes (Gabarito, Onest y Martian Mono) vienen del sistema de diseño Tecla.
+- Solo la casilla marca una prioridad como hecha, y antes pide confirmación.
+- La app guarda todos los datos en un archivo SQLite de tu Mac, sin cuenta y sin servidor.
+- La revisión con Claude está planeada para v2. No está construida. Es la única función que envía datos fuera de tu Mac, y solo cuando haces clic en su botón.
+
+## Qué hace v1
+
+- Dos listas de prioridades: **Hoy** y **Semana**. Mira [Prioridades](/guide/use/priorities).
+- Tres niveles para cada prioridad: alta, media y baja.
+- Una fecha límite opcional, con hora, que se muestra como un chip.
+- Un chip, `De ayer` o `Desde vie 9`, en una prioridad abierta que se queda en Hoy cuando cambia el día.
+- Un límite opcional de 5 prioridades abiertas en Hoy.
+- **Hechas** guarda las prioridades hechas en las últimas 24 horas. **Historial** guarda las más antiguas.
+- Subtareas y una nota para cada prioridad. Mira [Detalle y subtareas](/guide/use/detail-and-subtasks).
+- Un repetir cada día para una prioridad. Mira [Repetir cada día](/guide/use/repeat).
+- Una nota para cada día y una nota para cada semana. Mira [Notas](/guide/use/notes).
+- Una alerta con sonido 30 minutos antes de la fecha límite y otra al vencer. Mira [Alertas](/guide/use/alerts).
+- Un atajo global que abre una ventana de captura desde cualquier app. Mira [Ventana de captura](/guide/use/capture).
+- Una vista de ajustes detrás del botón de engranaje. Mira [Ajustes](/guide/use/settings).
+
+## Estado de v1
+
+v1 está construida. No tiene la revisión con Claude. Esa función está planeada para v2. Mira [Revisión con Claude y clave de API](/guide/claude/api-key).
+
+## Cómo obtienes la app
+
+No hay versión de App Store ni descarga. Compilas la app en tu propio Mac, desde la carpeta del código fuente. Empieza con los [Requisitos](/guide/getting-started/requirements).
