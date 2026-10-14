@@ -97,3 +97,7 @@ cd website && pnpm install && pnpm dev
 ## Stack
 
 Swift 6, SwiftUI, GRDB (SQLite), KeyboardShortcuts and XcodeGen. The site uses Rspress.
+
+## License
+
+The code uses the [MIT License](LICENSE).
