@@ -7,11 +7,13 @@ on:
       - apps/windows/**
       - packages/design-tokens/**
       - .github/workflows/windows.yml
+      - .gitattributes
   pull_request:
     paths:
       - apps/windows/**
       - packages/design-tokens/**
       - .github/workflows/windows.yml
+      - .gitattributes
 
 jobs:
   test:
