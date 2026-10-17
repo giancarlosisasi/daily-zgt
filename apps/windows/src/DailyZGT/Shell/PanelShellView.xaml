@@ -1,7 +1,6 @@
 <UserControl x:Class="DailyZGT.Shell.PanelShellView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:theme="clr-namespace:DailyZGT.Theme"
              xmlns:shell="clr-namespace:DailyZGT.Shell"
              xmlns:notes="clr-namespace:DailyZGT.Notes"
              xmlns:settings="clr-namespace:DailyZGT.Settings"

@@ -22,15 +22,15 @@
     <ControlTemplate x:Key="Tecla.SegmentTemplate" TargetType="RadioButton">
         <Grid SnapsToDevicePixels="True" Background="Transparent">
             <Border Background="{DynamicResource Brush.Key.Side}"
-                    CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}"
-                    Opacity="{Binding (theme:Selection.Amount), RelativeSource={RelativeSource TemplatedParent}}">
+                    CornerRadius="{theme:ParentValue theme:KeyFace.Radius}"
+                    Opacity="{theme:ParentValue theme:Selection.Amount}">
                 <Border.RenderTransform>
                     <TranslateTransform Y="{x:Static theme:TeclaTokens+Key.PanelSideHeight}" />
                 </Border.RenderTransform>
             </Border>
             <Border Background="{DynamicResource Brush.Key.SelectedFace}"
-                    CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}"
-                    Opacity="{Binding (theme:Selection.Amount), RelativeSource={RelativeSource TemplatedParent}}" />
+                    CornerRadius="{theme:ParentValue theme:KeyFace.Radius}"
+                    Opacity="{theme:ParentValue theme:Selection.Amount}" />
             <ContentPresenter Margin="{TemplateBinding Padding}"
                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -79,16 +79,16 @@
         <Grid SnapsToDevicePixels="True" Background="Transparent">
             <Border Background="{DynamicResource Brush.Key.Side}"
                     CornerRadius="{DynamicResource Radius.Checkbox}"
-                    Opacity="{Binding (theme:KeyFace.SideOpacity), RelativeSource={RelativeSource TemplatedParent}}">
+                    Opacity="{theme:ParentValue theme:KeyFace.SideOpacity}">
                 <Border.RenderTransform>
-                    <TranslateTransform Y="{Binding (theme:KeyFace.SideHeight), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <TranslateTransform Y="{theme:ParentValue theme:KeyFace.SideHeight}" />
                 </Border.RenderTransform>
             </Border>
             <Border x:Name="Face"
                     Background="{DynamicResource Brush.Key.Face}"
                     CornerRadius="{DynamicResource Radius.Checkbox}">
                 <Border.RenderTransform>
-                    <TranslateTransform Y="{Binding (theme:KeyFace.Offset), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <TranslateTransform Y="{theme:ParentValue theme:KeyFace.Offset}" />
                 </Border.RenderTransform>
                 <Grid>
                     <Border x:Name="Ring"
@@ -97,7 +97,7 @@
                             CornerRadius="{DynamicResource Radius.Checkbox}" />
                     <Border Background="{DynamicResource Brush.Panel.PressTint}"
                             CornerRadius="{DynamicResource Radius.Checkbox}"
-                            Opacity="{Binding (theme:KeyFace.Tint), RelativeSource={RelativeSource TemplatedParent}}" />
+                            Opacity="{theme:ParentValue theme:KeyFace.Tint}" />
                     <Grid x:Name="Check" Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*" />
@@ -153,7 +153,7 @@
             <Border Background="{DynamicResource Brush.Colors.Surface2}" CornerRadius="15" />
             <Border Background="{DynamicResource Brush.Colors.Fill}"
                     CornerRadius="15"
-                    Opacity="{Binding (theme:SwitchKnob.Position), RelativeSource={RelativeSource TemplatedParent}}" />
+                    Opacity="{theme:ParentValue theme:SwitchKnob.Position}" />
             <Path Fill="{DynamicResource Brush.Panel.Track}">
                 <Path.Data>
                     <CombinedGeometry GeometryCombineMode="Exclude">
@@ -172,22 +172,22 @@
                   HorizontalAlignment="Left"
                   VerticalAlignment="Center">
                 <Grid.RenderTransform>
-                    <TranslateTransform X="{Binding (theme:SwitchKnob.Position), RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static theme:ScaleConverter.Instance}, ConverterParameter={x:Static theme:SwitchKnob.KnobTravel}}" />
+                    <TranslateTransform X="{theme:ParentValue theme:SwitchKnob.Position, Converter={x:Static theme:ScaleConverter.Instance}, ConverterParameter={x:Static theme:SwitchKnob.KnobTravel}}" />
                 </Grid.RenderTransform>
                 <Border Background="{DynamicResource Brush.Key.Side}"
                         CornerRadius="8"
-                        Opacity="{Binding (theme:KeyFace.SideOpacity), RelativeSource={RelativeSource TemplatedParent}}">
+                        Opacity="{theme:ParentValue theme:KeyFace.SideOpacity}">
                     <Border.RenderTransform>
-                        <TranslateTransform Y="{Binding (theme:KeyFace.SideHeight), RelativeSource={RelativeSource TemplatedParent}}" />
+                        <TranslateTransform Y="{theme:ParentValue theme:KeyFace.SideHeight}" />
                     </Border.RenderTransform>
                 </Border>
                 <Border Background="{DynamicResource Brush.Colors.Knob}" CornerRadius="8">
                     <Border.RenderTransform>
-                        <TranslateTransform Y="{Binding (theme:KeyFace.Offset), RelativeSource={RelativeSource TemplatedParent}}" />
+                        <TranslateTransform Y="{theme:ParentValue theme:KeyFace.Offset}" />
                     </Border.RenderTransform>
                     <Border Background="{DynamicResource Brush.Panel.PressTint}"
                             CornerRadius="8"
-                            Opacity="{Binding (theme:KeyFace.Tint), RelativeSource={RelativeSource TemplatedParent}}" />
+                            Opacity="{theme:ParentValue theme:KeyFace.Tint}" />
                 </Border>
             </Grid>
         </Grid>

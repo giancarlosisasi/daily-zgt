@@ -88,6 +88,7 @@ The app speaks Spanish, English and Portuguese. It follows the Windows display l
 - Read the Swift file that owns a behavior before you port it. Port its tests to xUnit as well, renamed to C# style.
 - Put every user-facing string in the `Texts` catalog in all three languages (see "Languages"). The Spanish text is exactly what `docs/features.md` writes.
 - Comments only for a non-obvious why. No comments that narrate what the code does.
+- A control template reads an attached property of its control with `{theme:ParentValue theme:KeyFace.Radius}`, never with a Binding path such as `{Binding (theme:KeyFace.Radius), RelativeSource=...}`. WPF resolves the prefix of such a path in the view that uses the style, and never on a transform, so the binding fails without an error.
 - Business rules live in `DailyZGT.Core`, pure and tested. Views stay thin.
 - `dotnet build apps/windows/DailyZGT.slnx` has zero warnings and `dotnet test apps/windows/DailyZGT.slnx` is green before every commit.
 - Commit messages: Conventional Commits, scope `windows`, feature codes in the body, for example `feat(windows): add the priority store` with `F03 F05 F07` in the body. Do not add a `Co-Authored-By` trailer.

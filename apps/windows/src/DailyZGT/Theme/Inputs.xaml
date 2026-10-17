@@ -7,16 +7,16 @@
             <Border Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="{Binding (theme:Field.Radius), RelativeSource={RelativeSource TemplatedParent}}" />
+                    CornerRadius="{theme:ParentValue theme:Field.Radius}" />
             <Border x:Name="Ring"
-                    BorderBrush="{Binding (theme:Field.FocusBrush), RelativeSource={RelativeSource TemplatedParent}}"
+                    BorderBrush="{theme:ParentValue theme:Field.FocusBrush}"
                     BorderThickness="2"
-                    CornerRadius="{Binding (theme:Field.Radius), RelativeSource={RelativeSource TemplatedParent}}"
+                    CornerRadius="{theme:ParentValue theme:Field.Radius}"
                     Visibility="Collapsed"
                     IsHitTestVisible="False" />
             <Grid>
                 <TextBlock x:Name="Hint" Margin="{TemplateBinding Padding}" Padding="2,0,0,0"
-                           Text="{Binding (theme:Field.Placeholder), RelativeSource={RelativeSource TemplatedParent}}"
+                           Text="{theme:ParentValue theme:Field.Placeholder}"
                            Foreground="{DynamicResource Brush.Panel.Dim}"
                            FontFamily="{TemplateBinding FontFamily}"
                            FontSize="{TemplateBinding FontSize}"
