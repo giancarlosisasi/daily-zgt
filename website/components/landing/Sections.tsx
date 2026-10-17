@@ -4,7 +4,7 @@ import { Bento } from './Bento';
 import { useDemo } from './DemoContext';
 import { Desk } from './Desk';
 import { CheckIcon, TargetIcon } from './icons';
-import { Rich, useGuideHref, useT } from './i18n';
+import { Rich, useDemoLang, useGuideHref, useT } from './i18n';
 import { useInView, useReveal } from './motion';
 import { DueChip, LevelBars, NotificationCard } from './Panel';
 import { NOW, dueLabel, type Level } from './model';
@@ -66,9 +66,10 @@ const PRESETS = [-45, 36, 216];
 
 function DueSection() {
   const t = useT();
+  const lang = useDemoLang();
   const [minutes, setMinutes] = useState(36);
   const due = NOW + minutes * 60000;
-  const { text, tone } = dueLabel(due);
+  const { text, tone } = dueLabel(due, NOW, lang);
   return (
     <Block className={`dz-band dz-due dz-due--${tone}`}>
       <div className="dz-band-inner dz-due-inner">
@@ -104,14 +105,14 @@ function DueSection() {
           </div>
           <div className="dz-due-real">
             <div className="dz-panel dz-panel--static dz-panel--tight">
-              <MiniRow title="Enviar la propuesta" level="high" due={due} />
+              <MiniRow title={t('demo.seed.b')} level="high" due={due} />
             </div>
             <span>{t('due.real')}</span>
           </div>
         </div>
         <dl className="dz-rules" data-reveal>
           {PRESETS.map((preset, index) => {
-            const label = dueLabel(NOW + preset * 60000);
+            const label = dueLabel(NOW + preset * 60000, NOW, lang);
             return (
               <div key={preset} className={label.tone === tone ? 'is-on' : ''}>
                 <dt>
@@ -140,6 +141,7 @@ const END = 24;
 function AlertsSection() {
   const { reduced } = useDemo();
   const t = useT();
+  const lang = useDemoLang();
   const ref = useRef<HTMLDivElement>(null);
   const visible = useInView(ref);
   const [minute, setMinute] = useState(-30);
@@ -203,7 +205,7 @@ function AlertsSection() {
               >
                 <em>
                   <b>{clock(DUE_AT + snoozeAt * 60000)}</b>
-                  Posponer
+                  {t('demo.snoozeMark')}
                 </em>
               </span>
             ) : null}
@@ -212,17 +214,17 @@ function AlertsSection() {
         <div className="dz-deck-grid">
           <div className="dz-deck-cell">
             <div className="dz-panel dz-panel--static dz-panel--tight">
-              <MiniRow title="Enviar la propuesta" level="high" due={DUE_AT} highlight={opened > 0} />
+              <MiniRow title={t('demo.seed.b')} level="high" due={DUE_AT} highlight={opened > 0} />
             </div>
-            <p className="dz-clock">{t('alerts.clock', { time: clock(now), chip: dueLabel(DUE_AT, now).text })}</p>
+            <p className="dz-clock">{t('alerts.clock', { time: clock(now), chip: dueLabel(DUE_AT, now, lang).text })}</p>
           </div>
           <div className="dz-deck-cell">
             <div className="dz-toast-slot">
               {shown ? (
                 <NotificationCard
                   key={shown}
-                  title={shown === 'before' ? 'Vence en 30 min' : 'Prioridad vencida'}
-                  body="Enviar la propuesta"
+                  title={shown === 'before' ? t('demo.notif.before') : t('demo.notif.due')}
+                  body={t('demo.seed.b')}
                   onOpen={() => {
                     setOpened(1);
                     setDismissed(shown);
@@ -307,16 +309,16 @@ function NotesSection() {
           {rows.map((row) => (
             <div key={row.key} className="dz-panel dz-panel--static dz-panel--tight">
               <label className="dz-notes-label" htmlFor={`dz-note-${row.key}`}>
-                {row.key === 'today' ? 'Notas de hoy' : 'Notas de la semana'}
+                {row.key === 'today' ? t('demo.notes.today') : t('demo.notes.week')}
               </label>
               <textarea
                 id={`dz-note-${row.key}`}
                 className="dz-textarea dz-textarea--short"
                 value={row.text}
-                placeholder="Escribe una nota"
+                placeholder={t('demo.notes.placeholder')}
                 onChange={(event) => dispatch({ type: 'setNote', scope: row.key, text: event.target.value })}
               />
-              <span className="dz-notes-hint">Se guarda al escribir.</span>
+              <span className="dz-notes-hint">{t('demo.notes.hint')}</span>
             </div>
           ))}
         </div>
@@ -500,13 +502,13 @@ function ShortcutSection() {
       </div>
       <div className="dz-capture-slot" data-reveal>
         {open ? (
-          <div className="dz-capture" role="group" aria-label="Captura rápida">
+          <div className="dz-capture" role="group" aria-label={t('demo.quickCapture')}>
             <input
               ref={inputRef}
               className="dz-input"
               value={title}
-              placeholder="¿Qué es prioritario?"
-              aria-label="¿Qué es prioritario?"
+              placeholder={t('demo.form.placeholder')}
+              aria-label={t('demo.form.placeholder')}
               onChange={(event) => setTitle(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') submit();

@@ -75,8 +75,8 @@ export function Desk() {
             <NotificationCard
               key={state.toast}
               className="dz-toast"
-              title="Vence en 30 min"
-              body="Enviar la propuesta"
+              title={t('demo.notif.before')}
+              body={t('demo.seed.b')}
               onOpen={() => {
                 dispatch({ type: 'setPanel', open: true });
                 dispatch({ type: 'clearToast', token: state.toast });
@@ -91,6 +91,7 @@ export function Desk() {
           <p className="dz-eyebrow">{t('desk.eyebrow')}</p>
           <h2>{t('desk.title')}</h2>
           <p className="dz-desk-lead">{t('desk.lead')}</p>
+          <p className="dz-desk-note">{t('desk.appLang')}</p>
         </div>
         <ol className="dz-desk-steps" ref={listRef}>
           {STEPS.map((name, index) => (

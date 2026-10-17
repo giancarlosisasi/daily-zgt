@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useDemo } from './DemoContext';
 import { BellIcon, CheckIcon } from './icons';
-import { Rich, useT } from './i18n';
+import { Rich, useDemoLang, useT } from './i18n';
 import { springValue, useInView, useReveal } from './motion';
 import { LevelBars } from './Panel';
-import { LEVEL_LABEL, type Level } from './model';
+import { levelLabel, type Level } from './model';
 import { tokenSpring } from './tokens';
 
 const TABLES = [
@@ -75,6 +75,7 @@ function Tile({
 
 export function Bento() {
   const t = useT();
+  const lang = useDemoLang();
   const ref = useReveal<HTMLElement>();
   return (
     <section className="dz-bento" ref={ref}>
@@ -101,15 +102,15 @@ export function Bento() {
             {(['high', 'medium', 'low'] as Level[]).map((level) => (
               <span key={level} className={`dz-level dz-level--${level}`}>
                 <LevelBars level={level} />
-                {LEVEL_LABEL[level]}
+                {levelLabel(level, lang)}
               </span>
             ))}
           </div>
         </Tile>
         <Tile area="lists" tone="plain" value={2} label={t('bento.lists')} index={2}>
           <div className="dz-scope-tabs dz-scope-tabs--mock" aria-hidden="true">
-            <span className="is-on">Hoy · 4</span>
-            <span>Semana · 3</span>
+            <span className="is-on">{t('demo.scope.today')} · 4</span>
+            <span>{t('demo.scope.week')} · 3</span>
           </div>
         </Tile>
         <Tile area="alerts" tone="orange" value={2} label={t('bento.alerts')} index={3}>
@@ -127,8 +128,8 @@ export function Bento() {
         <Tile area="undo" tone="blue" value={5} unit="s" label={t('bento.undo')} index={4}>
           <div className="dz-undo dz-undo--mock" aria-hidden="true">
             <CheckIcon size={12} className="dz-done-check" />
-            <span className="dz-undo-text">Hecha: Enviar la propuesta</span>
-            <span className="dz-undo-btn">Deshacer</span>
+            <span className="dz-undo-text">{t('demo.undoText', { title: t('demo.seed.b') })}</span>
+            <span className="dz-undo-btn">{t('demo.undo')}</span>
             <i className="dz-undo-line" />
           </div>
         </Tile>
@@ -137,7 +138,7 @@ export function Bento() {
         </Tile>
         <Tile area="snooze" tone="orange" value={15} unit="min" label={t('bento.snooze')} index={6}>
           <span className="dz-fake-action" aria-hidden="true">
-            Posponer 15 min
+            {t('demo.notif.snooze')}
           </span>
         </Tile>
         <Tile area="accounts" tone="muted" value={0} label={t('bento.accounts')} index={7}>

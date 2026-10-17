@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react';
+import { useT } from './i18n';
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
@@ -49,19 +50,22 @@ export const CloseIcon = bold(
 const NOTE_PATH =
   'M84,108A12,12,0,0,1,96,96h64a12,12,0,0,1,0,24H96A12,12,0,0,1,84,108Zm32,28H96a12,12,0,0,0,0,24h20a12,12,0,0,0,0-24ZM228,48V156.69a19.86,19.86,0,0,1-5.86,14.14l-51.31,51.31A19.86,19.86,0,0,1,156.69,228H48a20,20,0,0,1-20-20V48A20,20,0,0,1,48,28H208A20,20,0,0,1,228,48ZM52,204h92V156a12,12,0,0,1,12-12h48V52H52Zm139-36H168v23Z';
 
-export const NoteIcon = ({ size = 11, ...props }: IconProps) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 256 256"
-    fill="currentColor"
-    role="img"
-    aria-label="Tiene notas"
-    {...props}
-  >
-    <path d={NOTE_PATH} />
-  </svg>
-);
+export const NoteIcon = ({ size = 11, ...props }: IconProps) => {
+  const t = useT();
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 256 256"
+      fill="currentColor"
+      role="img"
+      aria-label={t('demo.hasNotes')}
+      {...props}
+    >
+      <path d={NOTE_PATH} />
+    </svg>
+  );
+};
 
 export const BellIcon = bold(
   'M225.29,165.93C216.61,151,212,129.57,212,104a84,84,0,0,0-168,0c0,25.58-4.59,47-13.27,61.93A20.08,20.08,0,0,0,30.66,186,19.77,19.77,0,0,0,48,196H84.18a44,44,0,0,0,87.64,0H208a19.77,19.77,0,0,0,17.31-10A20.08,20.08,0,0,0,225.29,165.93ZM128,212a20,20,0,0,1-19.6-16h39.2A20,20,0,0,1,128,212ZM54.66,172C63.51,154,68,131.14,68,104a60,60,0,0,1,120,0c0,27.13,4.48,50,13.33,68Z',

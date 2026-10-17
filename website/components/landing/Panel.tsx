@@ -14,14 +14,14 @@ import {
   TrashIcon,
   WifiIcon,
 } from './icons';
-import { useGuideHref } from './i18n';
+import { useDemoLang, useGuideHref, useT } from './i18n';
 import {
   LEVEL_BARS,
-  LEVEL_LABEL,
   NOW,
   countDone,
   countOpen,
   dueLabel,
+  levelLabel,
   menuBarTitle,
   sinceLabel,
   sortDone,
@@ -33,8 +33,9 @@ import {
 
 export function LevelBars({ level }: { level: Level }) {
   const filled = LEVEL_BARS[level];
+  const lang = useDemoLang();
   return (
-    <span className={`dz-bars dz-bars--${level}`} aria-label={LEVEL_LABEL[level]} role="img">
+    <span className={`dz-bars dz-bars--${level}`} aria-label={levelLabel(level, lang)} role="img">
       {[0, 1, 2].map((index) => (
         <i key={index} className={index < filled ? 'is-on' : ''} />
       ))}
@@ -43,7 +44,8 @@ export function LevelBars({ level }: { level: Level }) {
 }
 
 export function DueChip({ due }: { due: number }) {
-  const { text, tone } = dueLabel(due);
+  const lang = useDemoLang();
+  const { text, tone } = dueLabel(due, NOW, lang);
   return <span className={`dz-chip dz-chip--${tone}`}>{text}</span>;
 }
 
@@ -84,35 +86,37 @@ export function ConfirmBar({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const t = useT();
   const hint =
     openSubtasks === 1
-      ? 'Queda 1 subtarea abierta.'
+      ? t('demo.confirm.one')
       : openSubtasks > 1
-        ? `Quedan ${openSubtasks} subtareas abiertas.`
+        ? t('demo.confirm.many', { n: openSubtasks })
         : null;
   return (
-    <div className="dz-confirm" role="group" aria-label="¿Marcar como hecha?">
+    <div className="dz-confirm" role="group" aria-label={t('demo.confirm.title')}>
       <div className="dz-confirm-text">
-        <span className="dz-confirm-title">¿Marcar como hecha?</span>
+        <span className="dz-confirm-title">{t('demo.confirm.title')}</span>
         {hint ? <span className="dz-confirm-hint">{hint}</span> : null}
       </div>
       <button type="button" className="dz-btn dz-btn--ghost" onClick={onCancel}>
-        Cancelar
+        {t('demo.cancel')}
       </button>
       <button type="button" className="dz-btn dz-btn--done" data-reel="confirm-yes" onClick={onConfirm}>
-        Hecha
+        {t('demo.done')}
       </button>
     </div>
   );
 }
 
 export function UndoBar({ title, onUndo }: { title: string; onUndo: () => void }) {
+  const t = useT();
   return (
     <div className="dz-undo" role="status">
       <CheckIcon size={12} className="dz-done-check" />
-      <span className="dz-undo-text">Hecha: {title}</span>
+      <span className="dz-undo-text">{t('demo.undoText', { title })}</span>
       <button type="button" className="dz-undo-btn" data-reel="undo" onClick={onUndo}>
-        Deshacer
+        {t('demo.undo')}
       </button>
       <i className="dz-undo-line" />
     </div>
@@ -121,6 +125,9 @@ export function UndoBar({ title, onUndo }: { title: string; onUndo: () => void }
 
 function Row({ item }: { item: Priority }) {
   const { state, dispatch } = useDemo();
+  const t = useT();
+  const lang = useDemoLang();
+  const since = item.list === 'today' ? sinceLabel(item.since, lang) : null;
   const expanded = state.expanded.includes(item.id);
   const confirming = state.confirming === item.id;
   const leaving = state.leaving === item.id;
@@ -138,7 +145,7 @@ function Row({ item }: { item: Priority }) {
           <button
             type="button"
             className={`dz-caret${expanded ? ' is-open' : ''}`}
-            aria-label={expanded ? 'Ocultar subtareas' : 'Mostrar subtareas'}
+            aria-label={expanded ? t('demo.hideSubtasks') : t('demo.showSubtasks')}
             aria-expanded={expanded}
             onClick={() => dispatch({ type: 'toggleCaret', id: item.id })}
           >
@@ -149,7 +156,7 @@ function Row({ item }: { item: Priority }) {
         )}
         <Checkbox
           checked={confirming}
-          label={`Marcar como hecha: ${item.title}`}
+          label={t('demo.markDone', { title: item.title })}
           reel={`check-${item.id}`}
           onClick={() => dispatch({ type: 'ask', id: item.id })}
         />
@@ -158,9 +165,7 @@ function Row({ item }: { item: Priority }) {
           <span className="dz-meta">
             <LevelBars level={item.level} />
             {item.due !== null ? <DueChip due={item.due} /> : null}
-            {item.list === 'today' && sinceLabel(item.since) ? (
-              <span className="dz-chip dz-chip--later">{sinceLabel(item.since)}</span>
-            ) : null}
+            {since ? <span className="dz-chip dz-chip--later">{since}</span> : null}
             {item.subtasks.length > 0 ? (
               <span className="dz-progress">
                 {done}/{item.subtasks.length}
@@ -172,7 +177,7 @@ function Row({ item }: { item: Priority }) {
         <button
           type="button"
           className="dz-remove"
-          aria-label="Quitar"
+          aria-label={t('demo.remove')}
           onClick={() => dispatch({ type: 'remove', id: item.id })}
         >
           <TrashIcon />
@@ -206,6 +211,8 @@ function Row({ item }: { item: Priority }) {
 
 function NewPriorityForm({ list }: { list: ListName }) {
   const { dispatch } = useDemo();
+  const t = useT();
+  const lang = useDemoLang();
   const [title, setTitle] = useState('');
   const [level, setLevel] = useState<Level>('medium');
   const [time, setTime] = useState('');
@@ -239,13 +246,13 @@ function NewPriorityForm({ list }: { list: ListName }) {
         className="dz-input"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        placeholder="¿Qué es prioritario?"
-        aria-label="¿Qué es prioritario?"
+        placeholder={t('demo.form.placeholder')}
+        aria-label={t('demo.form.placeholder')}
         maxLength={80}
       />
       <div className="dz-form-row">
-        <span className="dz-form-label">Prioridad</span>
-        <div className="dz-segment" role="radiogroup" aria-label="Prioridad">
+        <span className="dz-form-label">{t('demo.form.priority')}</span>
+        <div className="dz-segment" role="radiogroup" aria-label={t('demo.form.priority')}>
           {(['high', 'medium', 'low'] as Level[]).map((option) => (
             <button
               key={option}
@@ -256,33 +263,33 @@ function NewPriorityForm({ list }: { list: ListName }) {
               onClick={() => setLevel(option)}
             >
               <LevelBars level={option} />
-              {LEVEL_LABEL[option]}
+              {levelLabel(option, lang)}
             </button>
           ))}
         </div>
       </div>
       <div className="dz-form-row">
-        <span className="dz-form-label">Fecha límite</span>
+        <span className="dz-form-label">{t('demo.form.due')}</span>
         <input
           className="dz-input dz-input--time"
           type="time"
           value={time}
           onChange={(event) => setTime(event.target.value)}
-          aria-label="Fecha límite"
+          aria-label={t('demo.form.due')}
         />
       </div>
       {time ? (
         <div className="dz-form-hint">
           <BellIcon size={12} className="dz-ring" />
-          <span>Alerta con sonido 30 min antes y al vencer</span>
+          <span>{t('demo.form.alert')}</span>
         </div>
       ) : null}
       <div className="dz-form-actions">
         <button type="button" className="dz-btn dz-btn--ghost" onClick={() => dispatch({ type: 'setForm', open: false })}>
-          Cancelar
+          {t('demo.cancel')}
         </button>
         <button type="submit" className="dz-btn dz-btn--primary">
-          Añadir
+          {t('demo.form.add')}
         </button>
       </div>
     </form>
@@ -291,6 +298,7 @@ function NewPriorityForm({ list }: { list: ListName }) {
 
 function PrioView() {
   const { state, dispatch } = useDemo();
+  const t = useT();
   const open = sortOpen(state.items.filter((item) => item.list === state.scope));
   const done = sortDone(state.items.filter((item) => item.list === state.scope));
   const hasAny = state.items.some((item) => item.list === state.scope);
@@ -304,10 +312,10 @@ function PrioView() {
         {open.length === 0 && hasAny ? (
           <div className="dz-empty">
             <BigCheckIcon />
-            <span>Todo listo en esta lista</span>
+            <span>{t('demo.empty.done')}</span>
           </div>
         ) : null}
-        {!hasAny ? <div className="dz-empty dz-empty--none">Nada pendiente en esta lista.</div> : null}
+        {!hasAny ? <div className="dz-empty dz-empty--none">{t('demo.empty.none')}</div> : null}
       </div>
       {state.formOpen ? (
         <NewPriorityForm list={state.scope} />
@@ -318,7 +326,7 @@ function PrioView() {
           onClick={() => dispatch({ type: 'setForm', open: true })}
         >
           <PlusIcon />
-          Nueva prioridad
+          {t('demo.new')}
         </button>
       )}
       {done.length > 0 ? (
@@ -330,7 +338,7 @@ function PrioView() {
             onClick={() => dispatch({ type: 'toggleHechas' })}
           >
             <CaretIcon size={10} className={state.hechasOpen ? 'is-open' : ''} />
-            Hechas ({done.length})
+            {t('demo.completedCount', { n: done.length })}
           </button>
           {state.hechasOpen
             ? done.map((item) => (
@@ -343,7 +351,7 @@ function PrioView() {
                     onClick={() => dispatch({ type: 'regresar', id: item.id })}
                   >
                     <ArrowBackIcon size={11} />
-                    Regresar
+                    {t('demo.reopen')}
                   </button>
                 </div>
               ))
@@ -363,7 +371,8 @@ function UndoSlot() {
 
 function NotesView() {
   const { state, dispatch } = useDemo();
-  const label = state.scope === 'today' ? 'Notas de hoy' : 'Notas de la semana';
+  const t = useT();
+  const label = state.scope === 'today' ? t('demo.notes.today') : t('demo.notes.week');
   return (
     <div className="dz-notes">
       <label className="dz-notes-label" htmlFor="dz-hero-note">
@@ -377,9 +386,9 @@ function NotesView() {
         onChange={(event) =>
           dispatch({ type: 'setNote', scope: state.scope, text: event.target.value })
         }
-        placeholder="Escribe una nota"
+        placeholder={t('demo.notes.placeholder')}
       />
-      <span className="dz-notes-hint">Se guarda al escribir.</span>
+      <span className="dz-notes-hint">{t('demo.notes.hint')}</span>
     </div>
   );
 }
@@ -387,19 +396,19 @@ function NotesView() {
 export function Panel() {
   const { state, dispatch } = useDemo();
   const href = useGuideHref();
+  const t = useT();
   const openToday = countOpen(state.items, 'today');
   const openWeek = countOpen(state.items, 'week');
   const doneCount = countDone(state.items, state.scope);
   const total = state.items.filter((item) => item.list === state.scope).length;
-  const scopeWord = state.scope === 'today' ? 'hoy' : 'esta semana';
 
   return (
     <div className="dz-panel" role="dialog" aria-label="Daily ZGT">
       <div className="dz-top-tabs" role="tablist">
         {(
           [
-            ['prio', 'Prioridades'],
-            ['notes', 'Notas'],
+            ['prio', t('demo.tab.prio')],
+            ['notes', t('demo.tab.notes')],
           ] as const
         ).map(([tab, label]) => (
           <button
@@ -419,8 +428,8 @@ export function Panel() {
         <div className="dz-scope-tabs" role="tablist">
           {(
             [
-              ['today', `Hoy · ${openToday}`],
-              ['week', `Semana · ${openWeek}`],
+              ['today', `${t('demo.scope.today')} · ${openToday}`],
+              ['week', `${t('demo.scope.week')} · ${openWeek}`],
             ] as const
           ).map(([scope, label]) => (
             <button
@@ -437,7 +446,7 @@ export function Panel() {
           ))}
         </div>
         <span className="dz-date">
-          {state.scope === 'today' ? 'Lunes 12 oct' : 'Semana 42 · 12–18 oct'}
+          {state.scope === 'today' ? t('demo.date.today') : t('demo.date.week')}
         </span>
       </div>
       {state.tab === 'prio' ? (
@@ -453,38 +462,38 @@ export function Panel() {
       )}
       <div className="dz-footer">
         <span className="dz-footer-count">
-          {doneCount} de {total} hechas {scopeWord}
+          {t(state.scope === 'today' ? 'demo.footer.today' : 'demo.footer.week', { done: doneCount, total })}
         </span>
         <button
           type="button"
           className="dz-icon-btn"
-          aria-label="Probar alerta"
+          aria-label={t('demo.testAlert')}
           onClick={() => dispatch({ type: 'ping' })}
         >
           <BellIcon />
         </button>
-        <Link className="dz-icon-btn" href={href('/guide/use/settings')} aria-label="Ajustes" title="Ajustes">
+        <Link className="dz-icon-btn" href={href('/guide/use/settings')} aria-label={t('demo.settings')} title={t('demo.settings')}>
           <GearIcon />
         </Link>
         <button type="button" className="dz-quit" onClick={() => dispatch({ type: 'setPanel', open: false })}>
-          Salir
+          {t('demo.quit')}
         </button>
       </div>
     </div>
   );
 }
 
-const FINDER_MENUS = ['Finder', 'Archivo', 'Edición', 'Visualización', 'Ir', 'Ventana', 'Ayuda'];
-
 export function MenuBarStrip() {
   const { state, dispatch } = useDemo();
+  const t = useT();
+  const menus = t('demo.menus').split(',');
   const count = countOpen(state.items, 'today');
   const title = menuBarTitle(state.items);
   return (
-    <div className="dz-strip" aria-label="Barra de menús de macOS">
+    <div className="dz-strip" aria-label={t('demo.menubar')}>
       <div className="dz-strip-inner">
         <span className="dz-strip-menus" aria-hidden="true">
-          {FINDER_MENUS.map((menu, index) => (
+          {menus.map((menu, index) => (
             <span key={menu} className={index === 0 ? 'is-app' : ''}>
               {menu}
             </span>
@@ -496,7 +505,7 @@ export function MenuBarStrip() {
           type="button"
           className={`dz-strip-item${state.panelOpen ? ' is-active' : ''}`}
           data-reel="menubar"
-          aria-label="Prioridades"
+          aria-label={t('demo.tab.prio')}
           aria-expanded={state.panelOpen}
           onClick={() => dispatch({ type: 'setPanel', open: !state.panelOpen })}
         >
@@ -504,7 +513,7 @@ export function MenuBarStrip() {
           <span>{count}</span>
           {title ? <span className="dz-strip-title">{title}</span> : null}
         </button>
-        <span className="dz-strip-clock">lun 12 oct 12:24</span>
+        <span className="dz-strip-clock">{t('demo.clock')}</span>
       </div>
     </div>
   );
@@ -523,12 +532,13 @@ export function NotificationCard({
   onSnooze?: () => void;
   className?: string;
 }) {
+  const t = useT();
   return (
     <div className={`dz-notification ${className}`} role="alert">
       <div className="dz-notification-head">
         <TargetIcon size={14} />
-        <span>PRIORIDADES</span>
-        <span className="dz-notification-when">ahora</span>
+        <span>{t('demo.notif.head')}</span>
+        <span className="dz-notification-when">{t('demo.notif.now')}</span>
       </div>
       <div className="dz-notification-main">
         <BellIcon size={16} className="dz-ring" />
@@ -539,10 +549,10 @@ export function NotificationCard({
       </div>
       <div className="dz-notification-actions">
         <button type="button" className="dz-btn dz-btn--primary" onClick={onOpen}>
-          Abrir
+          {t('demo.notif.open')}
         </button>
         <button type="button" className="dz-btn dz-btn--ghost" onClick={onSnooze}>
-          Posponer 15 min
+          {t('demo.notif.snooze')}
         </button>
       </div>
     </div>

@@ -7,6 +7,7 @@ import {
   type Dispatch,
   type ReactNode,
 } from 'react';
+import { useDemoLang } from './i18n';
 import { initialState, reducer, type Action, type DemoState } from './model';
 import { tokenMs } from './tokens';
 
@@ -31,8 +32,13 @@ export function useReducedMotion(): boolean {
 }
 
 export function DemoProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, initialState);
+  const lang = useDemoLang();
+  const [state, dispatch] = useReducer(reducer, lang, initialState);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    dispatch({ type: 'lang', lang });
+  }, [lang]);
 
   useEffect(() => {
     if (!state.leaving) return;

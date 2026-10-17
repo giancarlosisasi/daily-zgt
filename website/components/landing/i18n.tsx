@@ -1,5 +1,6 @@
 import { useI18n, useLang } from '@rspress/core/runtime';
 import { Fragment, type ReactNode } from 'react';
+import { toLang, type Lang } from './model';
 
 export function useT() {
   const t = useI18n<Record<string, unknown>>();
@@ -12,6 +13,10 @@ export function useT() {
     }
     return text;
   };
+}
+
+export function useDemoLang(): Lang {
+  return toLang(useLang());
 }
 
 export function useGuideHref() {

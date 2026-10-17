@@ -1,3 +1,21 @@
+import dictionary from '../../i18n.json';
+
+export type Lang = 'en' | 'es' | 'pt';
+
+export const toLang = (value: string): Lang => (value === 'es' || value === 'pt' ? value : 'en');
+
+const DICTIONARY = dictionary as Record<string, Partial<Record<Lang, string>>>;
+
+export function msg(lang: Lang, key: string, vars?: Record<string, string | number>): string {
+  let text = DICTIONARY[key]?.[lang] ?? DICTIONARY[key]?.en ?? key;
+  if (vars) {
+    for (const [name, value] of Object.entries(vars)) {
+      text = text.replaceAll(`{${name}}`, String(value));
+    }
+  }
+  return text;
+}
+
 export type Level = 'high' | 'medium' | 'low';
 export type ListName = 'today' | 'week';
 export type TabName = 'prio' | 'notes';
@@ -27,43 +45,45 @@ export const NOW = new Date(2026, 9, 12, 12, 24, 0).getTime();
 const at = (dayOffset: number, hour: number, minute: number) =>
   new Date(2026, 9, 12 + dayOffset, hour, minute, 0).getTime();
 
-const WEEKDAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+const weekdays = (lang: Lang) => msg(lang, 'demo.weekdays').split(',');
 const RANK: Record<Level, number> = { high: 0, medium: 1, low: 2 };
 
-export const LEVEL_LABEL: Record<Level, string> = {
-  high: 'Alta',
-  medium: 'Media',
-  low: 'Baja',
-};
+export const levelLabel = (level: Level, lang: Lang) => msg(lang, `demo.level.${level}`);
 
 export const LEVEL_BARS: Record<Level, number> = { high: 3, medium: 2, low: 1 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-export function dueLabel(due: number, now: number = NOW): { text: string; tone: DueTone } {
+export function dueLabel(
+  due: number,
+  now: number = NOW,
+  lang: Lang = 'es',
+): { text: string; tone: DueTone } {
   const minutes = Math.round((due - now) / 60000);
-  if (minutes < 0) return { text: 'Vencida', tone: 'late' };
+  if (minutes < 0) return { text: msg(lang, 'demo.due.late'), tone: 'late' };
   if (minutes < 120) {
-    if (minutes < 60) return { text: `En ${minutes} min`, tone: 'soon' };
+    if (minutes < 60) return { text: msg(lang, 'demo.due.min', { n: minutes }), tone: 'soon' };
     const hours = Math.floor(minutes / 60);
     const rest = minutes % 60;
-    return { text: `En ${hours} h ${rest} min`, tone: 'soon' };
+    return { text: msg(lang, 'demo.due.hm', { h: hours, m: rest }), tone: 'soon' };
   }
   const date = new Date(due);
   const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   const sameDay = date.toDateString() === new Date(now).toDateString();
   return {
-    text: sameDay ? `Hoy ${time}` : `${WEEKDAYS[date.getDay()]} ${time}`,
+    text: sameDay
+      ? msg(lang, 'demo.due.today', { time })
+      : msg(lang, 'demo.due.day', { day: weekdays(lang)[date.getDay()], time }),
     tone: 'later',
   };
 }
 
-export function sinceLabel(days: number, now: number = NOW): string | null {
+export function sinceLabel(days: number, lang: Lang, now: number = NOW): string | null {
   if (days < 1) return null;
-  if (days === 1) return 'De ayer';
+  if (days === 1) return msg(lang, 'demo.since.yesterday');
   const base = new Date(now);
   const date = new Date(base.getFullYear(), base.getMonth(), base.getDate() - days);
-  return `Desde ${WEEKDAYS[date.getDay()]} ${date.getDate()}`;
+  return msg(lang, 'demo.since.day', { day: weekdays(lang)[date.getDay()], date: date.getDate() });
 }
 
 export const MENU_BAR_TITLE_MAX = 24;
@@ -94,10 +114,10 @@ export function sortDone(items: Priority[]): Priority[] {
     .sort((a, b) => (b.doneAt ?? 0) - (a.doneAt ?? 0));
 }
 
-export const seed = (): Priority[] => [
+export const seed = (lang: Lang): Priority[] => [
   {
     id: 'a',
-    title: 'Revisar el contrato de Lima',
+    title: msg(lang, 'demo.seed.a'),
     level: 'high',
     list: 'today',
     due: at(0, 11, 30),
@@ -108,22 +128,22 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'b',
-    title: 'Enviar la propuesta',
+    title: msg(lang, 'demo.seed.b'),
     level: 'high',
     list: 'today',
     due: at(0, 13, 0),
     doneAt: null,
     subtasks: [
-      { id: 'b1', title: 'Armar el PDF', done: true },
-      { id: 'b2', title: 'Revisar los precios', done: false },
-      { id: 'b3', title: 'Mandar el correo', done: false },
+      { id: 'b1', title: msg(lang, 'demo.seed.b1'), done: true },
+      { id: 'b2', title: msg(lang, 'demo.seed.b2'), done: false },
+      { id: 'b3', title: msg(lang, 'demo.seed.b3'), done: false },
     ],
     hasNote: true,
     since: 0,
   },
   {
     id: 'c',
-    title: 'Preparar la demo del jueves',
+    title: msg(lang, 'demo.seed.c'),
     level: 'medium',
     list: 'today',
     due: at(0, 16, 0),
@@ -134,7 +154,7 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'd',
-    title: 'Ordenar el escritorio',
+    title: msg(lang, 'demo.seed.d'),
     level: 'low',
     list: 'today',
     due: null,
@@ -145,7 +165,7 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'e',
-    title: 'Llamar a Marta',
+    title: msg(lang, 'demo.seed.e'),
     level: 'medium',
     list: 'today',
     due: null,
@@ -156,7 +176,7 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'f',
-    title: 'Planear el trimestre',
+    title: msg(lang, 'demo.seed.f'),
     level: 'medium',
     list: 'week',
     due: at(4, 18, 0),
@@ -167,7 +187,7 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'g',
-    title: 'Pagar el hosting',
+    title: msg(lang, 'demo.seed.g'),
     level: 'low',
     list: 'week',
     due: null,
@@ -178,7 +198,7 @@ export const seed = (): Priority[] => [
   },
   {
     id: 'h',
-    title: 'Escribir el resumen del sprint',
+    title: msg(lang, 'demo.seed.h'),
     level: 'high',
     list: 'week',
     due: at(2, 17, 0),
@@ -190,6 +210,7 @@ export const seed = (): Priority[] => [
 ];
 
 export interface DemoState {
+  lang: Lang;
   items: Priority[];
   tab: TabName;
   scope: ListName;
@@ -206,8 +227,9 @@ export interface DemoState {
   seq: number;
 }
 
-export const initialState = (): DemoState => ({
-  items: seed(),
+export const initialState = (lang: Lang = 'es'): DemoState => ({
+  lang,
+  items: seed(lang),
   tab: 'prio',
   scope: 'today',
   panelOpen: true,
@@ -219,8 +241,8 @@ export const initialState = (): DemoState => ({
   formOpen: false,
   highlight: null,
   notes: {
-    today: 'Llamar a Marta antes de las 5',
-    week: 'Cerrar el contrato de Lima el viernes',
+    today: msg(lang, 'demo.note.today'),
+    week: msg(lang, 'demo.note.week'),
   },
   toast: 0,
   seq: 10,
@@ -228,6 +250,7 @@ export const initialState = (): DemoState => ({
 
 export type Action =
   | { type: 'reset'; panelOpen: boolean }
+  | { type: 'lang'; lang: Lang }
   | { type: 'scene'; scene: number }
   | { type: 'setTab'; tab: TabName }
   | { type: 'setScope'; scope: ListName }
@@ -253,9 +276,13 @@ export type Action =
 export function reducer(state: DemoState, action: Action): DemoState {
   switch (action.type) {
     case 'reset':
-      return { ...initialState(), panelOpen: action.panelOpen };
+      return { ...initialState(state.lang), panelOpen: action.panelOpen };
+    case 'lang':
+      return state.lang === action.lang
+        ? state
+        : { ...initialState(action.lang), panelOpen: state.panelOpen };
     case 'scene': {
-      const base = { ...initialState(), notes: state.notes };
+      const base = { ...initialState(state.lang), notes: state.notes };
       if (action.scene === 1) return { ...base, confirming: 'b' };
       if (action.scene === 2) return { ...base, leaving: 'b' };
       if (action.scene === 3) {

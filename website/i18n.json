@@ -1,628 +1,1162 @@
 {
   "hero.eyebrow": {
     "en": "macOS 14 or later",
-    "es": "macOS 14 o superior"
+    "es": "macOS 14 o superior",
+    "pt": "macOS 14 ou superior"
   },
   "hero.title": {
     "en": "Priorities and notes in the macOS menu bar.",
-    "es": "Prioridades y notas en la barra de menús de macOS."
+    "es": "Prioridades y notas en la barra de menús de macOS.",
+    "pt": "Prioridades e notas na barra de menus do macOS."
   },
   "hero.lead": {
     "en": "One list for today and one for the week. Only the checkbox marks a priority done, and it asks first.",
-    "es": "Una lista para hoy y otra para la semana. Solo la casilla marca una prioridad como hecha, y antes pide confirmación."
+    "es": "Una lista para hoy y otra para la semana. Solo la casilla marca una prioridad como hecha, y antes pide confirmación.",
+    "pt": "Uma lista para hoje e outra para a semana. Só a caixa de seleção marca uma prioridade como concluída, e antes ela pede confirmação."
   },
   "hero.guide": {
     "en": "Read the Guide",
-    "es": "Lee la guía"
+    "es": "Lee la guía",
+    "pt": "Leia o guia"
   },
   "hero.build": {
     "en": "See the build commands",
-    "es": "Ver los comandos de compilación"
+    "es": "Ver los comandos de compilación",
+    "pt": "Ver os comandos de compilação"
   },
   "hero.fact.dark": {
     "en": "Dark mode only",
-    "es": "Solo modo oscuro"
+    "es": "Solo modo oscuro",
+    "pt": "Só modo escuro"
   },
   "hero.fact.local": {
     "en": "No account, no server",
-    "es": "Sin cuenta, sin servidor"
+    "es": "Sin cuenta, sin servidor",
+    "pt": "Sem conta, sem servidor"
   },
   "reel.reduced": {
     "en": "Your system asks for reduced motion. These are the key frames of the reel, with no motion and no sound.",
-    "es": "Tu sistema pide reducir el movimiento. Estos son los cuadros clave del reel, sin movimiento y sin sonido."
+    "es": "Tu sistema pide reducir el movimiento. Estos son los cuadros clave del reel, sin movimiento y sin sonido.",
+    "pt": "Seu sistema pede menos movimento. Estes são os quadros principais do reel, sem movimento e sem som."
   },
   "reel.eyebrow": {
     "en": "Motion reel",
-    "es": "Reel animado"
+    "es": "Reel animado",
+    "pt": "Reel animado"
   },
   "reel.label": {
     "en": "Animated reel of Daily ZGT. It shows the target mark, the palette, the name, the checkbox that asks first, the panel, one priority from new to done, the due chip, two alerts and six numbers.",
-    "es": "Reel animado de Daily ZGT. Muestra la marca de la diana, la paleta, el nombre, la casilla que pregunta antes, el panel, una prioridad de nueva a hecha, el chip de fecha límite, dos alertas y seis números."
+    "es": "Reel animado de Daily ZGT. Muestra la marca de la diana, la paleta, el nombre, la casilla que pregunta antes, el panel, una prioridad de nueva a hecha, el chip de fecha límite, dos alertas y seis números.",
+    "pt": "Reel animado do Daily ZGT. Mostra a marca do alvo, a paleta, o nome, a caixa de seleção que pergunta antes, o painel, uma prioridade de nova a concluída, o chip de prazo, dois alertas e seis números."
   },
   "reel.play": {
     "en": "Play",
-    "es": "Reproducir"
+    "es": "Reproducir",
+    "pt": "Reproduzir"
   },
   "reel.pause": {
     "en": "Pause",
-    "es": "Pausar"
+    "es": "Pausar",
+    "pt": "Pausar"
   },
   "reel.soundOn": {
     "en": "Sound on",
-    "es": "Activar sonido"
+    "es": "Activar sonido",
+    "pt": "Ativar som"
   },
   "reel.soundOff": {
     "en": "Sound off",
-    "es": "Quitar sonido"
+    "es": "Quitar sonido",
+    "pt": "Desativar som"
   },
   "reel.restart": {
     "en": "Restart",
-    "es": "Reiniciar"
+    "es": "Reiniciar",
+    "pt": "Reiniciar"
   },
   "reel.position": {
     "en": "Reel position",
-    "es": "Posición del reel"
+    "es": "Posición del reel",
+    "pt": "Posição do reel"
   },
   "reel.note": {
     "en": "The music starts only after you click Sound on. The reel pauses when it is not on the screen.",
-    "es": "La música empieza solo cuando haces clic en Activar sonido. El reel se pausa cuando no está en la pantalla."
+    "es": "La música empieza solo cuando haces clic en Activar sonido. El reel se pausa cuando no está en la pantalla.",
+    "pt": "A música só começa depois que você clica em Ativar som. O reel pausa quando não está na tela."
   },
   "reel.ch.mark": {
     "en": "Mark",
-    "es": "Marca"
+    "es": "Marca",
+    "pt": "Marca"
   },
   "reel.ch.palette": {
     "en": "Palette",
-    "es": "Paleta"
+    "es": "Paleta",
+    "pt": "Paleta"
   },
   "reel.ch.name": {
     "en": "Name",
-    "es": "Nombre"
+    "es": "Nombre",
+    "pt": "Nome"
   },
   "reel.ch.ask": {
     "en": "Checkbox",
-    "es": "Casilla"
+    "es": "Casilla",
+    "pt": "Caixa"
   },
   "reel.ch.panel": {
     "en": "Panel",
-    "es": "Panel"
+    "es": "Panel",
+    "pt": "Painel"
   },
   "reel.ch.flow": {
     "en": "Done",
-    "es": "Hecha"
+    "es": "Hecha",
+    "pt": "Concluída"
   },
   "reel.ch.due": {
     "en": "Due chip",
-    "es": "Chip"
+    "es": "Chip",
+    "pt": "Chip"
   },
   "reel.ch.alert": {
     "en": "Alerts",
-    "es": "Alertas"
+    "es": "Alertas",
+    "pt": "Alertas"
   },
   "reel.ch.numbers": {
     "en": "Numbers",
-    "es": "Números"
+    "es": "Números",
+    "pt": "Números"
   },
   "reel.ch.lockup": {
     "en": "End",
-    "es": "Cierre"
+    "es": "Cierre",
+    "pt": "Final"
   },
   "reel.cap.tag": {
     "en": "A macOS menu bar app",
-    "es": "App de barra de menús"
+    "es": "App de barra de menús",
+    "pt": "App de barra de menus"
   },
   "reel.cap.ask": {
     "en": "The checkbox asks first.",
-    "es": "La casilla pregunta antes."
+    "es": "La casilla pregunta antes.",
+    "pt": "A caixa pergunta antes."
   },
   "reel.cmp.list": {
     "en": "A checklist",
-    "es": "Una lista"
+    "es": "Una lista",
+    "pt": "Uma lista"
   },
   "reel.cap.panel": {
     "en": "Click. The panel opens.",
-    "es": "Clic. Abre el panel."
+    "es": "Clic. Abre el panel.",
+    "pt": "Clique. O painel abre."
   },
   "reel.step.add": {
     "en": "Add a priority.",
-    "es": "Añade una prioridad."
+    "es": "Añade una prioridad.",
+    "pt": "Adicione uma prioridade."
   },
   "reel.step.ask": {
     "en": "The checkbox asks.",
-    "es": "La casilla pregunta."
+    "es": "La casilla pregunta.",
+    "pt": "A caixa pergunta."
   },
   "reel.step.undo": {
-    "en": "Deshacer: 5 s.",
-    "es": "Deshacer: 5 s."
+    "en": "Undo: 5 s.",
+    "es": "Deshacer: 5 s.",
+    "pt": "Desfazer: 5 s."
   },
   "reel.cap.due": {
     "en": "The chip follows the clock.",
-    "es": "El chip sigue al reloj."
+    "es": "El chip sigue al reloj.",
+    "pt": "O chip acompanha o relógio."
   },
   "reel.cap.alert": {
     "en": "Two alerts, with sound.",
-    "es": "Dos alertas, con sonido."
+    "es": "Dos alertas, con sonido.",
+    "pt": "Dois alertas, com som."
   },
   "reel.tile.tables": {
     "en": "tables",
-    "es": "tablas"
+    "es": "tablas",
+    "pt": "tabelas"
   },
   "reel.tile.levels": {
     "en": "levels",
-    "es": "niveles"
+    "es": "niveles",
+    "pt": "níveis"
   },
   "reel.tile.lists": {
     "en": "lists",
-    "es": "listas"
+    "es": "listas",
+    "pt": "listas"
   },
   "reel.tile.alerts": {
     "en": "alerts",
-    "es": "alertas"
+    "es": "alertas",
+    "pt": "alertas"
   },
   "reel.tile.undo": {
-    "en": "Deshacer",
-    "es": "Deshacer"
+    "en": "Undo",
+    "es": "Deshacer",
+    "pt": "Desfazer"
   },
   "reel.tile.file": {
     "en": "SQLite file",
-    "es": "archivo SQLite"
+    "es": "archivo SQLite",
+    "pt": "arquivo SQLite"
   },
   "reel.credit": {
     "en": "macOS 14 or later",
-    "es": "macOS 14 o superior"
+    "es": "macOS 14 o superior",
+    "pt": "macOS 14 ou superior"
   },
   "desk.eyebrow": {
     "en": "The panel",
-    "es": "El panel"
+    "es": "El panel",
+    "pt": "O painel"
   },
   "desk.title": {
     "en": "Scroll, or click the panel.",
-    "es": "Desplázate, o haz clic en el panel."
+    "es": "Desplázate, o haz clic en el panel.",
+    "pt": "Role a página, ou clique no painel."
   },
   "desk.lead": {
     "en": "This panel is live. Each step changes its state.",
-    "es": "Este panel funciona. Cada paso cambia su estado."
+    "es": "Este panel funciona. Cada paso cambia su estado.",
+    "pt": "Este painel funciona. Cada passo muda o estado dele."
   },
   "desk.closed": {
     "en": "The panel is closed. Click the icon in the menu bar.",
-    "es": "El panel está cerrado. Haz clic en el icono de la barra de menús."
+    "es": "El panel está cerrado. Haz clic en el icono de la barra de menús.",
+    "pt": "O painel está fechado. Clique no ícone da barra de menus."
   },
   "desk.open.title": {
     "en": "Click the icon.",
-    "es": "Haz clic en el icono."
+    "es": "Haz clic en el icono.",
+    "pt": "Clique no ícone."
   },
   "desk.open.text": {
     "en": "The panel opens under the icon. The number is the count of open priorities for today. The text next to it is the title of the next one.",
-    "es": "El panel se abre debajo del icono. El número es la cantidad de prioridades abiertas de hoy. El texto a su lado es el título de la siguiente."
+    "es": "El panel se abre debajo del icono. El número es la cantidad de prioridades abiertas de hoy. El texto a su lado es el título de la siguiente.",
+    "pt": "O painel abre embaixo do ícone. O número é a quantidade de prioridades abertas de hoje. O texto ao lado é o título da próxima."
   },
   "desk.ask.title": {
     "en": "Click the checkbox.",
-    "es": "Haz clic en la casilla."
+    "es": "Haz clic en la casilla.",
+    "pt": "Clique na caixa de seleção."
   },
   "desk.ask.text": {
-    "en": "A violet bar asks `¿Marcar como hecha?` The bar counts the open subtasks.",
-    "es": "Una barra violeta pregunta `¿Marcar como hecha?` La barra cuenta las subtareas abiertas."
+    "en": "A violet bar asks `Mark as done?` The bar counts the open subtasks.",
+    "es": "Una barra violeta pregunta `¿Marcar como hecha?` La barra cuenta las subtareas abiertas.",
+    "pt": "Uma barra violeta pergunta `Marcar como concluída?` A barra conta as subtarefas abertas."
   },
   "desk.done.title": {
-    "en": "Choose `Hecha`.",
-    "es": "Elige `Hecha`."
+    "en": "Choose `Done`.",
+    "es": "Elige `Hecha`.",
+    "pt": "Escolha `Concluída`."
   },
   "desk.done.text": {
-    "en": "The row slides out. A bar shows `Deshacer` for 5 seconds.",
-    "es": "La fila se desliza hacia afuera. Una barra muestra `Deshacer` durante 5 segundos."
+    "en": "The row slides out. A bar shows `Undo` for 5 seconds.",
+    "es": "La fila se desliza hacia afuera. Una barra muestra `Deshacer` durante 5 segundos.",
+    "pt": "A linha desliza para fora. Uma barra mostra `Desfazer` por 5 segundos."
   },
   "desk.back.title": {
-    "en": "Open `Hechas`.",
-    "es": "Abre `Hechas`."
+    "en": "Open `Completed`.",
+    "es": "Abre `Hechas`.",
+    "pt": "Abra `Concluídas`."
   },
   "desk.back.text": {
-    "en": "`Hechas` shows the priorities of the last 24 hours. `Regresar` moves a priority back to the open list and highlights it.",
-    "es": "`Hechas` muestra las prioridades de las últimas 24 horas. `Regresar` devuelve una prioridad a la lista abierta y la resalta."
+    "en": "`Completed` shows the priorities of the last 24 hours. `Reopen` moves a priority back to the open list and highlights it.",
+    "es": "`Hechas` muestra las prioridades de las últimas 24 horas. `Regresar` devuelve una prioridad a la lista abierta y la resalta.",
+    "pt": "`Concluídas` mostra as prioridades das últimas 24 horas. `Reabrir` devolve uma prioridade à lista aberta e a destaca."
   },
   "desk.notes.title": {
-    "en": "Switch to `Notas`.",
-    "es": "Cambia a `Notas`."
+    "en": "Switch to `Notes`.",
+    "es": "Cambia a `Notas`.",
+    "pt": "Mude para `Notas`."
   },
   "desk.notes.text": {
     "en": "One note for the day and one for the week. The app saves the note while you type.",
-    "es": "Una nota para el día y otra para la semana. La app guarda la nota mientras escribes."
+    "es": "Una nota para el día y otra para la semana. La app guarda la nota mientras escribes.",
+    "pt": "Uma nota para o dia e outra para a semana. O app salva a nota enquanto você digita."
   },
   "bento.eyebrow": {
     "en": "Numbers",
-    "es": "Números"
+    "es": "Números",
+    "pt": "Números"
   },
   "bento.title": {
     "en": "Each number comes from the source code.",
-    "es": "Cada número sale del código fuente."
+    "es": "Cada número sale del código fuente.",
+    "pt": "Cada número vem do código-fonte."
   },
   "bento.lead": {
     "en": "The database schema, the Tecla tokens and the alert code give these values. The database also has the table `grdb_migrations`, which GRDB keeps.",
-    "es": "El esquema de la base de datos, los tokens de Tecla y el código de las alertas dan estos valores. La base de datos también tiene la tabla `grdb_migrations`, que mantiene GRDB."
+    "es": "El esquema de la base de datos, los tokens de Tecla y el código de las alertas dan estos valores. La base de datos también tiene la tabla `grdb_migrations`, que mantiene GRDB.",
+    "pt": "O esquema do banco de dados, os tokens do Tecla e o código dos alertas dão estes valores. O banco também tem a tabela `grdb_migrations`, que o GRDB mantém."
   },
   "bento.tables": {
     "en": "tables for your data",
-    "es": "tablas para tus datos"
+    "es": "tablas para tus datos",
+    "pt": "tabelas para os seus dados"
   },
   "bento.columns": {
     "en": "{n} columns",
-    "es": "{n} columnas"
+    "es": "{n} columnas",
+    "pt": "{n} colunas"
   },
   "bento.levels": {
     "en": "priority levels",
-    "es": "niveles de prioridad"
+    "es": "niveles de prioridad",
+    "pt": "níveis de prioridade"
   },
   "bento.lists": {
-    "en": "lists: Hoy and Semana",
-    "es": "listas: Hoy y Semana"
+    "en": "lists: Today and Week",
+    "es": "listas: Hoy y Semana",
+    "pt": "listas: Hoje e Semana"
   },
   "bento.alerts": {
     "en": "alerts for each due time",
-    "es": "alertas por cada fecha límite"
+    "es": "alertas por cada fecha límite",
+    "pt": "alertas para cada prazo"
   },
   "bento.undo": {
-    "en": "of Deshacer after Hecha",
-    "es": "de Deshacer después de Hecha"
+    "en": "of Undo after Done",
+    "es": "de Deshacer después de Hecha",
+    "pt": "de Desfazer depois de Concluída"
   },
   "bento.file": {
     "en": "SQLite file holds all the data",
-    "es": "archivo SQLite guarda todos los datos"
+    "es": "archivo SQLite guarda todos los datos",
+    "pt": "arquivo SQLite guarda todos os dados"
   },
   "bento.snooze": {
     "en": "later, the alert comes again",
-    "es": "después, la alerta vuelve"
+    "es": "después, la alerta vuelve",
+    "pt": "depois, o alerta volta"
   },
   "bento.accounts": {
     "en": "accounts",
-    "es": "cuentas"
+    "es": "cuentas",
+    "pt": "contas"
   },
   "bento.accountsNote": {
     "en": "No account and no server in v1.",
-    "es": "Sin cuenta y sin servidor en v1."
+    "es": "Sin cuenta y sin servidor en v1.",
+    "pt": "Sem conta e sem servidor na v1."
   },
   "due.eyebrow": {
     "en": "Due chip",
-    "es": "Chip de fecha límite"
+    "es": "Chip de fecha límite",
+    "pt": "Chip de prazo"
   },
   "due.title": {
     "en": "The chip shows the time left to the due time.",
-    "es": "El chip muestra cuánto falta para la fecha límite."
+    "es": "El chip muestra cuánto falta para la fecha límite.",
+    "pt": "O chip mostra quanto falta para o prazo."
   },
   "due.p3": {
     "en": "A priority sorts by level first, then by due time. No due time goes last.",
-    "es": "Las prioridades se ordenan primero por nivel y después por fecha límite. Sin fecha límite va al final."
+    "es": "Las prioridades se ordenan primero por nivel y después por fecha límite. Sin fecha límite va al final.",
+    "pt": "As prioridades são ordenadas primeiro por nível e depois por prazo. Sem prazo vai para o fim."
   },
   "due.label": {
     "en": "Due time",
-    "es": "Fecha límite"
+    "es": "Fecha límite",
+    "pt": "Prazo"
   },
   "due.now": {
     "en": "Now",
-    "es": "Ahora"
+    "es": "Ahora",
+    "pt": "Agora"
   },
   "due.past": {
     "en": "{n} min past",
-    "es": "pasaron {n} min"
+    "es": "pasaron {n} min",
+    "pt": "passaram {n} min"
   },
   "due.left": {
     "en": "{n} min left",
-    "es": "faltan {n} min"
+    "es": "faltan {n} min",
+    "pt": "faltam {n} min"
   },
   "due.rule1": {
     "en": "The due time is past.",
-    "es": "La fecha límite ya pasó."
+    "es": "La fecha límite ya pasó.",
+    "pt": "O prazo já passou."
   },
   "due.rule2": {
     "en": "The due time is in less than 2 hours.",
-    "es": "Faltan menos de 2 horas."
+    "es": "Faltan menos de 2 horas.",
+    "pt": "Faltam menos de 2 horas."
   },
   "due.rule3": {
     "en": "The due time is more than 2 hours away.",
-    "es": "Faltan más de 2 horas."
+    "es": "Faltan más de 2 horas.",
+    "pt": "Faltam mais de 2 horas."
   },
   "due.real": {
     "en": "The same chip at its size in the panel.",
-    "es": "El mismo chip a su tamaño en el panel."
+    "es": "El mismo chip a su tamaño en el panel.",
+    "pt": "O mesmo chip no tamanho que tem no painel."
   },
   "alerts.eyebrow": {
     "en": "Alerts",
-    "es": "Alertas"
+    "es": "Alertas",
+    "pt": "Alertas"
   },
   "alerts.title": {
     "en": "Two alerts for each due time, with sound.",
-    "es": "Dos alertas por cada fecha límite, con sonido."
+    "es": "Dos alertas por cada fecha límite, con sonido.",
+    "pt": "Dois alertas para cada prazo, com som."
   },
   "alerts.p1": {
     "en": "The app sends one alert 30 minutes before the due time and one at the due time.",
-    "es": "La app envía una alerta 30 minutos antes de la fecha límite y otra al vencer."
+    "es": "La app envía una alerta 30 minutos antes de la fecha límite y otra al vencer.",
+    "pt": "O app envia um alerta 30 minutos antes do prazo e outro quando ele vence."
   },
   "alerts.p2": {
-    "en": "`Abrir` opens the panel and highlights the priority. `Posponer 15 min` sets a new alert.",
-    "es": "`Abrir` abre el panel y resalta la prioridad. `Posponer 15 min` fija una alerta nueva."
+    "en": "`Open` opens the panel and highlights the priority. `Snooze 15 min` sets a new alert.",
+    "es": "`Abrir` abre el panel y resalta la prioridad. `Posponer 15 min` fija una alerta nueva.",
+    "pt": "`Abrir` abre o painel e destaca a prioridade. `Adiar 15 min` define um novo alerta."
   },
   "alerts.p3": {
     "en": "Each alert is a row in the table `alert`. The column `status` shows its state.",
-    "es": "Cada alerta es una fila de la tabla `alert`. La columna `status` muestra su estado."
+    "es": "Cada alerta es una fila de la tabla `alert`. La columna `status` muestra su estado.",
+    "pt": "Cada alerta é uma linha da tabela `alert`. A coluna `status` mostra o estado dele."
   },
   "alerts.before": {
     "en": "30 min before",
-    "es": "30 min antes"
+    "es": "30 min antes",
+    "pt": "30 min antes"
   },
   "alerts.atDue": {
     "en": "At due time",
-    "es": "Al vencer"
+    "es": "Al vencer",
+    "pt": "No prazo"
   },
   "alerts.clock": {
     "en": "Mac clock {time}. The chip reads {chip}.",
-    "es": "Reloj del Mac {time}. El chip dice {chip}."
+    "es": "Reloj del Mac {time}. El chip dice {chip}.",
+    "pt": "Relógio do Mac {time}. O chip diz {chip}."
   },
   "alerts.none": {
     "en": "No alert yet.",
-    "es": "Aún no hay alerta."
+    "es": "Aún no hay alerta.",
+    "pt": "Ainda não há alerta."
   },
   "alerts.table": {
     "en": "Table alert",
-    "es": "Tabla alert"
+    "es": "Tabla alert",
+    "pt": "Tabela alert"
   },
   "alerts.replay": {
     "en": "Replay the clock",
-    "es": "Repetir el reloj"
+    "es": "Repetir el reloj",
+    "pt": "Repetir o relógio"
   },
   "notes.eyebrow": {
     "en": "Notes",
-    "es": "Notas"
+    "es": "Notas",
+    "pt": "Notas"
   },
   "notes.title": {
     "en": "One note for the day. One note for the week.",
-    "es": "Una nota para el día. Una nota para la semana."
+    "es": "Una nota para el día. Una nota para la semana.",
+    "pt": "Uma nota para o dia. Uma nota para a semana."
   },
   "notes.p1": {
     "en": "Type in a note. The app saves it while you type.",
-    "es": "Escribe en una nota. La app la guarda mientras escribes."
+    "es": "Escribe en una nota. La app la guarda mientras escribes.",
+    "pt": "Digite em uma nota. O app a salva enquanto você digita."
   },
   "notes.p2": {
     "en": "Each day and each week has its own row in the table `note`.",
-    "es": "Cada día y cada semana tiene su propia fila en la tabla `note`."
+    "es": "Cada día y cada semana tiene su propia fila en la tabla `note`.",
+    "pt": "Cada dia e cada semana tem a sua própria linha na tabela `note`."
   },
   "notes.empty": {
     "en": "No rows. Type in a note.",
-    "es": "Sin filas. Escribe en una nota."
+    "es": "Sin filas. Escribe en una nota.",
+    "pt": "Sem linhas. Digite em uma nota."
   },
   "sqlite.eyebrow": {
     "en": "SQLite",
-    "es": "SQLite"
+    "es": "SQLite",
+    "pt": "SQLite"
   },
   "sqlite.title": {
     "en": "All data is in one SQLite file.",
-    "es": "Todos los datos están en un archivo SQLite."
+    "es": "Todos los datos están en un archivo SQLite.",
+    "pt": "Todos os dados estão em um arquivo SQLite."
   },
   "sqlite.p1": {
     "en": "Read the file with `sqlite3`. The first command lists the tables.",
-    "es": "Lee el archivo con `sqlite3`. El primer comando lista las tablas."
+    "es": "Lee el archivo con `sqlite3`. El primer comando lista las tablas.",
+    "pt": "Leia o arquivo com `sqlite3`. O primeiro comando lista as tabelas."
   },
   "sqlite.p2": {
     "en": "The rows of the second command come from the live panel of this page. Mark a priority done there and read the rows again.",
-    "es": "Las filas del segundo comando vienen del panel de esta página. Marca ahí una prioridad como hecha y lee las filas otra vez."
+    "es": "Las filas del segundo comando vienen del panel de esta página. Marca ahí una prioridad como hecha y lee las filas otra vez.",
+    "pt": "As linhas do segundo comando vêm do painel ao vivo desta página. Marque ali uma prioridade como concluída e leia as linhas de novo."
   },
   "shortcut.eyebrow": {
     "en": "Global shortcut",
-    "es": "Atajo global"
+    "es": "Atajo global",
+    "pt": "Atalho global"
   },
   "shortcut.title": {
     "en": "Add a priority from any app.",
-    "es": "Agrega una prioridad desde cualquier app."
+    "es": "Agrega una prioridad desde cualquier app.",
+    "pt": "Adicione uma prioridade de qualquer app."
   },
   "shortcut.p1": {
     "en": "Press `⌃⌥⌘P`. A small window opens with one title field.",
-    "es": "Pulsa `⌃⌥⌘P`. Se abre una ventana pequeña con un campo de título."
+    "es": "Pulsa `⌃⌥⌘P`. Se abre una ventana pequeña con un campo de título.",
+    "pt": "Pressione `⌃⌥⌘P`. Uma janela pequena abre com um campo de título."
   },
   "shortcut.p2": {
-    "en": "Press Enter to add the priority to Hoy with the level Media. Press Escape to close.",
-    "es": "Pulsa Enter para agregar la prioridad a Hoy con el nivel Media. Pulsa Escape para cerrar."
+    "en": "Press Enter to add the priority to Today with the level Medium. Press Escape to close.",
+    "es": "Pulsa Enter para agregar la prioridad a Hoy con el nivel Media. Pulsa Escape para cerrar.",
+    "pt": "Pressione Enter para adicionar a prioridade a Hoje com o nível Média. Pressione Escape para fechar."
   },
   "shortcut.p3": {
-    "en": "The setting `Atajo global` changes the shortcut or clears it.",
-    "es": "El ajuste `Atajo global` cambia el atajo o lo borra."
+    "en": "The setting `Global shortcut` changes the shortcut or clears it.",
+    "es": "El ajuste `Atajo global` cambia el atajo o lo borra.",
+    "pt": "O ajuste `Atalho global` muda o atalho ou o apaga."
   },
   "shortcut.keys": {
     "en": "Control, Option, Command and P",
-    "es": "Control, Opción, Comando y P"
+    "es": "Control, Opción, Comando y P",
+    "pt": "Control, Option, Command e P"
   },
   "shortcut.button": {
     "en": "Press ⌃⌥⌘P, or click here",
-    "es": "Pulsa ⌃⌥⌘P, o haz clic aquí"
+    "es": "Pulsa ⌃⌥⌘P, o haz clic aquí",
+    "pt": "Pressione ⌃⌥⌘P, ou clique aqui"
   },
   "shortcut.hint": {
     "en": "Enter adds. Escape closes.",
-    "es": "Enter agrega. Escape cierra."
+    "es": "Enter agrega. Escape cierra.",
+    "pt": "Enter adiciona. Escape fecha."
   },
   "shortcut.count": {
-    "en": "Hoy has {n} open priorities.",
-    "es": "Hoy tiene {n} prioridades abiertas."
+    "en": "Today has {n} open priorities.",
+    "es": "Hoy tiene {n} prioridades abiertas.",
+    "pt": "Hoje tem {n} prioridades abertas."
   },
   "shortcut.added": {
-    "en": "Added {title} with the level Media.",
-    "es": "Se agregó {title} con el nivel Media."
+    "en": "Added {title} with the level Medium.",
+    "es": "Se agregó {title} con el nivel Media.",
+    "pt": "Foi adicionada {title} com o nível Média."
   },
   "local.eyebrow": {
     "en": "Data and network",
-    "es": "Datos y red"
+    "es": "Datos y red",
+    "pt": "Dados e rede"
   },
   "local.title": {
     "en": "v1 keeps all data on your Mac.",
-    "es": "v1 guarda todos los datos en tu Mac."
+    "es": "v1 guarda todos los datos en tu Mac.",
+    "pt": "A v1 guarda todos os dados no seu Mac."
   },
   "local.p1": {
     "en": "v1 keeps all data in one SQLite file on the Mac, with no account and no server.",
-    "es": "v1 guarda todos los datos en un archivo SQLite del Mac, sin cuenta y sin servidor."
+    "es": "v1 guarda todos los datos en un archivo SQLite del Mac, sin cuenta y sin servidor.",
+    "pt": "A v1 guarda todos os dados em um arquivo SQLite no Mac, sem conta e sem servidor."
   },
   "local.p2": {
-    "en": "The planned Claude review sends a read-only export of the priorities to the Anthropic API. It does this only when you click `Revisar con Claude`.",
-    "es": "La revisión con Claude, planeada para v2, envía una exportación de solo lectura de las prioridades a la API de Anthropic. Solo lo hace cuando haces clic en `Revisar con Claude`."
+    "en": "The planned Claude review sends a read-only export of the priorities to the Anthropic API. It does this only when you click `Review with Claude`.",
+    "es": "La revisión con Claude, planeada para v2, envía una exportación de solo lectura de las prioridades a la API de Anthropic. Solo lo hace cuando haces clic en `Revisar con Claude`.",
+    "pt": "A revisão com Claude, planejada para a v2, envia uma exportação somente leitura das prioridades para a API da Anthropic. Ela só faz isso quando você clica em `Revisar com Claude`."
   },
   "local.p3": {
     "en": "You build the app from the source folder. There is no App Store build and no download.",
-    "es": "Tú compilas la app desde la carpeta del código fuente. No hay versión de App Store ni descarga."
+    "es": "Tú compilas la app desde la carpeta del código fuente. No hay versión de App Store ni descarga.",
+    "pt": "Você compila o app a partir da pasta do código-fonte. Não há versão da App Store nem download."
   },
   "local.mac": {
     "en": "Your Mac",
-    "es": "Tu Mac"
+    "es": "Tu Mac",
+    "pt": "Seu Mac"
   },
   "local.appKind": {
     "en": "menu bar app",
-    "es": "app de barra de menús"
+    "es": "app de barra de menús",
+    "pt": "app de barra de menus"
   },
   "local.account": {
     "en": "Account",
-    "es": "Cuenta"
+    "es": "Cuenta",
+    "pt": "Conta"
   },
   "local.server": {
     "en": "Server",
-    "es": "Servidor"
+    "es": "Servidor",
+    "pt": "Servidor"
   },
   "local.store": {
     "en": "App Store build",
-    "es": "Versión de App Store"
+    "es": "Versión de App Store",
+    "pt": "Versão da App Store"
   },
   "local.none": {
     "en": "none",
-    "es": "no hay"
+    "es": "no hay",
+    "pt": "não há"
   },
   "local.api": {
     "en": "Anthropic API",
-    "es": "API de Anthropic"
+    "es": "API de Anthropic",
+    "pt": "API da Anthropic"
   },
   "local.apiNote": {
     "en": "v2, only on a click",
-    "es": "v2, solo con un clic"
+    "es": "v2, solo con un clic",
+    "pt": "v2, só com um clique"
   },
   "build.eyebrow": {
     "en": "Build it",
-    "es": "Compílala"
+    "es": "Compílala",
+    "pt": "Compile"
   },
   "build.title": {
     "en": "Three commands clone, install and start the app.",
-    "es": "Tres comandos clonan, instalan e inician la app."
+    "es": "Tres comandos clonan, instalan e inician la app.",
+    "pt": "Três comandos clonam, instalam e iniciam o app."
   },
   "build.lead": {
     "en": "Run them in a terminal. You need macOS 14 or later, Xcode 26 and XcodeGen.",
-    "es": "Ejecútalos en una terminal. Necesitas macOS 14 o superior, Xcode 26 y XcodeGen."
+    "es": "Ejecútalos en una terminal. Necesitas macOS 14 o superior, Xcode 26 y XcodeGen.",
+    "pt": "Execute-os em um terminal. Você precisa de macOS 14 ou superior, Xcode 26 e XcodeGen."
   },
   "build.cmd1": {
     "en": "1. Clone the repository",
-    "es": "1. Clona el repositorio"
+    "es": "1. Clona el repositorio",
+    "pt": "1. Clone o repositório"
   },
   "build.cmd2": {
     "en": "2. Install the app",
-    "es": "2. Instala la app"
+    "es": "2. Instala la app",
+    "pt": "2. Instale o app"
   },
   "build.cmd3": {
     "en": "3. Start the app",
-    "es": "3. Inicia la app"
+    "es": "3. Inicia la app",
+    "pt": "3. Inicie o app"
   },
   "build.copy": {
     "en": "Copy",
-    "es": "Copiar"
+    "es": "Copiar",
+    "pt": "Copiar"
   },
   "build.copied": {
     "en": "Copied",
-    "es": "Copiado"
+    "es": "Copiado",
+    "pt": "Copiado"
   },
   "build.guide": {
     "en": "Open the Guide",
-    "es": "Abre la guía"
+    "es": "Abre la guía",
+    "pt": "Abra o guia"
   },
   "build.claude": {
     "en": "Claude review and the API key",
-    "es": "Revisión con Claude y clave de API"
+    "es": "Revisión con Claude y clave de API",
+    "pt": "Revisão com Claude e chave de API"
   },
   "languagesText": {
-    "es": "Idiomas"
+    "es": "Idiomas",
+    "pt": "Idiomas"
   },
   "themeText": {
-    "es": "Tema"
+    "es": "Tema",
+    "pt": "Tema"
   },
   "versionsText": {
-    "es": "Versiones"
+    "es": "Versiones",
+    "pt": "Versões"
   },
   "menuTitle": {
-    "es": "Menú"
+    "es": "Menú",
+    "pt": "Menu"
   },
   "outlineTitle": {
-    "es": "EN ESTA PÁGINA"
+    "es": "EN ESTA PÁGINA",
+    "pt": "NESTA PÁGINA"
   },
   "scrollToTopText": {
-    "es": "Volver arriba"
+    "es": "Volver arriba",
+    "pt": "Voltar ao topo"
   },
   "lastUpdatedText": {
-    "es": "Última actualización"
+    "es": "Última actualización",
+    "pt": "Última atualização"
   },
   "lastUpdatedAuthorText": {
-    "es": "por"
+    "es": "por",
+    "pt": "por"
   },
   "prevPageText": {
-    "es": "Página anterior"
+    "es": "Página anterior",
+    "pt": "Página anterior"
   },
   "nextPageText": {
-    "es": "Página siguiente"
+    "es": "Página siguiente",
+    "pt": "Próxima página"
   },
   "sourceCodeText": {
-    "es": "Código fuente"
+    "es": "Código fuente",
+    "pt": "Código-fonte"
   },
   "searchPlaceholderText": {
-    "es": "Buscar"
+    "es": "Buscar",
+    "pt": "Buscar"
   },
   "searchPanelCancelText": {
-    "es": "Cancelar"
+    "es": "Cancelar",
+    "pt": "Cancelar"
   },
   "searchNoResultsText": {
-    "es": "Sin resultados"
+    "es": "Sin resultados",
+    "pt": "Sem resultados"
   },
   "searchSuggestedQueryText": {
-    "es": "Prueba con otras palabras"
+    "es": "Prueba con otras palabras",
+    "pt": "Tente outras palavras"
   },
   "overview.filterNameText": {
-    "es": "Filtrar"
+    "es": "Filtrar",
+    "pt": "Filtrar"
   },
   "overview.filterPlaceholderText": {
-    "es": "Buscar"
+    "es": "Buscar",
+    "pt": "Buscar"
   },
   "overview.filterNoResultText": {
-    "es": "Sin resultados"
+    "es": "Sin resultados",
+    "pt": "Sem resultados"
   },
   "openInText": {
-    "es": "Abrir en {{name}}"
+    "es": "Abrir en {{name}}",
+    "pt": "Abrir em {{name}}"
   },
   "copyMarkdownText": {
-    "es": "Copiar Markdown"
+    "es": "Copiar Markdown",
+    "pt": "Copiar Markdown"
   },
   "copyMarkdownLinkText": {
-    "es": "Copiar enlace de Markdown"
+    "es": "Copiar enlace de Markdown",
+    "pt": "Copiar link do Markdown"
   },
   "editLinkText": {
-    "es": "Editar esta página"
+    "es": "Editar esta página",
+    "pt": "Editar esta página"
   },
   "codeButtonGroupCopyButtonText": {
-    "es": "Copiar código"
+    "es": "Copiar código",
+    "pt": "Copiar código"
   },
   "codeButtonGroupWrapButtonText": {
-    "es": "Ajustar las líneas del código"
+    "es": "Ajustar las líneas del código",
+    "pt": "Quebrar as linhas do código"
   },
   "notFoundText": {
-    "es": "PÁGINA NO ENCONTRADA"
+    "es": "PÁGINA NO ENCONTRADA",
+    "pt": "PÁGINA NÃO ENCONTRADA"
   },
   "takeMeHomeText": {
-    "es": "Ir al inicio"
+    "es": "Ir al inicio",
+    "pt": "Ir para o início"
   },
   "promptCopyText": {
-    "es": "Copiar"
+    "es": "Copiar",
+    "pt": "Copiar"
   },
   "promptCopiedText": {
-    "es": "Copiado"
+    "es": "Copiado",
+    "pt": "Copiado"
   },
   "promptExpandText": {
-    "es": "Expandir"
+    "es": "Expandir",
+    "pt": "Expandir"
   },
   "promptCollapseText": {
-    "es": "Contraer"
+    "es": "Contraer",
+    "pt": "Recolher"
+  },
+  "desk.appLang": {
+    "en": "For now, the app interface is in Spanish only.",
+    "es": "Por ahora, la interfaz de la app solo está en español.",
+    "pt": "Por enquanto, a interface do app está apenas em espanhol."
+  },
+  "demo.tab.prio": {
+    "en": "Priorities",
+    "es": "Prioridades",
+    "pt": "Prioridades"
+  },
+  "demo.tab.notes": {
+    "en": "Notes",
+    "es": "Notas",
+    "pt": "Notas"
+  },
+  "demo.scope.today": {
+    "en": "Today",
+    "es": "Hoy",
+    "pt": "Hoje"
+  },
+  "demo.scope.week": {
+    "en": "Week",
+    "es": "Semana",
+    "pt": "Semana"
+  },
+  "demo.date.today": {
+    "en": "Monday Oct 12",
+    "es": "Lunes 12 oct",
+    "pt": "Segunda 12 out"
+  },
+  "demo.date.week": {
+    "en": "Week 42 · Oct 12–18",
+    "es": "Semana 42 · 12–18 oct",
+    "pt": "Semana 42 · 12–18 out"
+  },
+  "demo.clock": {
+    "en": "Mon Oct 12 12:24",
+    "es": "lun 12 oct 12:24",
+    "pt": "seg 12 out 12:24"
+  },
+  "demo.menubar": {
+    "en": "macOS menu bar",
+    "es": "Barra de menús de macOS",
+    "pt": "Barra de menus do macOS"
+  },
+  "demo.menus": {
+    "en": "Finder,File,Edit,View,Go,Window,Help",
+    "es": "Finder,Archivo,Edición,Visualización,Ir,Ventana,Ayuda",
+    "pt": "Finder,Arquivo,Edição,Visualizar,Ir,Janela,Ajuda"
+  },
+  "demo.weekdays": {
+    "en": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
+    "es": "dom,lun,mar,mié,jue,vie,sáb",
+    "pt": "dom,seg,ter,qua,qui,sex,sáb"
+  },
+  "demo.level.high": {
+    "en": "High",
+    "es": "Alta",
+    "pt": "Alta"
+  },
+  "demo.level.medium": {
+    "en": "Medium",
+    "es": "Media",
+    "pt": "Média"
+  },
+  "demo.level.low": {
+    "en": "Low",
+    "es": "Baja",
+    "pt": "Baixa"
+  },
+  "demo.due.late": {
+    "en": "Overdue",
+    "es": "Vencida",
+    "pt": "Atrasada"
+  },
+  "demo.due.min": {
+    "en": "In {n} min",
+    "es": "En {n} min",
+    "pt": "Em {n} min"
+  },
+  "demo.due.hm": {
+    "en": "In {h} h {m} min",
+    "es": "En {h} h {m} min",
+    "pt": "Em {h} h {m} min"
+  },
+  "demo.due.today": {
+    "en": "Today {time}",
+    "es": "Hoy {time}",
+    "pt": "Hoje {time}"
+  },
+  "demo.due.day": {
+    "en": "{day} {time}",
+    "es": "{day} {time}",
+    "pt": "{day} {time}"
+  },
+  "demo.since.yesterday": {
+    "en": "From yesterday",
+    "es": "De ayer",
+    "pt": "De ontem"
+  },
+  "demo.since.day": {
+    "en": "Since {day} {date}",
+    "es": "Desde {day} {date}",
+    "pt": "Desde {day} {date}"
+  },
+  "demo.hasNotes": {
+    "en": "Has notes",
+    "es": "Tiene notas",
+    "pt": "Tem notas"
+  },
+  "demo.done": {
+    "en": "Done",
+    "es": "Hecha",
+    "pt": "Concluída"
+  },
+  "demo.completed": {
+    "en": "Completed",
+    "es": "Hechas",
+    "pt": "Concluídas"
+  },
+  "demo.undo": {
+    "en": "Undo",
+    "es": "Deshacer",
+    "pt": "Desfazer"
+  },
+  "demo.undoText": {
+    "en": "Done: {title}",
+    "es": "Hecha: {title}",
+    "pt": "Concluída: {title}"
+  },
+  "demo.reopen": {
+    "en": "Reopen",
+    "es": "Regresar",
+    "pt": "Reabrir"
+  },
+  "demo.confirm.title": {
+    "en": "Mark as done?",
+    "es": "¿Marcar como hecha?",
+    "pt": "Marcar como concluída?"
+  },
+  "demo.confirm.one": {
+    "en": "1 subtask is still open.",
+    "es": "Queda 1 subtarea abierta.",
+    "pt": "Resta 1 subtarefa aberta."
+  },
+  "demo.confirm.many": {
+    "en": "{n} subtasks are still open.",
+    "es": "Quedan {n} subtareas abiertas.",
+    "pt": "Restam {n} subtarefas abertas."
+  },
+  "demo.cancel": {
+    "en": "Cancel",
+    "es": "Cancelar",
+    "pt": "Cancelar"
+  },
+  "demo.hideSubtasks": {
+    "en": "Hide subtasks",
+    "es": "Ocultar subtareas",
+    "pt": "Ocultar subtarefas"
+  },
+  "demo.showSubtasks": {
+    "en": "Show subtasks",
+    "es": "Mostrar subtareas",
+    "pt": "Mostrar subtarefas"
+  },
+  "demo.markDone": {
+    "en": "Mark as done: {title}",
+    "es": "Marcar como hecha: {title}",
+    "pt": "Marcar como concluída: {title}"
+  },
+  "demo.remove": {
+    "en": "Remove",
+    "es": "Quitar",
+    "pt": "Remover"
+  },
+  "demo.form.placeholder": {
+    "en": "What is the priority?",
+    "es": "¿Qué es prioritario?",
+    "pt": "Qual é a prioridade?"
+  },
+  "demo.form.priority": {
+    "en": "Priority",
+    "es": "Prioridad",
+    "pt": "Prioridade"
+  },
+  "demo.form.due": {
+    "en": "Due time",
+    "es": "Fecha límite",
+    "pt": "Prazo"
+  },
+  "demo.form.alert": {
+    "en": "Alert with sound 30 min before and at the due time",
+    "es": "Alerta con sonido 30 min antes y al vencer",
+    "pt": "Alerta com som 30 min antes e no prazo"
+  },
+  "demo.form.add": {
+    "en": "Add",
+    "es": "Añadir",
+    "pt": "Adicionar"
+  },
+  "demo.empty.done": {
+    "en": "All done in this list",
+    "es": "Todo listo en esta lista",
+    "pt": "Tudo pronto nesta lista"
+  },
+  "demo.empty.none": {
+    "en": "Nothing pending in this list.",
+    "es": "Nada pendiente en esta lista.",
+    "pt": "Nada pendente nesta lista."
+  },
+  "demo.new": {
+    "en": "New priority",
+    "es": "Nueva prioridad",
+    "pt": "Nova prioridade"
+  },
+  "demo.completedCount": {
+    "en": "Completed ({n})",
+    "es": "Hechas ({n})",
+    "pt": "Concluídas ({n})"
+  },
+  "demo.notes.today": {
+    "en": "Notes for today",
+    "es": "Notas de hoy",
+    "pt": "Notas de hoje"
+  },
+  "demo.notes.week": {
+    "en": "Notes for the week",
+    "es": "Notas de la semana",
+    "pt": "Notas da semana"
+  },
+  "demo.notes.placeholder": {
+    "en": "Write a note",
+    "es": "Escribe una nota",
+    "pt": "Escreva uma nota"
+  },
+  "demo.notes.hint": {
+    "en": "Saved as you type.",
+    "es": "Se guarda al escribir.",
+    "pt": "Salva ao digitar."
+  },
+  "demo.footer.today": {
+    "en": "{done} of {total} done today",
+    "es": "{done} de {total} hechas hoy",
+    "pt": "{done} de {total} concluídas hoje"
+  },
+  "demo.footer.week": {
+    "en": "{done} of {total} done this week",
+    "es": "{done} de {total} hechas esta semana",
+    "pt": "{done} de {total} concluídas nesta semana"
+  },
+  "demo.testAlert": {
+    "en": "Test alert",
+    "es": "Probar alerta",
+    "pt": "Testar alerta"
+  },
+  "demo.settings": {
+    "en": "Settings",
+    "es": "Ajustes",
+    "pt": "Ajustes"
+  },
+  "demo.quit": {
+    "en": "Quit",
+    "es": "Salir",
+    "pt": "Sair"
+  },
+  "demo.notif.head": {
+    "en": "PRIORITIES",
+    "es": "PRIORIDADES",
+    "pt": "PRIORIDADES"
+  },
+  "demo.notif.now": {
+    "en": "now",
+    "es": "ahora",
+    "pt": "agora"
+  },
+  "demo.notif.open": {
+    "en": "Open",
+    "es": "Abrir",
+    "pt": "Abrir"
+  },
+  "demo.notif.snooze": {
+    "en": "Snooze 15 min",
+    "es": "Posponer 15 min",
+    "pt": "Adiar 15 min"
+  },
+  "demo.notif.before": {
+    "en": "Due in 30 min",
+    "es": "Vence en 30 min",
+    "pt": "Vence em 30 min"
+  },
+  "demo.notif.due": {
+    "en": "Priority overdue",
+    "es": "Prioridad vencida",
+    "pt": "Prioridade atrasada"
+  },
+  "demo.snoozeMark": {
+    "en": "Snooze",
+    "es": "Posponer",
+    "pt": "Adiar"
+  },
+  "demo.quickCapture": {
+    "en": "Quick capture",
+    "es": "Captura rápida",
+    "pt": "Captura rápida"
+  },
+  "demo.seed.a": {
+    "en": "Review the Lima contract",
+    "es": "Revisar el contrato de Lima",
+    "pt": "Revisar o contrato de Lima"
+  },
+  "demo.seed.b": {
+    "en": "Send the proposal",
+    "es": "Enviar la propuesta",
+    "pt": "Enviar a proposta"
+  },
+  "demo.seed.b1": {
+    "en": "Build the PDF",
+    "es": "Armar el PDF",
+    "pt": "Montar o PDF"
+  },
+  "demo.seed.b2": {
+    "en": "Check the prices",
+    "es": "Revisar los precios",
+    "pt": "Revisar os preços"
+  },
+  "demo.seed.b3": {
+    "en": "Send the email",
+    "es": "Mandar el correo",
+    "pt": "Enviar o e-mail"
+  },
+  "demo.seed.c": {
+    "en": "Prepare Thursday's demo",
+    "es": "Preparar la demo del jueves",
+    "pt": "Preparar a demo de quinta"
+  },
+  "demo.seed.d": {
+    "en": "Tidy the desk",
+    "es": "Ordenar el escritorio",
+    "pt": "Organizar a mesa"
+  },
+  "demo.seed.e": {
+    "en": "Call Marta",
+    "es": "Llamar a Marta",
+    "pt": "Ligar para a Marta"
+  },
+  "demo.seed.f": {
+    "en": "Plan the quarter",
+    "es": "Planear el trimestre",
+    "pt": "Planejar o trimestre"
+  },
+  "demo.seed.g": {
+    "en": "Pay the hosting",
+    "es": "Pagar el hosting",
+    "pt": "Pagar a hospedagem"
+  },
+  "demo.seed.h": {
+    "en": "Write the sprint summary",
+    "es": "Escribir el resumen del sprint",
+    "pt": "Escrever o resumo da sprint"
+  },
+  "demo.note.today": {
+    "en": "Call Marta before 5",
+    "es": "Llamar a Marta antes de las 5",
+    "pt": "Ligar para a Marta antes das 17h"
+  },
+  "demo.note.week": {
+    "en": "Close the Lima contract on Friday",
+    "es": "Cerrar el contrato de Lima el viernes",
+    "pt": "Fechar o contrato de Lima na sexta"
   }
 }
