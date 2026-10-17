@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>DailyZGT</RootNamespace>
+    <AssemblyName>DailyZGT</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\**\*.ttf" />
+    <Resource Include="Assets\**\*.png" />
+    <Resource Include="Assets\**\*.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DailyZGT.Core\DailyZGT.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The pure parts of the app's Platform folder. The app project targets WPF, so the tests compile these files directly. -->
+    <Compile Include="..\..\src\DailyZGT\Platform\Hotkey\HotkeyShortcut.cs" Link="Platform\HotkeyShortcut.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Hotkey\ShortcutFormatter.cs" Link="Platform\ShortcutFormatter.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Startup\IStartupRegistration.cs" Link="Platform\IStartupRegistration.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Tray\TrayBadge.cs" Link="Platform\TrayBadge.cs" />
+  </ItemGroup>
+
+</Project>
