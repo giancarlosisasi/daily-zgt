@@ -265,6 +265,47 @@
   top: var(--dz-nav);
   z-index: 0;
   height: calc(100vh - var(--dz-nav));
+  overflow: clip;
+  pointer-events: none;
+}
+
+/* Back layer: it drifts less than the copy in front, so the section has depth. */
+.dz-wall-rings {
+  position: absolute;
+  left: 66%;
+  top: 46%;
+  width: 1180px;
+  height: 1180px;
+  margin: -590px 0 0 -590px;
+  mask-image: radial-gradient(closest-side, black 45%, transparent 98%);
+  transform: translateY(calc((var(--desk-p, 0.5) - 0.5) * -110px))
+    rotate(calc((var(--desk-p, 0.5) - 0.5) * 30deg));
+}
+
+.dz-wall-ring {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: 1;
+}
+
+.dz-wall-arc {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-opacity: 0.4;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform: rotate(var(--start));
+}
+
+.dz-wall-glow {
+  position: absolute;
+  right: 4%;
+  top: 4%;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-fill) 16%, transparent), transparent);
+  transform: translateY(calc((var(--desk-p, 0.5) - 0.5) * 70px));
 }
 
 .dz-desk-stage {
@@ -287,6 +328,7 @@
   position: relative;
   max-width: 1400px;
   margin: 0 auto;
+  transform: translateY(calc((0.5 - var(--desk-p, 0.5)) * 18px));
 }
 
 .dz-desk .dz-toast {
@@ -305,6 +347,19 @@
   font-size: var(--fs-small);
   line-height: var(--lh-small);
   color: var(--color-text-2);
+}
+
+/* Short laptop screens: shrink the panel so the tallest scene (about 510px with the strip) fits. */
+@media (min-width: 961px) and (max-height: 620px) {
+  .dz-desk .dz-panel-slot {
+    zoom: 0.85;
+  }
+}
+
+@media (min-width: 961px) and (max-height: 540px) {
+  .dz-desk .dz-panel-slot {
+    zoom: 0.7;
+  }
 }
 
 .dz-desk-copy {
@@ -337,12 +392,17 @@
 .dz-desk-steps li {
   display: flex;
   align-items: center;
-  min-height: 62vh;
+  min-height: 44vh;
   margin: 0;
 }
 
 .dz-desk-steps li:last-child {
-  margin-bottom: 26vh;
+  margin-bottom: 24vh;
+}
+
+/* Fallback before the first scroll frame: the active step reads full. */
+.dz-desk-steps li.is-on {
+  --step-p: 1;
 }
 
 .dz-desk-steps button {
@@ -356,16 +416,9 @@
   border-radius: var(--radius-card);
   background: none;
   text-align: left;
-  opacity: 0.4;
-  transform: translateX(-10px);
-  transition:
-    opacity var(--duration-slow) ease,
-    transform var(--duration-slow) var(--ease-out);
-}
-
-.dz-desk-steps li.is-on button {
-  opacity: 1;
-  transform: none;
+  opacity: calc(0.38 + 0.62 * var(--step-p, 0));
+  transform: translateX(calc((1 - var(--step-p, 0)) * -14px)) scale(calc(0.97 + 0.03 * var(--step-p, 0)));
+  transform-origin: left center;
 }
 
 .dz-desk-steps b {
@@ -1494,50 +1547,61 @@
 }
 
 @media (max-width: 960px) {
+  /* Phones: the panel pins under the nav, scaled down, and the steps scroll beneath it. */
   .dz-desk {
     display: flex;
     flex-direction: column;
   }
 
   .dz-desk-wall {
-    position: absolute;
-    inset: 0;
-    height: auto;
-  }
-
-  .dz-desk-stage {
-    position: relative;
-    top: auto;
-    order: 2;
-    height: auto;
-    margin-top: 0;
-    padding-bottom: 48px;
-    pointer-events: auto;
+    display: none;
   }
 
   .dz-desk-copy {
-    order: 1;
-    width: 100%;
-    margin-top: 0;
-    padding-top: 72px;
-    padding-bottom: 28px;
+    display: contents;
   }
 
   .dz-desk-head {
-    padding-top: 0;
+    order: 0;
+    width: 100%;
+    max-width: none;
+    padding: 72px var(--dz-gutter) 28px;
+  }
+
+  .dz-desk-stage {
+    position: sticky;
+    top: var(--dz-nav);
+    order: 1;
+    height: auto;
+    margin-top: 0;
+    padding-bottom: 8px;
+    background: var(--color-ground);
+    border-bottom: 1px solid var(--color-line);
+    pointer-events: auto;
+  }
+
+  .dz-desk-inner {
+    transform: none;
   }
 
   .dz-desk-steps {
+    order: 2;
     display: grid;
-    gap: 12px;
+    gap: 0;
     max-width: none;
-    margin-top: 28px;
+    margin: 0;
+    padding: 0 var(--dz-gutter);
   }
 
   .dz-desk-steps li,
   .dz-desk-steps li:last-child {
-    min-height: 0;
+    align-items: center;
+    min-height: 26vh;
     margin-bottom: 0;
+  }
+
+  .dz-desk-steps li:last-child {
+    margin-bottom: 30vh;
   }
 
   .dz-desk-steps button {
@@ -1548,8 +1612,9 @@
     padding: 10px 12px 14px;
     border-radius: var(--radius-ctl);
     background: var(--color-surface);
-    opacity: 1;
-    transform: none;
+    opacity: calc(0.55 + 0.45 * var(--step-p, 0));
+    transform: scale(calc(0.97 + 0.03 * var(--step-p, 0)));
+    transform-origin: center;
   }
 
   .dz-desk-steps li.is-on button {
@@ -1575,6 +1640,11 @@
 
   .dz-desk-steps li.is-on .dz-step-text {
     display: block;
+  }
+
+  /* The slot keeps one height, so the steps below never shift when a scene changes. */
+  .dz-desk .dz-panel-slot {
+    min-height: 480px;
   }
 
   .dz-desk .dz-toast {
@@ -1671,6 +1741,12 @@
   .dz-panel-slot {
     padding-left: 8px;
     padding-right: 8px;
+  }
+
+  /* zoom shrinks the layout too, so the pinned panel takes less of the screen. */
+  .dz-desk .dz-panel-slot {
+    zoom: 0.74;
+    min-height: 400px;
   }
 
   .dz-desk .dz-panel {
@@ -1780,6 +1856,10 @@
 
   .dz-landing [data-reveal] {
     opacity: 1;
+    transform: none;
+  }
+
+  .dz-desk-steps button {
     transform: none;
   }
 

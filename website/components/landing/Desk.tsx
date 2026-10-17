@@ -1,22 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useDemo } from './DemoContext';
 import { Rich, useT } from './i18n';
 import { useReveal } from './motion';
 import { MenuBarStrip, NotificationCard, Panel } from './Panel';
+import { token, tokenMs } from './tokens';
+import { useDeskScroll } from './useDeskScroll';
 
 const STEPS = ['open', 'ask', 'done', 'back', 'notes'] as const;
+
+const RINGS = [
+  { r: 250, sweep: 44, start: -62 },
+  { r: 450, sweep: 30, start: 196 },
+  { r: 650, sweep: 22, start: 12 },
+] as const;
 
 export function Desk() {
   const { state, dispatch, reduced } = useDemo();
   const t = useT();
   const ref = useReveal<HTMLElement>();
-  const listRef = useRef<HTMLOListElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
   const current = useRef(0);
   const [step, setStep] = useState(0);
 
-  const go = useCallback(
-    (index: number) => {
-      if (current.current === index) return;
+  const select = useCallback(
+    (index: number, force = false) => {
+      if (current.current === index && !force) return;
       current.current = index;
       setStep(index);
       dispatch({ type: 'scene', scene: index });
@@ -24,51 +32,55 @@ export function Desk() {
     [dispatch],
   );
 
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-    const media = window.matchMedia('(min-width: 961px)');
-    let observer: IntersectionObserver | null = null;
-    const setup = () => {
-      observer?.disconnect();
-      observer = null;
-      if (!media.matches) return;
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) go(Number((entry.target as HTMLElement).dataset.step));
-          }
-        },
-        { rootMargin: '-49% 0px -49% 0px', threshold: 0 },
-      );
-      for (const item of Array.from(list.children)) observer.observe(item);
-    };
-    setup();
-    media.addEventListener('change', setup);
-    return () => {
-      observer?.disconnect();
-      media.removeEventListener('change', setup);
-    };
-  }, [go]);
+  const scrollToStep = useDeskScroll(ref, { reduced, current, onStep: select });
 
-  const pick = (index: number, element: HTMLElement) => {
-    current.current = index;
-    setStep(index);
-    dispatch({ type: 'scene', scene: index });
-    if (window.matchMedia('(min-width: 961px)').matches) {
-      element.closest('li')?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+  // The panel keeps its state across scenes, so the change is a short lift instead of a remount.
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
     }
+    if (reduced) return;
+    slotRef.current?.animate(
+      [
+        { opacity: 0.6, transform: 'translateY(8px) scale(0.985)' },
+        { opacity: 1, transform: 'none' },
+      ],
+      { duration: tokenMs('--duration-slow'), easing: token('--ease-out') },
+    );
+  }, [step, reduced]);
+
+  const pick = (index: number) => {
+    select(index, true);
+    scrollToStep(index);
   };
 
   const toast = state.toast > 0;
 
   return (
     <section className="dz-desk" id="panel" ref={ref}>
-      <div className="dz-desk-wall" aria-hidden="true" />
+      <div className="dz-desk-wall" aria-hidden="true">
+        <div className="dz-wall-glow" />
+        <svg className="dz-wall-rings" viewBox="-700 -700 1400 1400">
+          {RINGS.map((ring) => (
+            <g key={ring.r}>
+              <circle className="dz-wall-ring" r={ring.r} />
+              <circle
+                className="dz-wall-arc"
+                r={ring.r}
+                pathLength={360}
+                strokeDasharray={`${ring.sweep} 360`}
+                style={{ '--start': `${ring.start}deg` } as CSSProperties}
+              />
+            </g>
+          ))}
+        </svg>
+      </div>
       <div className="dz-desk-stage">
         <MenuBarStrip />
         <div className="dz-desk-inner">
-          <div className="dz-panel-slot">
+          <div className="dz-panel-slot" ref={slotRef}>
             {state.panelOpen ? <Panel /> : <p className="dz-desk-closed">{t('desk.closed')}</p>}
           </div>
           {toast ? (
@@ -93,13 +105,13 @@ export function Desk() {
           <p className="dz-desk-lead">{t('desk.lead')}</p>
           <p className="dz-desk-note">{t('desk.appLang')}</p>
         </div>
-        <ol className="dz-desk-steps" ref={listRef}>
+        <ol className="dz-desk-steps">
           {STEPS.map((name, index) => (
             <li key={name} data-step={index} className={step === index ? 'is-on' : ''}>
               <button
                 type="button"
                 aria-pressed={step === index}
-                onClick={(event) => pick(index, event.currentTarget)}
+                onClick={() => pick(index)}
               >
                 <b>{index + 1}</b>
                 <span className="dz-step-title">
