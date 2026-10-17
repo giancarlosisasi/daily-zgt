@@ -1,0 +1,60 @@
+<UserControl x:Class="DailyZGT.Priorities.SubtaskList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             xmlns:p="clr-namespace:DailyZGT.Priorities"
+             x:Name="Self"
+             AutomationProperties.AutomationId="Subtasks"
+             Focusable="False">
+    <UserControl.Resources>
+        <ResourceDictionary Source="PriorityStyles.xaml" />
+    </UserControl.Resources>
+    <StackPanel>
+        <ItemsControl ItemsSource="{Binding Items}" Focusable="False">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type p:SubtaskItem}">
+                    <Grid MinHeight="26" Margin="{Binding RowGap, ElementName=Self}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Style="{StaticResource Tecla.SubtaskCheckbox}" VerticalAlignment="Center"
+                                  IsChecked="{Binding IsDone, Mode=OneWay}"
+                                  Command="{Binding Toggle}"
+                                  AutomationProperties.AutomationId="{Binding AutomationId}"
+                                  AutomationProperties.Name="{Binding Title}" />
+                        <TextBox Grid.Column="1" Margin="6,5,0,5" VerticalAlignment="Center"
+                                 Text="{Binding Title, Mode=OneWay}">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource Priorities.SelectableText}">
+                                    <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+                                    <Setter Property="TextBlock.LineHeight" Value="16" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text2}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Dim}" />
+                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBox Style="{StaticResource Tecla.TextBox.Subtask}"
+                 Margin="{Binding FieldGap, ElementName=Self}"
+                 theme:Field.Placeholder="{p:Text SubtaskPlaceholder}"
+                 Text="{Binding Editor.Draft, UpdateSourceTrigger=PropertyChanged}"
+                 AutomationProperties.AutomationId="SubtaskField"
+                 AutomationProperties.Name="{p:Text NewSubtask}">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding Add}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <TextBlock Style="{StaticResource Tecla.Text.Meta}" Margin="0,4,0,0"
+                   Text="{p:Text ListSaveFailed}"
+                   Visibility="{Binding Editor.SaveFailed, Converter={x:Static p:ShownConverter.Instance}}" />
+    </StackPanel>
+</UserControl>

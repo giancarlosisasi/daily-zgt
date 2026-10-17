@@ -1,0 +1,39 @@
+<UserControl x:Class="DailyZGT.Priorities.ConfirmBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             xmlns:p="clr-namespace:DailyZGT.Priorities"
+             x:Name="Self"
+             AutomationProperties.AutomationId="ConfirmBar"
+             Focusable="False"
+             AutomationProperties.Name="{p:Text ConfirmName}">
+    <Border Style="{StaticResource Tecla.ConfirmBar}">
+        <p:ConfirmLayout>
+            <TextBlock Style="{StaticResource Tecla.Text.LabelStrong}"
+                       Foreground="{DynamicResource Brush.Panel.DoneTitle}"
+                       Text="{p:Text ConfirmDoneTitle}"
+                       AutomationProperties.AutomationId="ConfirmTitle" />
+            <TextBlock Style="{StaticResource Tecla.Text.Meta}"
+                       Margin="0,1,0,0"
+                       TextWrapping="Wrap"
+                       Text="{Binding Hint, ElementName=Self}"
+                       Visibility="{Binding Hint, ElementName=Self, Converter={x:Static p:ShownConverter.Instance}}"
+                       AutomationProperties.AutomationId="ConfirmHint" />
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,8,2"
+                        Content="{p:Text Cancel}"
+                        Command="{Binding CancelCommand, ElementName=Self}"
+                        AutomationProperties.AutomationId="ConfirmCancel" />
+                <Button Style="{StaticResource Tecla.KeyButton.Primary}" Margin="0,0,0,2"
+                        Command="{Binding ConfirmCommand, ElementName=Self}"
+                        AutomationProperties.AutomationId="ConfirmDone"
+                        AutomationProperties.Name="{p:Text ConfirmDone}">
+                    <StackPanel Orientation="Horizontal">
+                        <theme:IconView Kind="Check" Size="12" Margin="0,0,5,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{p:Text ConfirmDone}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </p:ConfirmLayout>
+    </Border>
+</UserControl>

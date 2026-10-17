@@ -1,3 +1,268 @@
 <UserControl x:Class="DailyZGT.Priorities.PrioritiesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             xmlns:p="clr-namespace:DailyZGT.Priorities"
+             xmlns:core="clr-namespace:DailyZGT.Core.Domain;assembly=DailyZGT.Core"
+             Focusable="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="PriorityStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="Confirmation" DataType="{x:Type p:OpenRowItem}">
+                <p:ConfirmBar Margin="30,2,4,4"
+                              p:Moves.EnterOnLoad="True"
+                              Hint="{Binding OpenSubtasksHint}"
+                              CancelCommand="{Binding CancelDone}"
+                              ConfirmCommand="{Binding ConfirmDone}" />
+            </DataTemplate>
+
+            <DataTemplate x:Key="RowSubtasks" DataType="{x:Type p:SubtaskListItem}">
+                <p:SubtaskList Margin="50,0,4,6" p:Moves.EnterOnLoad="True" />
+            </DataTemplate>
+
+            <p:WhenSet x:Key="WhenConfirming" Template="{StaticResource Confirmation}" />
+            <p:WhenSet x:Key="WhenExpanded" Template="{StaticResource RowSubtasks}" />
+
+            <DataTemplate x:Key="OpenRow" DataType="{x:Type p:OpenRowItem}">
+                <StackPanel Margin="0,0,0,2"
+                            p:Moves.EnterOnLoad="{Binding IsNew, Mode=OneTime}"
+                            p:Moves.Leaving="{Binding IsLeaving}">
+                    <p:GroupBorder Style="{StaticResource Tecla.Row}"
+                                   theme:RowState.Highlighted="{Binding IsHighlighted}"
+                                   AutomationProperties.AutomationId="{Binding RowId}"
+                                   AutomationProperties.Name="{Binding Title}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="18" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Button Style="{StaticResource Priorities.PlainButton}"
+                                    Width="18" Height="22" Margin="0,7,0,0" VerticalAlignment="Top"
+                                    Command="{Binding ToggleSubtasks}"
+                                    AutomationProperties.AutomationId="{Binding CaretId}"
+                                    AutomationProperties.Name="{p:Text SubtasksLabel}"
+                                    AutomationProperties.ItemStatus="{Binding CaretState}">
+                                <theme:IconView Kind="CaretRight" Size="11"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                Foreground="{DynamicResource Brush.Panel.Dim}"
+                                                p:Moves.Turned="{Binding IsExpanded}" />
+                            </Button>
+                            <CheckBox Grid.Column="1" Style="{StaticResource Tecla.PriorityCheckbox}"
+                                      Margin="8,10,8,0" VerticalAlignment="Top"
+                                      IsChecked="{Binding IsChecked, Mode=OneWay}"
+                                      Command="{Binding ToggleDone}"
+                                      AutomationProperties.AutomationId="{Binding CheckboxId}"
+                                      AutomationProperties.Name="{Binding CheckboxName}" />
+                            <StackPanel Grid.Column="2" Margin="0,5">
+                                <TextBox Style="{StaticResource Priorities.RowTitle}"
+                                         Text="{Binding Title, Mode=OneWay}"
+                                         p:TitleClick.Command="{Binding Open}"
+                                         AutomationProperties.AutomationId="{Binding TitleId}"
+                                         AutomationProperties.Name="{Binding Title}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0" Background="Transparent"
+                                            p:TitleClick.Command="{Binding Open}"
+                                            TextElement.Foreground="{DynamicResource Brush.Panel.Muted}">
+                                    <theme:LevelBars Level="{Binding Level}" VerticalAlignment="Center" />
+                                    <ContentControl Margin="6,0,0,0"
+                                                    Style="{Binding Due.Tone, Converter={x:Static p:ChipStyleConverter.Instance}}"
+                                                    Content="{Binding Due.Label}"
+                                                    Visibility="{Binding Due, Converter={x:Static p:ShownConverter.Instance}}" />
+                                    <ContentControl Margin="6,0,0,0"
+                                                    Style="{StaticResource Tecla.Chip.Later}"
+                                                    Content="{Binding Since.Label}"
+                                                    Visibility="{Binding Since, Converter={x:Static p:ShownConverter.Instance}}" />
+                                    <TextBlock Style="{StaticResource Tecla.Text.Meta}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                               Text="{Binding Ratio}"
+                                               Visibility="{Binding Ratio, Converter={x:Static p:ShownConverter.Instance}}" />
+                                    <theme:IconView Kind="Note" Size="11" Margin="6,0,0,0" VerticalAlignment="Center"
+                                                    Foreground="{DynamicResource Brush.Panel.Muted}"
+                                                    AutomationProperties.Name="{p:Text HasNote}"
+                                                    Visibility="{Binding HasNote, Converter={x:Static p:ShownConverter.Instance}}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Grid.Column="3" Style="{StaticResource Tecla.IconButton.Remove}"
+                                    Margin="8,7,0,0" VerticalAlignment="Top"
+                                    Command="{Binding Delete}"
+                                    AutomationProperties.AutomationId="{Binding DeleteId}"
+                                    AutomationProperties.Name="{p:Text RemoveRow}">
+                                <theme:IconView Kind="Trash" Size="12" />
+                            </Button>
+                        </Grid>
+                    </p:GroupBorder>
+                    <ContentControl Focusable="False" Content="{Binding Confirmation}" ContentTemplateSelector="{StaticResource WhenConfirming}" />
+                    <ContentControl Focusable="False" Content="{Binding ExpandedSubtasks}" ContentTemplateSelector="{StaticResource WhenExpanded}" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel x:Name="Root">
+        <ScrollViewer x:Name="OpenScroll" MaxHeight="330" VerticalScrollBarVisibility="Auto" Focusable="False"
+                      Visibility="{Binding HasRows, Converter={x:Static p:ShownConverter.Instance}}">
+            <ItemsControl x:Name="OpenList" ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource OpenRow}" Focusable="False" />
+        </ScrollViewer>
+
+        <p:GroupBorder AutomationProperties.AutomationId="EmptyState"
+                       Visibility="{Binding HasRows, Converter={x:Static p:ShownConverter.Inverted}}">
+            <Grid>
+                <StackPanel x:Name="AllDone" Margin="8,18,8,14" HorizontalAlignment="Center"
+                            Visibility="{Binding IsAllDone, Converter={x:Static p:ShownConverter.Instance}}">
+                    <Grid Width="36" Height="36" HorizontalAlignment="Center">
+                        <Ellipse Width="30" Height="30" StrokeThickness="2.4" Opacity="0.38"
+                                 Stroke="{DynamicResource Brush.Panel.Done}" />
+                        <Path x:Name="AllDoneCheck" Data="M10.5,18.75 L15.3,23.55 L25.5,13.5"
+                              Stroke="{DynamicResource Brush.Panel.Done}" StrokeThickness="2.4"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              StrokeDashArray="9 9" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Tecla.Text.BodyStrong}" Margin="0,8,0,0" HorizontalAlignment="Center"
+                               Text="{p:Text EmptyAllDone}" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource Tecla.Text.Body}" Foreground="{DynamicResource Brush.Panel.Muted}"
+                           Margin="8,14"
+                           Text="{p:Text EmptyNothingPending}"
+                           Visibility="{Binding IsNothingPending, Converter={x:Static p:ShownConverter.Instance}}" />
+            </Grid>
+        </p:GroupBorder>
+
+        <Button Style="{StaticResource Tecla.NewPriorityButton}" Margin="0,8,0,0"
+                Command="{Binding OpenForm}"
+                Visibility="{Binding Form.IsOpen, Converter={x:Static p:ShownConverter.Inverted}}"
+                AutomationProperties.AutomationId="NewPriorityButton"
+                AutomationProperties.Name="{p:Text NewPriority}">
+            <StackPanel Orientation="Horizontal">
+                <theme:IconView Kind="Plus" Size="13" Margin="0,0,8,0" VerticalAlignment="Center" />
+                <TextBlock Text="{p:Text NewPriority}" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <Border x:Name="FormCard" Style="{StaticResource Tecla.Card}" Margin="0,8,0,0" KeyDown="OnFormKey"
+                Visibility="{Binding Form.IsOpen, Converter={x:Static p:ShownConverter.Instance}}">
+            <StackPanel>
+                <TextBox x:Name="FormTitle" Style="{StaticResource Tecla.TextBox}"
+                         theme:Field.Placeholder="{p:Text TitlePlaceholder}"
+                         Text="{Binding Form.Title, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.AutomationId="NewPriorityTitle"
+                         AutomationProperties.Name="{p:Text LabelPriority}" />
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="72" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Tecla.Text.Meta}" Text="{p:Text LabelPriority}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Border Grid.Column="1" Style="{StaticResource Tecla.SegmentTrack.Form}">
+                        <UniformGrid Columns="3">
+                            <RadioButton Style="{StaticResource Tecla.SegmentButton.Form}" Margin="0,0,2,0"
+                                         IsChecked="{Binding Form.Level, Converter={x:Static p:IsValueConverter.Instance}, ConverterParameter={x:Static core:PriorityLevel.High}}"
+                                         AutomationProperties.AutomationId="LevelHigh"
+                                         AutomationProperties.Name="{p:Text LevelHighName}">
+                                <StackPanel Orientation="Horizontal">
+                                    <theme:LevelBars Level="High" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="{p:Text LevelHigh}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource Tecla.SegmentButton.Form}" Margin="0,0,2,0"
+                                         IsChecked="{Binding Form.Level, Converter={x:Static p:IsValueConverter.Instance}, ConverterParameter={x:Static core:PriorityLevel.Medium}}"
+                                         AutomationProperties.AutomationId="LevelMedium"
+                                         AutomationProperties.Name="{p:Text LevelMediumName}">
+                                <StackPanel Orientation="Horizontal">
+                                    <theme:LevelBars Level="Medium" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="{p:Text LevelMedium}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource Tecla.SegmentButton.Form}"
+                                         IsChecked="{Binding Form.Level, Converter={x:Static p:IsValueConverter.Instance}, ConverterParameter={x:Static core:PriorityLevel.Low}}"
+                                         AutomationProperties.AutomationId="LevelLow"
+                                         AutomationProperties.Name="{p:Text LevelLowName}">
+                                <StackPanel Orientation="Horizontal">
+                                    <theme:LevelBars Level="Low" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="{p:Text LevelLow}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </RadioButton>
+                        </UniformGrid>
+                    </Border>
+                </Grid>
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="72" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Tecla.Text.Meta}" Text="{p:Text LabelDue}" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" Margin="0,0,8,0" />
+                    <p:DueField x:Name="FormDue" Grid.Column="1"
+                                Value="{Binding Form.DueAt, Mode=OneWay}"
+                                Clock="{Binding Panel.Clock}" />
+                </Grid>
+                <p:AlertHint Margin="0,8,0,0" HasDue="True" Text="{p:Text DueNote}"
+                             FontSize="{DynamicResource FontSize.PanelMeta}"
+                             Foreground="{DynamicResource Brush.Panel.Muted}"
+                             Visibility="{Binding Form.ShowsDueNote, Converter={x:Static p:ShownConverter.Instance}}" />
+                <TextBlock Style="{StaticResource Priorities.Notice}" Margin="0,8,0,0"
+                           Text="{p:Text TodayLimitMessage}"
+                           Visibility="{Binding Form.ShowsLimitNotice, Converter={x:Static p:ShownConverter.Instance}}"
+                           AutomationProperties.AutomationId="LimitNotice" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,2">
+                    <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,6,0"
+                            Content="{p:Text Cancel}"
+                            Command="{Binding CancelForm}"
+                            AutomationProperties.AutomationId="CancelButton" />
+                    <Button Style="{StaticResource Tecla.KeyButton.Primary}" Padding="12,0"
+                            Content="{p:Text Add}"
+                            Command="{Binding SubmitForm}"
+                            AutomationProperties.AutomationId="AddButton" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Margin="0,8,0,0" Visibility="{Binding ShowsDone, Converter={x:Static p:ShownConverter.Instance}}">
+            <Border Style="{StaticResource Tecla.Divider}" />
+            <Button Style="{StaticResource Tecla.GhostButton}" Height="28" Padding="8,0" Margin="0,6,0,2"
+                    HorizontalContentAlignment="Left"
+                    Foreground="{DynamicResource Brush.Panel.Muted}"
+                    Command="{Binding ToggleDoneSection}"
+                    AutomationProperties.AutomationId="DoneHeader"
+                    AutomationProperties.Name="{Binding DoneHeader}"
+                    AutomationProperties.ItemStatus="{Binding DoneState}">
+                <StackPanel Orientation="Horizontal">
+                    <theme:IconView Kind="CaretRight" Size="10" Margin="0,0,6,0" VerticalAlignment="Center"
+                                    p:Moves.Turned="{Binding IsDoneOpen}" />
+                    <TextBlock Text="{Binding DoneHeader}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <StackPanel x:Name="DoneRowsPanel"
+                        Visibility="{Binding IsDoneOpen, Converter={x:Static p:ShownConverter.Instance}}">
+                <ItemsControl ItemsSource="{Binding DoneRows}" ItemTemplate="{StaticResource Priorities.DoneRow}" Focusable="False" />
+                <Button Style="{StaticResource Tecla.GhostButton}" Height="28" Padding="30,0,8,0"
+                        HorizontalContentAlignment="Stretch"
+                        Command="{Binding OpenHistory}"
+                        Visibility="{Binding ShowsHistoryRow, Converter={x:Static p:ShownConverter.Instance}}"
+                        AutomationProperties.AutomationId="HistoryRow"
+                        AutomationProperties.Name="{p:Text HistoryTitle}"
+                        AutomationProperties.ItemStatus="{Binding HistoryCount}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Tecla.Text.Label}" Text="{p:Text HistoryTitle}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource Tecla.Text.Dim}" Text="{Binding HistoryCount}"
+                                   Margin="8,0" VerticalAlignment="Center" />
+                        <theme:IconView Grid.Column="2" Kind="CaretRight" Size="10" VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.Panel.Dim}" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Style="{StaticResource Tecla.Text.Meta}" Margin="0,8,0,0"
+                   Text="{p:Text ListSaveFailed}"
+                   Visibility="{Binding Flow.SaveFailed, Converter={x:Static p:ShownConverter.Instance}}"
+                   AutomationProperties.AutomationId="ListSaveFailed" />
+    </StackPanel>
+</UserControl>
