@@ -103,7 +103,7 @@ export function Desk() {
           <p className="dz-eyebrow">{t('desk.eyebrow')}</p>
           <h2>{t('desk.title')}</h2>
           <p className="dz-desk-lead">{t('desk.lead')}</p>
-          <p className="dz-desk-note">{t('desk.appLang')}</p>
+          <p className="dz-desk-note">{t('desk.platform')}</p>
         </div>
         <ol className="dz-desk-steps">
           {STEPS.map((name, index) => (

@@ -12,21 +12,21 @@ export default defineConfig({
       label: 'English',
       title: 'Daily ZGT',
       description:
-        'A macOS menu bar app for the priorities and notes of the day and the week.',
+        'A native, open source app for Windows (system tray) and macOS (menu bar) for the priorities and notes of the day and the week. Your data stays on your computer.',
     },
     {
       lang: 'es',
       label: 'Español',
       title: 'Daily ZGT',
       description:
-        'Una app de barra de menús de macOS para las prioridades y las notas del día y de la semana.',
+        'Una app nativa y de código abierto para Windows (bandeja del sistema) y macOS (barra de menús) para las prioridades y las notas del día y de la semana. Tus datos se quedan en tu computadora.',
     },
     {
       lang: 'pt',
       label: 'Português',
       title: 'Daily ZGT',
       description:
-        'Um app de barra de menus do macOS para as prioridades e as notas do dia e da semana.',
+        'Um app nativo e de código aberto para Windows (bandeja do sistema) e macOS (barra de menus) para as prioridades e as notas do dia e da semana. Seus dados ficam no seu computador.',
     },
   ],
   icon: '/favicon.svg',
@@ -50,5 +50,6 @@ export default defineConfig({
   globalStyles: path.join(import.meta.dirname, 'styles/global.css'),
   themeConfig: {
     darkMode: 'force-dark',
+    socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/giancarlosisasi/daily-zgt' }],
   },
 });

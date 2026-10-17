@@ -134,7 +134,10 @@ export function Bento() {
           </div>
         </Tile>
         <Tile area="file" tone="plain" value={1} label={t('bento.file')} index={5}>
-          <code className="dz-path">~/Library/Application Support/DailyZGT/daily-zgt.sqlite</code>
+          <div className="dz-paths">
+            <code className="dz-path">%LOCALAPPDATA%\DailyZGT\daily-zgt.sqlite</code>
+            <code className="dz-path">~/Library/Application Support/DailyZGT/daily-zgt.sqlite</code>
+          </div>
         </Tile>
         <Tile area="snooze" tone="orange" value={15} unit="min" label={t('bento.snooze')} index={6}>
           <span className="dz-fake-action" aria-hidden="true">

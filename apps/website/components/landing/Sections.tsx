@@ -5,6 +5,7 @@ import { useDemo } from './DemoContext';
 import { Desk } from './Desk';
 import { CheckIcon, TargetIcon } from './icons';
 import { Rich, useDemoLang, useGuideHref, useT } from './i18n';
+import { LATEST_RELEASE, REPO } from './links';
 import { useInView, useReveal } from './motion';
 import { DueChip, LevelBars, NotificationCard } from './Panel';
 import { NOW, dueLabel, type Level } from './model';
@@ -434,13 +435,22 @@ function SqliteSection() {
             <Rich text={t('sqlite.p1')} />
           </p>
           <p>{t('sqlite.p2')}</p>
+          <p>
+            <Rich text={t('sqlite.p3')} />
+          </p>
         </div>
       </div>
     </Block>
   );
 }
 
-const KEYS = ['⌃', '⌥', '⌘', 'P'];
+const SHORTCUTS = [
+  { platform: 'Windows', label: 'shortcut.keys.win', keys: ['Ctrl', 'Alt', 'Shift', 'P'] },
+  { platform: 'macOS', label: 'shortcut.keys.mac', keys: ['⌃', '⌥', '⌘', 'P'] },
+];
+
+const isShortcut = (event: KeyboardEvent) =>
+  event.code === 'KeyP' && event.ctrlKey && event.altKey && (event.metaKey || event.shiftKey);
 
 function ShortcutSection() {
   const { state, dispatch } = useDemo();
@@ -461,7 +471,7 @@ function ShortcutSection() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.altKey && event.metaKey && event.code === 'KeyP') {
+      if (isShortcut(event)) {
         event.preventDefault();
         byUser.current = true;
         setPressed((current) => current + 1);
@@ -493,11 +503,22 @@ function ShortcutSection() {
         {t('shortcut.eyebrow')}
       </p>
       <h2 data-reveal>{t('shortcut.title')}</h2>
-      <div className="dz-keys" aria-label={t('shortcut.keys')} data-reveal>
-        {KEYS.map((key, index) => (
-          <kbd key={`${key}-${pressed}`} style={{ '--i': index } as CSSProperties}>
-            {key}
-          </kbd>
+      <div className="dz-keysets">
+        {SHORTCUTS.map((shortcut) => (
+          <div key={shortcut.platform} className="dz-keyset">
+            <span className="dz-keyset-label">{shortcut.platform}</span>
+            <div className="dz-keys" aria-label={t(shortcut.label)} data-reveal>
+              {shortcut.keys.map((key, index) => (
+                <kbd
+                  key={`${key}-${pressed}`}
+                  className={key.length > 1 ? 'dz-key-word' : undefined}
+                  style={{ '--i': index } as CSSProperties}
+                >
+                  {key}
+                </kbd>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
       <div className="dz-capture-slot" data-reveal>
@@ -547,20 +568,27 @@ function ShortcutSection() {
 
 function LocalSection() {
   const t = useT();
+  const href = useGuideHref();
   return (
     <Block className="dz-split dz-split--flip dz-local-section">
       <div className="dz-split-copy" data-reveal>
         <p className="dz-eyebrow">{t('local.eyebrow')}</p>
         <h2>{t('local.title')}</h2>
         <p>{t('local.p1')}</p>
-        <p>
-          <Rich text={t('local.p2')} />
-        </p>
+        <p>{t('local.p2')}</p>
         <p>{t('local.p3')}</p>
+        <div className="dz-actions">
+          <Link className="dz-button dz-button--ghost dz-button--small" href={href('/guide/help/privacy')}>
+            {t('local.privacy')}
+          </Link>
+          <a className="dz-button dz-button--ghost dz-button--small" href={REPO}>
+            {t('local.repo')}
+          </a>
+        </div>
       </div>
       <div className="dz-split-demo dz-local" data-reveal>
         <div className="dz-local-mac">
-          <span className="dz-local-label">{t('local.mac')}</span>
+          <span className="dz-local-label">{t('local.device')}</span>
           <div className="dz-local-flow">
             <div className="dz-local-box">
               <TargetIcon size={20} />
@@ -573,7 +601,7 @@ function LocalSection() {
             <div className="dz-local-box dz-local-box--file">
               <CheckIcon size={16} className="dz-done-check" />
               <b>daily-zgt.sqlite</b>
-              <span>Application Support</span>
+              <span>{t('local.fileKind')}</span>
             </div>
           </div>
         </div>
@@ -587,14 +615,8 @@ function LocalSection() {
             <span>{t('local.none')}</span>
           </div>
           <div>
-            <s>{t('local.store')}</s>
+            <s>{t('local.telemetry')}</s>
             <span>{t('local.none')}</span>
-          </div>
-        </div>
-        <div className="dz-local-api">
-          <div className="dz-claude">
-            <b>{t('local.api')}</b>
-            <span>{t('local.apiNote')}</span>
           </div>
         </div>
       </div>
@@ -636,27 +658,44 @@ function CopyCommand({ label, code, index }: { label: string; code: string; inde
   );
 }
 
-function BuildSection() {
+function DownloadSection() {
   const t = useT();
   const href = useGuideHref();
   return (
-    <Block className="dz-build" id="build">
+    <Block className="dz-build" id="download">
       <div className="dz-section-head dz-section-head--center" data-reveal>
         <p className="dz-eyebrow">{t('build.eyebrow')}</p>
         <h2>{t('build.title')}</h2>
         <p>{t('build.lead')}</p>
       </div>
-      <div className="dz-commands">
-        {COMMANDS.map((command, index) => (
-          <CopyCommand key={command.label} {...command} index={index} />
-        ))}
+      <div className="dz-platform" data-reveal>
+        <h3>Windows</h3>
+        <p className="dz-platform-req">{t('build.win.req')}</p>
+        <p>{t('build.win.p1')}</p>
+        <p>
+          <Rich text={t('build.win.smartscreen')} />
+        </p>
+        <p>{t('build.win.lang')}</p>
+        <div className="dz-actions">
+          <a className="dz-button dz-button--accent" href={LATEST_RELEASE}>
+            {t('hero.download')}
+          </a>
+        </div>
+      </div>
+      <div className="dz-platform" id="build" data-reveal>
+        <h3>macOS</h3>
+        <p className="dz-platform-req">{t('build.mac.req')}</p>
+        <p>{t('build.mac.p1')}</p>
+        <div className="dz-commands">
+          {COMMANDS.map((command, index) => (
+            <CopyCommand key={command.label} {...command} index={index} />
+          ))}
+        </div>
+        <p>{t('build.mac.lang')}</p>
       </div>
       <div className="dz-actions dz-actions--center" data-reveal>
-        <Link className="dz-button dz-button--primary" href={href('/guide/getting-started/build-and-run')}>
+        <Link className="dz-button dz-button--primary" href={href('/guide/getting-started/download')}>
           {t('build.guide')}
-        </Link>
-        <Link className="dz-button dz-button--ghost" href={href('/guide/claude/api-key')}>
-          {t('build.claude')}
         </Link>
       </div>
       <div className="dz-lockup" data-reveal>
@@ -686,7 +725,7 @@ export function Sections() {
       <SqliteSection />
       <ShortcutSection />
       <LocalSection />
-      <BuildSection />
+      <DownloadSection />
     </>
   );
 }

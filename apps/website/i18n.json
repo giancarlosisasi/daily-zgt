@@ -1,28 +1,38 @@
 {
   "hero.eyebrow": {
-    "en": "macOS 14 or later",
-    "es": "macOS 14 o superior",
-    "pt": "macOS 14 ou superior"
+    "en": "Windows and macOS",
+    "es": "Windows y macOS",
+    "pt": "Windows e macOS"
   },
   "hero.title": {
-    "en": "Priorities and notes in the macOS menu bar.",
-    "es": "Prioridades y notas en la barra de menús de macOS.",
-    "pt": "Prioridades e notas na barra de menus do macOS."
+    "en": "Priorities and notes in the system tray or the menu bar.",
+    "es": "Prioridades y notas en la bandeja del sistema o la barra de menús.",
+    "pt": "Prioridades e notas na bandeja do sistema ou na barra de menus."
   },
   "hero.lead": {
-    "en": "One list for today and one for the week. Only the checkbox marks a priority done, and it asks first.",
-    "es": "Una lista para hoy y otra para la semana. Solo la casilla marca una prioridad como hecha, y antes pide confirmación.",
-    "pt": "Uma lista para hoje e outra para a semana. Só a caixa de seleção marca uma prioridade como concluída, e antes ela pede confirmação."
+    "en": "A native app for Windows and macOS. One list for today and one for the week. Only the checkbox marks a priority done, and it asks first.",
+    "es": "Una app nativa para Windows y macOS. Una lista para hoy y otra para la semana. Solo la casilla marca una prioridad como hecha, y antes pide confirmación.",
+    "pt": "Um app nativo para Windows e macOS. Uma lista para hoje e outra para a semana. Só a caixa de seleção marca uma prioridade como concluída, e antes ela pede confirmação."
   },
   "hero.guide": {
     "en": "Read the Guide",
     "es": "Lee la guía",
     "pt": "Leia o guia"
   },
+  "hero.download": {
+    "en": "Download for Windows",
+    "es": "Descargar para Windows",
+    "pt": "Baixar para Windows"
+  },
   "hero.build": {
-    "en": "See the build commands",
-    "es": "Ver los comandos de compilación",
-    "pt": "Ver os comandos de compilação"
+    "en": "Build on macOS",
+    "es": "Compilar en macOS",
+    "pt": "Compilar no macOS"
+  },
+  "hero.fact.license": {
+    "en": "Open source, MIT License",
+    "es": "Código abierto, licencia MIT",
+    "pt": "Código aberto, licença MIT"
   },
   "hero.fact.dark": {
     "en": "Dark mode only",
@@ -30,6 +40,11 @@
     "pt": "Só modo escuro"
   },
   "hero.fact.local": {
+    "en": "Data stays on your computer",
+    "es": "Los datos se quedan en tu computadora",
+    "pt": "Os dados ficam no seu computador"
+  },
+  "hero.fact.account": {
     "en": "No account, no server",
     "es": "Sin cuenta, sin servidor",
     "pt": "Sem conta, sem servidor"
@@ -135,9 +150,9 @@
     "pt": "Final"
   },
   "reel.cap.tag": {
-    "en": "A macOS menu bar app",
-    "es": "App de barra de menús",
-    "pt": "App de barra de menus"
+    "en": "A tray and menu bar app",
+    "es": "App de bandeja y barra de menús",
+    "pt": "App de bandeja e barra de menus"
   },
   "reel.cap.ask": {
     "en": "The checkbox asks first.",
@@ -210,9 +225,9 @@
     "pt": "arquivo SQLite"
   },
   "reel.credit": {
-    "en": "macOS 14 or later",
-    "es": "macOS 14 o superior",
-    "pt": "macOS 14 ou superior"
+    "en": "Windows 10 or later, macOS 14 or later",
+    "es": "Windows 10 o superior, macOS 14 o superior",
+    "pt": "Windows 10 ou superior, macOS 14 ou superior"
   },
   "desk.eyebrow": {
     "en": "The panel",
@@ -229,10 +244,15 @@
     "es": "Este panel funciona. Cada paso cambia su estado.",
     "pt": "Este painel funciona. Cada passo muda o estado dele."
   },
+  "desk.platform": {
+    "en": "This demo shows the macOS menu bar. On Windows, the icon is in the system tray and shows the count as a badge.",
+    "es": "Esta demo muestra la barra de menús de macOS. En Windows, el icono está en la bandeja del sistema y muestra la cantidad en una insignia.",
+    "pt": "Esta demonstração mostra a barra de menus do macOS. No Windows, o ícone fica na bandeja do sistema e mostra a quantidade em um selo."
+  },
   "desk.closed": {
-    "en": "The panel is closed. Click the icon in the menu bar.",
-    "es": "El panel está cerrado. Haz clic en el icono de la barra de menús.",
-    "pt": "O painel está fechado. Clique no ícone da barra de menus."
+    "en": "The panel is closed. Click the Daily ZGT icon.",
+    "es": "El panel está cerrado. Haz clic en el icono de Daily ZGT.",
+    "pt": "O painel está fechado. Clique no ícone do Daily ZGT."
   },
   "desk.open.title": {
     "en": "Click the icon.",
@@ -240,9 +260,9 @@
     "pt": "Clique no ícone."
   },
   "desk.open.text": {
-    "en": "The panel opens under the icon. The number is the count of open priorities for today. The text next to it is the title of the next one.",
-    "es": "El panel se abre debajo del icono. El número es la cantidad de prioridades abiertas de hoy. El texto a su lado es el título de la siguiente.",
-    "pt": "O painel abre embaixo do ícone. O número é a quantidade de prioridades abertas de hoje. O texto ao lado é o título da próxima."
+    "en": "The panel opens next to the icon. The number is the count of open priorities for today. The text next to it is the title of the next one.",
+    "es": "El panel se abre junto al icono. El número es la cantidad de prioridades abiertas de hoy. El texto a su lado es el título de la siguiente.",
+    "pt": "O painel abre junto ao ícone. O número é a quantidade de prioridades abertas de hoje. O texto ao lado é o título da próxima."
   },
   "desk.ask.title": {
     "en": "Click the checkbox.",
@@ -295,9 +315,9 @@
     "pt": "Cada número vem do código-fonte."
   },
   "bento.lead": {
-    "en": "The database schema, the Tecla tokens and the alert code give these values. The database also has the table `grdb_migrations`, which GRDB keeps.",
-    "es": "El esquema de la base de datos, los tokens de Tecla y el código de las alertas dan estos valores. La base de datos también tiene la tabla `grdb_migrations`, que mantiene GRDB.",
-    "pt": "O esquema do banco de dados, os tokens do Tecla e o código dos alertas dão estes valores. O banco também tem a tabela `grdb_migrations`, que o GRDB mantém."
+    "en": "The database schema, the Tecla tokens and the alert code give these values. Both apps use the same schema.",
+    "es": "El esquema de la base de datos, los tokens de Tecla y el código de las alertas dan estos valores. Las dos apps usan el mismo esquema.",
+    "pt": "O esquema do banco de dados, os tokens do Tecla e o código dos alertas dão estes valores. Os dois apps usam o mesmo esquema."
   },
   "bento.tables": {
     "en": "tables for your data",
@@ -345,9 +365,9 @@
     "pt": "contas"
   },
   "bento.accountsNote": {
-    "en": "No account and no server in v1.",
-    "es": "Sin cuenta y sin servidor en v1.",
-    "pt": "Sem conta e sem servidor na v1."
+    "en": "No account and no server. The app does not use the network.",
+    "es": "Sin cuenta y sin servidor. La app no usa la red.",
+    "pt": "Sem conta e sem servidor. O app não usa a rede."
   },
   "due.eyebrow": {
     "en": "Due chip",
@@ -440,9 +460,9 @@
     "pt": "No prazo"
   },
   "alerts.clock": {
-    "en": "Mac clock {time}. The chip reads {chip}.",
-    "es": "Reloj del Mac {time}. El chip dice {chip}.",
-    "pt": "Relógio do Mac {time}. O chip diz {chip}."
+    "en": "Computer clock {time}. The chip reads {chip}.",
+    "es": "Reloj de la computadora {time}. El chip dice {chip}.",
+    "pt": "Relógio do computador {time}. O chip diz {chip}."
   },
   "alerts.none": {
     "en": "No alert yet.",
@@ -504,6 +524,11 @@
     "es": "Las filas del segundo comando vienen del panel de esta página. Marca ahí una prioridad como hecha y lee las filas otra vez.",
     "pt": "As linhas do segundo comando vêm do painel ao vivo desta página. Marque ali uma prioridade como concluída e leia as linhas de novo."
   },
+  "sqlite.p3": {
+    "en": "The commands use the macOS path. On Windows, the file is `%LOCALAPPDATA%\\DailyZGT\\daily-zgt.sqlite`.",
+    "es": "Los comandos usan la ruta de macOS. En Windows, el archivo es `%LOCALAPPDATA%\\DailyZGT\\daily-zgt.sqlite`.",
+    "pt": "Os comandos usam o caminho do macOS. No Windows, o arquivo é `%LOCALAPPDATA%\\DailyZGT\\daily-zgt.sqlite`."
+  },
   "shortcut.eyebrow": {
     "en": "Global shortcut",
     "es": "Atajo global",
@@ -515,9 +540,9 @@
     "pt": "Adicione uma prioridade de qualquer app."
   },
   "shortcut.p1": {
-    "en": "Press `⌃⌥⌘P`. A small window opens with one title field.",
-    "es": "Pulsa `⌃⌥⌘P`. Se abre una ventana pequeña con un campo de título.",
-    "pt": "Pressione `⌃⌥⌘P`. Uma janela pequena abre com um campo de título."
+    "en": "Press `Ctrl+Alt+Shift+P` on Windows or `⌃⌥⌘P` on macOS. A small window opens with one title field.",
+    "es": "Pulsa `Ctrl+Alt+Shift+P` en Windows o `⌃⌥⌘P` en macOS. Se abre una ventana pequeña con un campo de título.",
+    "pt": "Pressione `Ctrl+Alt+Shift+P` no Windows ou `⌃⌥⌘P` no macOS. Uma janela pequena abre com um campo de título."
   },
   "shortcut.p2": {
     "en": "Press Enter to add the priority to Today with the level Medium. Press Escape to close.",
@@ -529,15 +554,20 @@
     "es": "El ajuste `Atajo global` cambia el atajo o lo borra.",
     "pt": "O ajuste `Atalho global` muda o atalho ou o apaga."
   },
-  "shortcut.keys": {
+  "shortcut.keys.win": {
+    "en": "Ctrl, Alt, Shift and P",
+    "es": "Ctrl, Alt, Shift y P",
+    "pt": "Ctrl, Alt, Shift e P"
+  },
+  "shortcut.keys.mac": {
     "en": "Control, Option, Command and P",
     "es": "Control, Opción, Comando y P",
     "pt": "Control, Option, Command e P"
   },
   "shortcut.button": {
-    "en": "Press ⌃⌥⌘P, or click here",
-    "es": "Pulsa ⌃⌥⌘P, o haz clic aquí",
-    "pt": "Pressione ⌃⌥⌘P, ou clique aqui"
+    "en": "Press the shortcut, or click here",
+    "es": "Pulsa el atajo, o haz clic aquí",
+    "pt": "Pressione o atalho, ou clique aqui"
   },
   "shortcut.hint": {
     "en": "Enter adds. Escape closes.",
@@ -560,34 +590,49 @@
     "pt": "Dados e rede"
   },
   "local.title": {
-    "en": "v1 keeps all data on your Mac.",
-    "es": "v1 guarda todos los datos en tu Mac.",
-    "pt": "A v1 guarda todos os dados no seu Mac."
+    "en": "All data stays on your computer.",
+    "es": "Todos los datos se quedan en tu computadora.",
+    "pt": "Todos os dados ficam no seu computador."
   },
   "local.p1": {
-    "en": "v1 keeps all data in one SQLite file on the Mac, with no account and no server.",
-    "es": "v1 guarda todos los datos en un archivo SQLite del Mac, sin cuenta y sin servidor.",
-    "pt": "A v1 guarda todos os dados em um arquivo SQLite no Mac, sem conta e sem servidor."
+    "en": "The app keeps all data in one SQLite file on your computer. There is no account, no server and no telemetry.",
+    "es": "La app guarda todos los datos en un archivo SQLite de tu computadora. No hay cuenta, ni servidor, ni telemetría.",
+    "pt": "O app guarda todos os dados em um arquivo SQLite no seu computador. Não há conta, servidor nem telemetria."
   },
   "local.p2": {
-    "en": "The planned Claude review sends a read-only export of the priorities to the Anthropic API. It does this only when you click `Review with Claude`.",
-    "es": "La revisión con Claude, planeada para v2, envía una exportación de solo lectura de las prioridades a la API de Anthropic. Solo lo hace cuando haces clic en `Revisar con Claude`.",
-    "pt": "A revisão com Claude, planejada para a v2, envia uma exportação somente leitura das prioridades para a API da Anthropic. Ela só faz isso quando você clica em `Revisar com Claude`."
+    "en": "The app does not use the network. No data goes to a third party.",
+    "es": "La app no usa la red. Ningún dato va a terceros.",
+    "pt": "O app não usa a rede. Nenhum dado vai para terceiros."
   },
   "local.p3": {
-    "en": "You build the app from the source folder. There is no App Store build and no download.",
-    "es": "Tú compilas la app desde la carpeta del código fuente. No hay versión de App Store ni descarga.",
-    "pt": "Você compila o app a partir da pasta do código-fonte. Não há versão da App Store nem download."
+    "en": "The code is open source under the MIT License. Anyone can read it, build it and change it.",
+    "es": "El código es abierto, con la licencia MIT. Cualquier persona puede leerlo, compilarlo y cambiarlo.",
+    "pt": "O código é aberto, sob a licença MIT. Qualquer pessoa pode ler, compilar e alterar o código."
   },
-  "local.mac": {
-    "en": "Your Mac",
-    "es": "Tu Mac",
-    "pt": "Seu Mac"
+  "local.privacy": {
+    "en": "Read about privacy",
+    "es": "Lee sobre la privacidad",
+    "pt": "Leia sobre a privacidade"
+  },
+  "local.repo": {
+    "en": "Source code on GitHub",
+    "es": "Código fuente en GitHub",
+    "pt": "Código-fonte no GitHub"
+  },
+  "local.device": {
+    "en": "Your computer",
+    "es": "Tu computadora",
+    "pt": "Seu computador"
   },
   "local.appKind": {
-    "en": "menu bar app",
-    "es": "app de barra de menús",
-    "pt": "app de barra de menus"
+    "en": "tray or menu bar app",
+    "es": "app de bandeja o barra de menús",
+    "pt": "app de bandeja ou barra de menus"
+  },
+  "local.fileKind": {
+    "en": "one local file",
+    "es": "un archivo local",
+    "pt": "um arquivo local"
   },
   "local.account": {
     "en": "Account",
@@ -599,40 +644,65 @@
     "es": "Servidor",
     "pt": "Servidor"
   },
-  "local.store": {
-    "en": "App Store build",
-    "es": "Versión de App Store",
-    "pt": "Versão da App Store"
+  "local.telemetry": {
+    "en": "Telemetry",
+    "es": "Telemetría",
+    "pt": "Telemetria"
   },
   "local.none": {
     "en": "none",
     "es": "no hay",
     "pt": "não há"
   },
-  "local.api": {
-    "en": "Anthropic API",
-    "es": "API de Anthropic",
-    "pt": "API da Anthropic"
-  },
-  "local.apiNote": {
-    "en": "v2, only on a click",
-    "es": "v2, solo con un clic",
-    "pt": "v2, só com um clique"
-  },
   "build.eyebrow": {
-    "en": "Build it",
-    "es": "Compílala",
-    "pt": "Compile"
+    "en": "Download",
+    "es": "Descarga",
+    "pt": "Download"
   },
   "build.title": {
-    "en": "Three commands clone, install and start the app.",
-    "es": "Tres comandos clonan, instalan e inician la app.",
-    "pt": "Três comandos clonam, instalam e iniciam o app."
+    "en": "Install Daily ZGT on Windows or macOS.",
+    "es": "Instala Daily ZGT en Windows o macOS.",
+    "pt": "Instale o Daily ZGT no Windows ou no macOS."
   },
   "build.lead": {
-    "en": "Run them in a terminal. You need macOS 14 or later, Xcode 26 and XcodeGen.",
-    "es": "Ejecútalos en una terminal. Necesitas macOS 14 o superior, Xcode 26 y XcodeGen.",
-    "pt": "Execute-os em um terminal. Você precisa de macOS 14 ou superior, Xcode 26 e XcodeGen."
+    "en": "Windows has an installer. On macOS, you build the app from the source code.",
+    "es": "Windows tiene un instalador. En macOS, compilas la app desde el código fuente.",
+    "pt": "O Windows tem um instalador. No macOS, você compila o app a partir do código-fonte."
+  },
+  "build.win.req": {
+    "en": "Windows 10 build 19041 or later, 64-bit.",
+    "es": "Windows 10 compilación 19041 o superior, de 64 bits.",
+    "pt": "Windows 10 build 19041 ou superior, 64 bits."
+  },
+  "build.win.p1": {
+    "en": "Download the installer from GitHub Releases and run it. It needs no admin rights. The app opens when the install ends.",
+    "es": "Descarga el instalador desde GitHub Releases y ejecútalo. No necesita permisos de administrador. La app se abre cuando termina la instalación.",
+    "pt": "Baixe o instalador no GitHub Releases e execute-o. Ele não precisa de permissão de administrador. O app abre quando a instalação termina."
+  },
+  "build.win.smartscreen": {
+    "en": "If Windows shows `Windows protected your PC`, click `More info`, then `Run anyway`. The installer is not signed yet.",
+    "es": "Si Windows muestra un aviso de SmartScreen, haz clic en `Más información` y después en `Ejecutar de todas formas`. El instalador aún no tiene firma.",
+    "pt": "Se o Windows mostrar um aviso do SmartScreen, clique em `Mais informações` e depois em `Executar assim mesmo`. O instalador ainda não tem assinatura."
+  },
+  "build.win.lang": {
+    "en": "The app is in English, Spanish and Portuguese. It follows the Windows language.",
+    "es": "La app está en español, inglés y portugués. Sigue el idioma de Windows.",
+    "pt": "O app está em português, inglês e espanhol. Ele segue o idioma do Windows."
+  },
+  "build.mac.req": {
+    "en": "macOS 14 or later, Xcode 26 and XcodeGen.",
+    "es": "macOS 14 o superior, Xcode 26 y XcodeGen.",
+    "pt": "macOS 14 ou superior, Xcode 26 e XcodeGen."
+  },
+  "build.mac.p1": {
+    "en": "There is no macOS download yet. Run these three commands in a terminal.",
+    "es": "Aún no hay descarga para macOS. Ejecuta estos tres comandos en una terminal.",
+    "pt": "Ainda não há download para macOS. Execute estes três comandos em um terminal."
+  },
+  "build.mac.lang": {
+    "en": "For now, the macOS app is in Spanish only.",
+    "es": "Por ahora, la app de macOS solo está en español.",
+    "pt": "Por enquanto, o app de macOS está apenas em espanhol."
   },
   "build.cmd1": {
     "en": "1. Clone the repository",
@@ -660,14 +730,9 @@
     "pt": "Copiado"
   },
   "build.guide": {
-    "en": "Open the Guide",
-    "es": "Abre la guía",
-    "pt": "Abra o guia"
-  },
-  "build.claude": {
-    "en": "Claude review and the API key",
-    "es": "Revisión con Claude y clave de API",
-    "pt": "Revisão com Claude e chave de API"
+    "en": "Open the download guide",
+    "es": "Abre la guía de descarga",
+    "pt": "Abra o guia de download"
   },
   "languagesText": {
     "es": "Idiomas",
@@ -788,11 +853,6 @@
   "promptCollapseText": {
     "es": "Contraer",
     "pt": "Recolher"
-  },
-  "desk.appLang": {
-    "en": "For now, the app interface is in Spanish only.",
-    "es": "Por ahora, la interfaz de la app solo está en español.",
-    "pt": "Por enquanto, a interface do app está apenas em espanhol."
   },
   "demo.tab.prio": {
     "en": "Priorities",

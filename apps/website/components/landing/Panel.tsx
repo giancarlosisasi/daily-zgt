@@ -472,7 +472,7 @@ export function Panel() {
         >
           <BellIcon />
         </button>
-        <Link className="dz-icon-btn" href={href('/guide/use/settings')} aria-label={t('demo.settings')} title={t('demo.settings')}>
+        <Link className="dz-icon-btn" href={href('/guide/features/settings')} aria-label={t('demo.settings')} title={t('demo.settings')}>
           <GearIcon />
         </Link>
         <button type="button" className="dz-quit" onClick={() => dispatch({ type: 'setPanel', open: false })}>

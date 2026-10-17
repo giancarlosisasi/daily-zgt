@@ -242,6 +242,12 @@
   color: var(--color-on-band);
 }
 
+.dz-landing .dz-facts a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .dz-facts li::before {
   content: '';
   width: 6px;
@@ -729,6 +735,11 @@
   animation: dz-drain var(--duration-undo) linear infinite;
 }
 
+.dz-paths {
+  display: grid;
+  gap: 8px;
+}
+
 .dz-landing .dz-path {
   display: block;
   padding: 12px 14px;
@@ -1173,11 +1184,36 @@
   text-align: center;
 }
 
+.dz-keysets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px 56px;
+  margin: 48px 0 calc(40px + var(--key-big-side-height));
+}
+
+.dz-keyset {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+.dz-keyset-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-panel-label);
+  color: var(--color-text-2);
+}
+
 .dz-keys {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin: 48px 0 calc(40px + var(--key-big-side-height));
+}
+
+.dz-landing .dz-keys .dz-key-word {
+  font-family: var(--font-text);
+  font-size: clamp(var(--fs-small), 2vw, var(--fs-subhead));
+  font-weight: 700;
 }
 
 .dz-landing .dz-keys kbd {
@@ -1347,32 +1383,53 @@
   color: var(--color-text);
 }
 
-.dz-local-api {
-  display: block;
-}
-
-.dz-claude {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 16px;
-  padding: 14px 16px;
-  border-radius: var(--radius-ctl);
-  border: 1px dashed var(--color-line-2);
-  font-size: var(--fs-panel);
-  color: var(--color-text-2);
-}
-
-.dz-claude b {
-  font-size: var(--fs-small);
-  color: var(--color-text);
+.dz-split-copy .dz-actions {
+  margin-top: 28px;
 }
 
 .dz-build {
   max-width: 960px;
   margin: 0 auto;
   padding: 136px var(--dz-gutter) 104px;
+}
+
+.dz-platform {
+  margin-top: 24px;
+  padding: 32px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.dz-landing .dz-platform h3 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-heading);
+  font-weight: var(--weight-heading);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-text);
+}
+
+.dz-platform > p {
+  max-width: 44em;
+  margin-top: 12px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text-2);
+}
+
+.dz-platform > .dz-platform-req {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  color: var(--color-text);
+}
+
+.dz-platform .dz-actions,
+.dz-platform .dz-commands {
+  margin-top: 24px;
 }
 
 .dz-commands {
@@ -1826,6 +1883,10 @@
 
   .dz-beam i {
     display: none;
+  }
+
+  .dz-platform {
+    padding: 20px 16px;
   }
 
   .dz-command {

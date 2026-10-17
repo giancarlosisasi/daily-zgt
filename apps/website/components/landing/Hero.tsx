@@ -1,6 +1,7 @@
 import { Link } from '@rspress/core/theme';
 import { Fragment, useEffect, useRef, type CSSProperties } from 'react';
 import { useDemo } from './DemoContext';
+import { LATEST_RELEASE, REPO } from './links';
 import { useGuideHref, useT } from './i18n';
 import { createSpring2D, useReveal } from './motion';
 // The motion reel is hidden for now. Restore this import and the block below to show it again.
@@ -107,7 +108,10 @@ export function Hero() {
           {t('hero.lead')}
         </p>
         <div className="dz-actions" data-reveal>
-          <Link className="dz-button dz-button--accent" href={href('/guide/getting-started/introduction')}>
+          <a className="dz-button dz-button--accent" href={LATEST_RELEASE}>
+            {t('hero.download')}
+          </a>
+          <Link className="dz-button dz-button--ghost" href={href('/guide/getting-started/introduction')}>
             {t('hero.guide')}
           </Link>
           <a className="dz-button dz-button--ghost" href="#build">
@@ -115,10 +119,13 @@ export function Hero() {
           </a>
         </div>
         <ul className="dz-facts" data-reveal>
-          <li>SwiftUI</li>
-          <li>SQLite</li>
-          <li>{t('hero.fact.dark')}</li>
+          <li>Windows · macOS</li>
+          <li>
+            <a href={REPO}>{t('hero.fact.license')}</a>
+          </li>
           <li>{t('hero.fact.local')}</li>
+          <li>{t('hero.fact.account')}</li>
+          <li>{t('hero.fact.dark')}</li>
         </ul>
       </div>
       {/*
