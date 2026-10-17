@@ -6,9 +6,17 @@ public static class WpfShortcut
 {
     public static HotkeyShortcut? From(Key key, ModifierKeys modifiers)
     {
-        var shortcut = new HotkeyShortcut(ToModifiers(modifiers), KeyInterop.VirtualKeyFromKey(key));
+        var shortcut = Read(key, modifiers);
         return shortcut.IsValid ? shortcut : null;
     }
+
+    // The keys as pressed, valid or not, so the recorder can say why a shortcut was refused.
+    public static HotkeyShortcut Read(Key key, ModifierKeys modifiers) =>
+        new(ToModifiers(modifiers), KeyInterop.VirtualKeyFromKey(key));
+
+    public static bool IsModifier(Key key) =>
+        key is Key.LeftCtrl or Key.RightCtrl or Key.LeftAlt or Key.RightAlt or Key.LeftShift or Key.RightShift
+            or Key.LWin or Key.RWin;
 
     private static HotkeyModifiers ToModifiers(ModifierKeys keys)
     {

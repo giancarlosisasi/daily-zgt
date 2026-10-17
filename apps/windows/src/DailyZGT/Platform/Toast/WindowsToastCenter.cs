@@ -114,6 +114,15 @@ public sealed class WindowsToastCenter : IToastCenter
         }
     }
 
+    // A toast activation that a second launch of the exe received and passed to this instance.
+    public void Deliver(string arguments)
+    {
+        if (ParseActivation(arguments) is { } activation)
+        {
+            Activated?.Invoke(this, activation);
+        }
+    }
+
     internal static ToastActivation? ParseActivation(string arguments)
     {
         var parsed = ToastArguments.Parse(arguments);

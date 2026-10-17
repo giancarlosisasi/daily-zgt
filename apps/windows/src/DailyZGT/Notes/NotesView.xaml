@@ -1,0 +1,20 @@
+<UserControl x:Class="DailyZGT.Notes.NotesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             Focusable="False">
+    <StackPanel>
+        <TextBlock x:Name="Title" Style="{StaticResource Tecla.Text.Label}" />
+        <TextBox x:Name="Box"
+                 Style="{StaticResource Tecla.NoteBox}"
+                 Margin="0,6,0,0"
+                 Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                 theme:Field.Placeholder="{Binding NotesPlaceholder, Source={StaticResource Texts}}"
+                 AutomationProperties.AutomationId="NotesBox"
+                 AutomationProperties.Name="{Binding Text, ElementName=Title}" />
+        <TextBlock x:Name="Hint"
+                   Style="{StaticResource Tecla.Text.Dim}"
+                   Margin="0,6,0,0"
+                   AutomationProperties.AutomationId="NotesHint" />
+    </StackPanel>
+</UserControl>
