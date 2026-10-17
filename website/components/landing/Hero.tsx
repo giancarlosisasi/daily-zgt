@@ -3,7 +3,8 @@ import { Fragment, useEffect, useRef, type CSSProperties } from 'react';
 import { useDemo } from './DemoContext';
 import { useGuideHref, useT } from './i18n';
 import { createSpring2D, useReveal } from './motion';
-import { Reel } from './reel/Reel';
+// The motion reel is hidden for now. Restore this import and the block below to show it again.
+// import { Reel } from './reel/Reel';
 import { tokenSpring } from './tokens';
 
 const RINGS = [
@@ -120,6 +121,7 @@ export function Hero() {
           <li>{t('hero.fact.local')}</li>
         </ul>
       </div>
+      {/*
       <div className="dz-hero-reel" data-reveal>
         <div className="dz-reel-head">
           <span className="dz-eyebrow">{t('reel.eyebrow')}</span>
@@ -127,6 +129,7 @@ export function Hero() {
         </div>
         <Reel />
       </div>
+      */}
     </header>
   );
 }
