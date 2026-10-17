@@ -2,8 +2,10 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using DailyZGT.Core.App;
 using DailyZGT.Core.Domain;
+using DailyZGT.Platform;
 
 namespace DailyZGT.Shell;
 
@@ -12,6 +14,8 @@ namespace DailyZGT.Shell;
 public partial class PanelShellView : UserControl
 {
     private const double SlotGap = 10;
+
+    private readonly ISystemSettings systemSettings = new WindowsSettingsOpener();
 
     private ShellModel? shell;
     private FrameworkElement? shownPage;
@@ -44,6 +48,9 @@ public partial class PanelShellView : UserControl
     }
 
     private void OnShellChanged(object? sender, PropertyChangedEventArgs e) => RenderFooter();
+
+    // F15. "Abrir ajustes" under "Las alertas están desactivadas." in the form and the detail view.
+    private void OnOpenAlertSettings(object sender, ExecutedRoutedEventArgs e) => systemSettings.OpenNotifications();
 
     private void OnPanelChanged(object? sender, PropertyChangedEventArgs e) => Render();
 

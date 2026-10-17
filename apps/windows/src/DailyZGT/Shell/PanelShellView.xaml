@@ -5,7 +5,11 @@
              xmlns:notes="clr-namespace:DailyZGT.Notes"
              xmlns:settings="clr-namespace:DailyZGT.Settings"
              xmlns:priorities="clr-namespace:DailyZGT.Priorities"
+             priorities:AlertsNotice.IsOff="{Binding AlertsOff}"
              Focusable="False">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static priorities:AlertsNotice.OpenSettings}" Executed="OnOpenAlertSettings" />
+    </UserControl.CommandBindings>
     <StackPanel>
         <StackPanel x:Name="Tabs" Margin="0,0,0,10">
             <Border Style="{StaticResource Tecla.SegmentTrack.Top}">
