@@ -1,0 +1,186 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:theme="clr-namespace:DailyZGT.Theme">
+
+    <Style x:Key="Tecla.FocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="-2"
+                               RadiusX="{DynamicResource RadiusPx.PanelControl}"
+                               RadiusY="{DynamicResource RadiusPx.PanelControl}"
+                               Stroke="{DynamicResource Brush.Panel.Focus}"
+                               StrokeThickness="2"
+                               SnapsToDevicePixels="True"
+                               IsHitTestVisible="False" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="Tecla.KeyButtonTemplate" TargetType="Button">
+        <Grid SnapsToDevicePixels="True" Background="Transparent">
+            <Border x:Name="Side"
+                    Background="{Binding (theme:KeyFace.Side), RelativeSource={RelativeSource TemplatedParent}}"
+                    CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}"
+                    Opacity="{Binding (theme:KeyFace.SideOpacity), RelativeSource={RelativeSource TemplatedParent}}">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="{Binding (theme:KeyFace.SideHeight), RelativeSource={RelativeSource TemplatedParent}}" />
+                </Border.RenderTransform>
+            </Border>
+            <Border x:Name="Face"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="{Binding (theme:KeyFace.Offset), RelativeSource={RelativeSource TemplatedParent}}" />
+                </Border.RenderTransform>
+                <Grid>
+                    <Border Background="{DynamicResource Brush.Panel.PressTint}"
+                            CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}"
+                            Opacity="{Binding (theme:KeyFace.Tint), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <ContentPresenter Margin="{TemplateBinding Padding}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      RecognizesAccessKey="True" />
+                </Grid>
+            </Border>
+        </Grid>
+    </ControlTemplate>
+
+    <Style x:Key="Tecla.KeyButton" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Tecla.FocusVisual}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Key.Face}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text}" />
+        <Setter Property="theme:KeyFace.Side" Value="{DynamicResource Brush.Key.Side}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+        <Setter Property="FontWeight" Value="{DynamicResource FontWeight.PanelLabel}" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Tecla.KeyButtonTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="theme:KeyFace.Pressed" Value="True" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Tecla.KeyButton.Primary" TargetType="Button" BasedOn="{StaticResource Tecla.KeyButton}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Key.AccentFace}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.OnAccent}" />
+        <Setter Property="theme:KeyFace.Side" Value="{DynamicResource Brush.Key.AccentSide}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <ControlTemplate x:Key="Tecla.GhostButtonTemplate" TargetType="Button">
+        <Border x:Name="Chrome"
+                Background="Transparent"
+                CornerRadius="{Binding (theme:KeyFace.Radius), RelativeSource={RelativeSource TemplatedParent}}"
+                SnapsToDevicePixels="True">
+            <ContentPresenter Margin="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              RecognizesAccessKey="True" />
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Panel.Hover2}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Panel.Hover2}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Tecla.GhostButton" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Tecla.FocusVisual}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Ghost}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+        <Setter Property="FontWeight" Value="{DynamicResource FontWeight.PanelLabel}" />
+        <Setter Property="theme:KeyFace.Radius" Value="{DynamicResource Radius.Ghost}" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Tecla.GhostButtonTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Tecla.GhostButton.Link" TargetType="Button" BasedOn="{StaticResource Tecla.GhostButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Link}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="Tecla.IconButton" TargetType="Button" BasedOn="{StaticResource Tecla.GhostButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Muted}" />
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="Tecla.IconButton.Detail" TargetType="Button" BasedOn="{StaticResource Tecla.IconButton}">
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="26" />
+    </Style>
+
+    <Style x:Key="Tecla.IconButton.Remove" TargetType="Button" BasedOn="{StaticResource Tecla.IconButton}">
+        <Setter Property="theme:KeyFace.Radius" Value="{DynamicResource Radius.Remove}" />
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Opacity" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="theme:RowState.Hovered" Value="True">
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate x:Key="Tecla.NewPriorityTemplate" TargetType="Button">
+        <Grid SnapsToDevicePixels="True" Background="Transparent">
+            <Border x:Name="Hover" Background="Transparent" CornerRadius="{DynamicResource Radius.Row}" />
+            <Rectangle RadiusX="{DynamicResource RadiusPx.Row}"
+                       RadiusY="{DynamicResource RadiusPx.Row}"
+                       Stroke="{DynamicResource Brush.Panel.Dash}"
+                       StrokeThickness="1"
+                       StrokeDashArray="3 3"
+                       IsHitTestVisible="False" />
+            <ContentPresenter Margin="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Hover" Property="Background" Value="{DynamicResource Brush.Panel.Hover2}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Hover" Property="Background" Value="{DynamicResource Brush.Panel.Hover2}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Tecla.NewPriorityButton" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Tecla.FocusVisual}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Ghost}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Panel}" />
+        <Setter Property="FontWeight" Value="{DynamicResource FontWeight.Panel}" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Tecla.NewPriorityTemplate}" />
+    </Style>
+</ResourceDictionary>

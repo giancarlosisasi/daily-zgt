@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:theme="clr-namespace:DailyZGT.Theme">
+
+    <ControlTemplate x:Key="Tecla.TextBoxTemplate" TargetType="TextBox">
+        <Grid SnapsToDevicePixels="True">
+            <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{Binding (theme:Field.Radius), RelativeSource={RelativeSource TemplatedParent}}" />
+            <Border x:Name="Ring"
+                    BorderBrush="{Binding (theme:Field.FocusBrush), RelativeSource={RelativeSource TemplatedParent}}"
+                    BorderThickness="2"
+                    CornerRadius="{Binding (theme:Field.Radius), RelativeSource={RelativeSource TemplatedParent}}"
+                    Visibility="Collapsed"
+                    IsHitTestVisible="False" />
+            <Grid>
+                <TextBlock x:Name="Hint" Margin="{TemplateBinding Padding}" Padding="2,0,0,0"
+                           Text="{Binding (theme:Field.Placeholder), RelativeSource={RelativeSource TemplatedParent}}"
+                           Foreground="{DynamicResource Brush.Panel.Dim}"
+                           FontFamily="{TemplateBinding FontFamily}"
+                           FontSize="{TemplateBinding FontSize}"
+                           FontWeight="{TemplateBinding FontWeight}"
+                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                           TextWrapping="{TemplateBinding TextWrapping}"
+                           Visibility="Collapsed"
+                           IsHitTestVisible="False" />
+                <ScrollViewer x:Name="PART_ContentHost"
+                              Focusable="False"
+                              HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                              VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" />
+            </Grid>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter TargetName="Hint" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter TargetName="Ring" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="Tecla.TextBox" TargetType="TextBox">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.In}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Panel.Text}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Palette.Blue}" />
+        <Setter Property="SelectionOpacity" Value="0.45" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Panel}" />
+        <Setter Property="FontWeight" Value="{DynamicResource FontWeight.Panel}" />
+        <Setter Property="theme:Field.FocusBrush" Value="{DynamicResource Brush.Panel.Focus}" />
+        <Setter Property="theme:Field.Radius" Value="{DynamicResource Radius.Input}" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="AllowDrop" Value="False" />
+        <Setter Property="Template" Value="{StaticResource Tecla.TextBoxTemplate}" />
+    </Style>
+
+    <Style x:Key="Tecla.TextBox.Capture" TargetType="TextBox" BasedOn="{StaticResource Tecla.TextBox}">
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelCapture}" />
+        <Setter Property="theme:Field.FocusBrush" Value="{DynamicResource Brush.Panel.CaptureFocus}" />
+        <Setter Property="theme:Field.Radius" Value="{DynamicResource Radius.Track}" />
+    </Style>
+
+    <Style x:Key="Tecla.TextBox.Subtask" TargetType="TextBox" BasedOn="{StaticResource Tecla.TextBox}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Card}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="8,0" />
+    </Style>
+
+    <Style x:Key="Tecla.NoteBox" TargetType="TextBox" BasedOn="{StaticResource Tecla.TextBox}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Card}" />
+        <Setter Property="theme:Field.Radius" Value="{DynamicResource Radius.Bar}" />
+        <Setter Property="Height" Value="200" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="TextBlock.LineHeight" Value="19.5" />
+        <Setter Property="TextBlock.LineStackingStrategy" Value="BlockLineHeight" />
+    </Style>
+</ResourceDictionary>

@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 SOURCE = ROOT / "packages" / "design-tokens" / "tecla.json"
 OUTPUT = ROOT / "apps" / "macos" / "DailyZGT" / "App" / "TeclaTokens.swift"
+CSHARP_OUTPUT = ROOT / "apps" / "windows" / "src" / "DailyZGT" / "Theme" / "TeclaTokens.cs"
 SWIFT_KEYWORDS = {"default", "in", "is", "as", "do", "for", "if", "let", "var", "case", "func", "enum", "self", "static"}
 
 
@@ -161,17 +162,169 @@ def render(raw):
     return "\n".join(lines) + "\n"
 
 
+def pascal(key):
+    return key[0].upper() + key[1:] if not key[0].isdigit() else "S" + key
+
+
+def cs_double(value):
+    return repr(float(value))
+
+
+def cs_color(value):
+    digits = value["hex"].lstrip("#").upper()
+    if len(digits) != 6:
+        raise SystemExit("color %r is not #rrggbb" % value["hex"])
+    alpha = int(round(float(value["alpha"]) * 255))
+    return "Color.FromArgb(0x%02X, 0x%s, 0x%s, 0x%s)" % (alpha, digits[0:2], digits[2:4], digits[4:6])
+
+
+def cs_colors(values):
+    return ["public static readonly Color %s = %s;" % (pascal(key), cs_color(value)) for key, value in values.items()]
+
+
+def cs_doubles(values):
+    return ["public const double %s = %s;" % (pascal(key), cs_double(value)) for key, value in values.items()]
+
+
+def cs_fonts(values):
+    lines = []
+    for key, value in values.items():
+        weights = ", ".join(str(weight) for weight in value["weights"])
+        width = cs_double(value["width"]) if "width" in value else "null"
+        lines.append(
+            "public static readonly TeclaFontFamily %s = new(%s, [%s], %s, %s);"
+            % (pascal(key), json.dumps(value["family"]), weights, width, json.dumps(value["file"]))
+        )
+    lines.append("public static readonly TeclaFontFamily[] All = [%s];" % ", ".join(pascal(key) for key in values))
+    return lines
+
+
+def cs_text_styles(values, families):
+    lines = []
+    for key, value in values.items():
+        if value["font"] not in families:
+            raise SystemExit("type.%s uses the unknown font %r" % (key, value["font"]))
+        lines.append(
+            "public static readonly TeclaTextStyle %s = new(%s, %s, %s, %s, Fonts.%s);"
+            % (
+                pascal(key),
+                cs_double(value["size"]),
+                cs_double(value["lineHeight"]),
+                cs_double(value["trackingEm"]),
+                value["weight"],
+                pascal(value["font"]),
+            )
+        )
+    return lines
+
+
+def cs_key_values(values):
+    lines = []
+    for key, value in values.items():
+        if is_color(value):
+            lines.append("public static readonly Color %s = %s;" % (pascal(key), cs_color(value)))
+        else:
+            lines.append("public const double %s = %s;" % (pascal(key), cs_double(value)))
+    return lines
+
+
+def cs_shadows(values):
+    lines = []
+    for key, layers in values.items():
+        items = ", ".join(
+            "new(%s, %s, %s, %s)" % (cs_double(layer["x"]), cs_double(layer["y"]), cs_double(layer["blur"]), cs_color(layer["color"]))
+            for layer in layers
+        )
+        lines.append("public static readonly TeclaShadow[] %s = [%s];" % (pascal(key), items))
+    return lines
+
+
+def cs_durations(values):
+    return [
+        "public static readonly TimeSpan %s = TimeSpan.FromMilliseconds(%s);" % (pascal(key), cs_double(round(float(value) * 1000)))
+        for key, value in values.items()
+    ]
+
+
+def cs_easings(values):
+    lines = []
+    for key, value in values.items():
+        x1, y1, x2, y2 = (cs_double(point) for point in value["cubicBezier"])
+        lines.append(
+            "public static readonly TeclaEasing %s = new(%s, %s, %s, %s, TimeSpan.FromMilliseconds(%s));"
+            % (pascal(key), x1, y1, x2, y2, cs_double(round(float(value["duration"]) * 1000)))
+        )
+    return lines
+
+
+def cs_springs(values):
+    return [
+        "public static readonly TeclaSpring %s = new(%s, %s);" % (pascal(key), cs_double(value["response"]), cs_double(value["dampingFraction"]))
+        for key, value in values.items()
+    ]
+
+
+def cs_group(title, lines):
+    return ["    public static class %s" % title, "    {"] + ["        " + line for line in lines] + ["    }"]
+
+
+def render_csharp(raw):
+    tokens = json.loads(raw)
+    groups = [
+        cs_group("Colors", cs_colors(tokens["color"])),
+        cs_group("Palette", cs_colors(tokens["palette"])),
+        cs_group("Panel", cs_colors(tokens["panel"])),
+        cs_group("Fonts", cs_fonts(tokens["font"])),
+        cs_group("TextStyles", cs_text_styles(tokens["type"], tokens["font"])),
+        cs_group("Space", cs_doubles(tokens["space"])),
+        cs_group("Radius", cs_doubles(tokens["radius"])),
+        cs_group("Size", cs_doubles(tokens["size"])),
+        cs_group("Key", cs_key_values(tokens["key"])),
+        cs_group("Shadows", cs_shadows(tokens["shadow"])),
+        cs_group("Durations", cs_durations(tokens["duration"])),
+        cs_group("Easings", cs_easings(tokens["easing"])),
+        cs_group("Springs", cs_springs(tokens["spring"])),
+    ]
+    lines = [
+        "// <auto-generated>",
+        "// Written by packages/design-tokens/generate-tecla-tokens from tecla.json. Do not edit.",
+        "// </auto-generated>",
+        "using System.Windows.Media;",
+        "",
+        "namespace DailyZGT.Theme;",
+        "",
+        "public static class TeclaTokens",
+        "{",
+        "    public const string Name = %s;" % json.dumps(tokens["name"]),
+        "    public const string SourceDigest = %s;" % json.dumps(hashlib.sha256(raw).hexdigest()),
+    ]
+    for block in groups:
+        lines.append("")
+        lines.extend(block)
+    lines.append("}")
+    body = "\n".join(lines) + "\n"
+    output_digest = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    lines.insert(11, "    public const string OutputDigest = %s;" % json.dumps(output_digest))
+    return "\n".join(lines) + "\n"
+
+
 def main():
-    expected = render(SOURCE.read_bytes())
+    raw = SOURCE.read_bytes()
+    outputs = [(OUTPUT, render(raw)), (CSHARP_OUTPUT, render_csharp(raw))]
     if "--check" in sys.argv[1:]:
-        current = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
-        if current != expected:
-            print("%s does not match %s. Run packages/design-tokens/generate-tecla-tokens." % (OUTPUT.name, SOURCE.name))
-            return 1
-        print("%s matches %s." % (OUTPUT.name, SOURCE.name))
-        return 0
-    OUTPUT.write_text(expected, encoding="utf-8")
-    print("Wrote %s." % OUTPUT.relative_to(ROOT))
+        failed = False
+        for path, expected in outputs:
+            current = path.read_bytes().decode("utf-8") if path.exists() else ""
+            if current != expected:
+                print("%s does not match %s. Run packages/design-tokens/generate-tecla-tokens." % (path.name, SOURCE.name))
+                failed = True
+            else:
+                print("%s matches %s." % (path.name, SOURCE.name))
+        return 1 if failed else 0
+    for path, expected in outputs:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(expected.encode("utf-8"))
+        print("Wrote %s." % path.relative_to(ROOT).as_posix())
     return 0
 
 
