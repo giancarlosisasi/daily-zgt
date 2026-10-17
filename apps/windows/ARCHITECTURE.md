@@ -23,14 +23,17 @@ apps/windows/
     Store/                     schema, migrations, AppStore (every mutation), snapshot
     Repeat/                    F14 repeat planner
     Rules/                     presentation rules: chips, labels, done window, history, tray title, footer count
-    Alerts/                    F15 alert planner, copy, reconciler (pure)
+    Alerts/                    F15 alert planner, copy, reconciler (pure) and the alert coordinator
+    Localization/              the Texts catalog (es, en, pt)
+    App/                       UI state models the views bind to (panel, flow, form, detail, notes, capture, settings, tray summary, clock)
   src/DailyZGT/                the WPF app
     Theme/                     TeclaTokens.cs (generated), resource dictionaries, control styles
     Assets/Fonts/              static font instances (generated from the macOS variable fonts)
     Assets/Icons/              icon geometry, app icon
     Platform/                  tray icon, toast notifications, global hotkey, start with Windows, animation setting, single instance
     Panel/                     panel window, navigation state, footer, settings, notes
-    Priorities/                list, row, new priority form, confirm and undo bars, done, history, detail
+    Priorities/                PrioritiesView (list, rows, form, confirm bar, done), HistoryView, DetailView, UndoBarView
+    UiText.cs                  UiText.Current, the Texts instance every view reads
     Capture/                   capture window
   tests/DailyZGT.Core.Tests/   unit tests for DailyZGT.Core
   tests/DailyZGT.UiTests/      end-to-end tests that launch the app and drive it with UI Automation
