@@ -1,42 +1,23 @@
 ---
 title: Introduction
-description: What Daily ZGT is, what it does in v1, and the rules of the product.
+description: Daily ZGT keeps the priorities and the notes of your day and your week, in a small panel on Windows and macOS.
 ---
 
 # Introduction
 
-Daily ZGT is a macOS menu bar app. It keeps the priorities and the notes of the day and the week.
+Daily ZGT keeps the priorities and the notes of your day and your week. It lives in the system tray on Windows and in the menu bar on macOS. Click its icon and a small panel opens.
 
-The app lives in the menu bar. It has no Dock icon and no main window. You click the menu bar icon, and a dark panel opens. Next to the icon, the app shows the count of open priorities of Hoy. It can also show the title of the next one.
+<img src="/shots/en/priorities.png" alt="The Daily ZGT panel on the Priorities tab, list Today. Four open priorities, each with a level, a due time and a checkbox. Review the Lima contract and Send the proposal are high, Prepare Thursday's demo is medium, Tidy the desk is low." width="360" />
 
-## Product rules
+The icon shows how many priorities are still open today. On Windows, hover over it to see the next one. On macOS, the next one shows next to the icon.
 
-- The app is dark mode only.
-- The text in the app is Spanish.
-- The look and the fonts (Gabarito, Onest and Martian Mono) come from the Tecla design system.
-- Only the checkbox marks a priority done, and it asks first.
-- The app keeps all data in one SQLite file on your Mac, with no account and no server.
-- The Claude review is planned for v2. It is not built. It is the only feature that sends data out of your Mac, and only when you click its button.
+<img src="/shots/en/tray.png" alt="The tray icon with the number 4 on it, under its tooltip, which reads Daily ZGT · 4 and the next priority, Review the Lima contract." width="240" />
 
-## What v1 does
+- **Windows and macOS.** One native app for each system.
+- **Your language.** The Windows app is in English, Spanish and Portuguese, and it follows the language of your system. The macOS app is in Spanish.
+- **Free and open source.** The code is on [GitHub](https://github.com/giancarlosisasi/daily-zgt) under the MIT license.
+- **Your data stays on your computer.** There is no account and no server. The app sends nothing anywhere. See [Privacy and your data](/guide/help/privacy).
 
-- Two lists of priorities: **Hoy** (today) and **Semana** (this week). See [Priorities](/guide/use/priorities).
-- Three levels for each priority: high, medium and low.
-- An optional due date and time, shown as a chip.
-- A chip, `De ayer` or `Desde vie 9`, on an open priority that stays in Hoy after the day changes.
-- An optional limit of 5 open priorities in Hoy.
-- **Hechas** keeps the priorities done in the last 24 hours. **Historial** keeps the older ones.
-- Subtasks and a note for each priority. See [Detail and subtasks](/guide/use/detail-and-subtasks).
-- A daily repeat for a priority. See [Daily repeat](/guide/use/repeat).
-- One note for each day and one note for each week. See [Notes](/guide/use/notes).
-- An alert with sound 30 minutes before the due time and at the due time. See [Alerts](/guide/use/alerts).
-- A global shortcut that opens a capture window from any app. See [Capture window](/guide/use/capture).
-- A settings view behind the gear key. See [Settings](/guide/use/settings).
+The pictures in this guide show the Windows app. The macOS app looks the same.
 
-## Status of v1
-
-v1 is built. It has no Claude review. That feature is planned for v2. See [Claude review and the API key](/guide/claude/api-key).
-
-## How you get the app
-
-There is no App Store build and no download. You build the app on your own Mac from the source folder. Start with [Requirements](/guide/getting-started/requirements).
+Next, [install Daily ZGT](/guide/getting-started/download).

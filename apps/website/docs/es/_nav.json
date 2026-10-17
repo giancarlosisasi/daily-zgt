@@ -3,5 +3,9 @@
     "text": "Guía",
     "link": "/guide/getting-started/introduction",
     "activeMatch": "^/es/guide/"
+  },
+  {
+    "text": "Descargar",
+    "link": "/guide/getting-started/download"
   }
 ]

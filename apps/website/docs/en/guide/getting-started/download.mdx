@@ -1,0 +1,79 @@
+---
+title: Install
+description: Install Daily ZGT on Windows, build it on macOS, or let your AI agent do it for you.
+---
+
+import { Steps } from '@rspress/core/theme';
+
+# Install
+
+## Windows
+
+You need 64-bit Windows 10 (build 19041 or later) or Windows 11. You do not need admin rights.
+
+<Steps>
+
+### Download the installer
+
+Open the [latest release](https://github.com/giancarlosisasi/daily-zgt/releases/latest) and download `DailyZGT.Windows-win-Setup.exe`.
+
+### Run it
+
+Double-click the file. Daily ZGT installs and opens. Its icon shows in the system tray, and a `Daily ZGT` shortcut shows in the Start menu.
+
+### Get past the SmartScreen warning
+
+The installer has no code signature, so Windows can show "Windows protected your PC". Click **More info**, then **Run anyway**.
+
+</Steps>
+
+**Uninstall.** Open Settings > Apps > Installed apps, find Daily ZGT and choose **Uninstall**. Your data stays on your computer.
+
+**Update.** Uninstall the app, then run the newer installer. Your data stays.
+
+## macOS
+
+There is no download for macOS. You build the app on your Mac from the source code. You need macOS 14 or later, Xcode 26, XcodeGen and `just` (`brew install xcodegen just`).
+
+```bash
+git clone https://github.com/giancarlosisasi/daily-zgt.git
+cd daily-zgt
+just mac-install
+open /Applications/DailyZGT.app
+```
+
+`just mac-install` builds the app and copies it to your Applications folder. The app has no Dock icon. Click the target icon in the menu bar to open the panel.
+
+To update, quit the app, run `git pull` and `just mac-install` again.
+
+## Install with your AI agent
+
+A coding agent such as Claude Code, Cursor or Codex can do the steps above for you. Copy this prompt and paste it into your agent.
+
+```text
+Install the Daily ZGT app on my computer. The code and the releases are at https://github.com/giancarlosisasi/daily-zgt.
+
+Rules:
+- First find out if I use Windows or macOS.
+- Before each step, tell me in plain words what it does.
+- Ask me before any step that needs my password or admin rights.
+- Never change, move or delete the Daily ZGT data folder (%LOCALAPPDATA%\DailyZGT on Windows, ~/Library/Application Support/DailyZGT on macOS).
+- If a step fails, show me the error and explain it before you try something else.
+
+On Windows:
+1. Check that the system is 64-bit Windows 10 (build 19041 or later) or Windows 11.
+2. Download the latest installer from https://github.com/giancarlosisasi/daily-zgt/releases/latest/download/DailyZGT.Windows-win-Setup.exe
+   (with the GitHub CLI: gh release download --repo giancarlosisasi/daily-zgt --pattern "*Setup.exe").
+3. Run the installer. If Windows shows "Windows protected your PC", tell me to click "More info", then "Run anyway".
+4. Tell me to look for the Daily ZGT icon in the system tray, next to the clock.
+
+On macOS:
+1. Check that macOS is version 14 or later. If it is older, stop and tell me.
+2. Check that Xcode 26 is installed. If it is not, ask me to install it from the App Store, open it once, and tell you when it is ready. Make sure "xcode-select -p" points to Xcode, not to the Command Line Tools.
+3. Check that Homebrew is installed. If it is not, install it from https://brew.sh.
+4. Install the tools: brew install xcodegen just
+5. Clone the code into my home folder: git clone https://github.com/giancarlosisasi/daily-zgt.git
+6. In the daily-zgt folder, run: just mac-install
+7. Open the app: open /Applications/DailyZGT.app
+8. Tell me to click the target icon in the menu bar. The app has no Dock icon.
+```

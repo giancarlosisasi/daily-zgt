@@ -1,42 +1,23 @@
 ---
 title: Introdução
-description: O que é o Daily ZGT, o que ele faz na v1 e as regras do produto.
+description: O Daily ZGT guarda as prioridades e as notas do seu dia e da sua semana, em um painel pequeno no Windows e no macOS.
 ---
 
 # Introdução
 
-O Daily ZGT é um app de barra de menus do macOS. Ele guarda as prioridades e as notas do dia e da semana.
+O Daily ZGT guarda as prioridades e as notas do seu dia e da sua semana. Ele fica na bandeja do sistema no Windows e na barra de menus no macOS. Clique no ícone e um painel pequeno se abre.
 
-O app vive na barra de menus. Ele não tem ícone no Dock nem janela principal. Você clica no ícone da barra de menus e um painel escuro abre. Ao lado do ícone, o app mostra a quantidade de prioridades abertas de Hoy. Ele também pode mostrar o título da próxima.
+<img src="/shots/pt/priorities.png" alt="O painel do Daily ZGT na aba Prioridades, lista Hoje. Quatro prioridades abertas, cada uma com nível, prazo e caixa de seleção. Revisar o contrato de Lima e Enviar a proposta têm nível alto, Preparar a demo de quinta é médio e Organizar a mesa é baixo." width="360" />
 
-## Regras do produto
+O ícone mostra quantas prioridades ainda estão abertas hoje. No Windows, passe o mouse sobre ele para ver a próxima. No macOS, a próxima aparece ao lado do ícone.
 
-- O app tem apenas modo escuro.
-- O texto do app está em espanhol.
-- O visual e as fontes (Gabarito, Onest e Martian Mono) vêm do sistema de design Tecla.
-- Só a caixa de seleção marca uma prioridade como concluída, e antes ela pede confirmação.
-- O app guarda todos os dados em um arquivo SQLite no seu Mac, sem conta e sem servidor.
-- A revisão com Claude está planejada para a v2. Ela não está construída. É a única função que envia dados para fora do seu Mac, e só quando você clica no botão dela.
+<img src="/shots/pt/tray.png" alt="O ícone da bandeja com o número 4, sob a dica dele, que diz Daily ZGT · 4 e a próxima prioridade, Revisar o contrato de Lima." width="240" />
 
-## O que a v1 faz
+- **Windows e macOS.** Um app nativo para cada sistema.
+- **Seu idioma.** O app para Windows está em português, inglês e espanhol, e segue o idioma do seu sistema. O app para macOS está em espanhol.
+- **Gratuito e de código aberto.** O código está no [GitHub](https://github.com/giancarlosisasi/daily-zgt) com a licença MIT.
+- **Seus dados ficam no seu computador.** Não há conta nem servidor. O app não envia nada para lugar nenhum. Veja [Privacidade e seus dados](/guide/help/privacy).
 
-- Duas listas de prioridades: **Hoy** (hoje) e **Semana** (esta semana). Veja [Prioridades](/guide/use/priorities).
-- Três níveis para cada prioridade: alta, média e baixa.
-- Um prazo opcional, com hora, mostrado como um chip.
-- Um chip, `De ayer` ou `Desde vie 9`, em uma prioridade aberta que continua em Hoy depois que o dia muda.
-- Um limite opcional de 5 prioridades abertas em Hoy.
-- **Hechas** guarda as prioridades concluídas nas últimas 24 horas. **Historial** guarda as mais antigas.
-- Subtarefas e uma nota para cada prioridade. Veja [Detalhe e subtarefas](/guide/use/detail-and-subtasks).
-- Uma repetição diária para uma prioridade. Veja [Repetir todo dia](/guide/use/repeat).
-- Uma nota para cada dia e uma nota para cada semana. Veja [Notas](/guide/use/notes).
-- Um alerta com som 30 minutos antes do prazo e outro quando ele vence. Veja [Alertas](/guide/use/alerts).
-- Um atalho global que abre uma janela de captura a partir de qualquer app. Veja [Janela de captura](/guide/use/capture).
-- Uma tela de ajustes atrás do botão de engrenagem. Veja [Ajustes](/guide/use/settings).
+As imagens deste guia mostram o app para Windows. O app para macOS tem a mesma aparência.
 
-## Estado da v1
-
-A v1 está construída. Ela não tem a revisão com Claude. Essa função está planejada para a v2. Veja [Revisão com Claude e chave de API](/guide/claude/api-key).
-
-## Como você obtém o app
-
-Não há versão da App Store nem download. Você compila o app no seu próprio Mac, a partir da pasta do código-fonte. Comece pelos [Requisitos](/guide/getting-started/requirements).
+Agora, [instale o Daily ZGT](/guide/getting-started/download).

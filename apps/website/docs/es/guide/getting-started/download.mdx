@@ -1,0 +1,79 @@
+---
+title: Instalar
+description: Instala Daily ZGT en Windows, compílalo en macOS o deja que tu agente de IA lo haga por ti.
+---
+
+import { Steps } from '@rspress/core/theme';
+
+# Instalar
+
+## Windows
+
+Necesitas Windows 10 de 64 bits (compilación 19041 o posterior) o Windows 11. No necesitas permisos de administrador.
+
+<Steps>
+
+### Descarga el instalador
+
+Abre la [última versión](https://github.com/giancarlosisasi/daily-zgt/releases/latest) y descarga `DailyZGT.Windows-win-Setup.exe`.
+
+### Ejecútalo
+
+Haz doble clic en el archivo. Daily ZGT se instala y se abre. Su ícono aparece en la bandeja del sistema, y el acceso directo `Daily ZGT` aparece en el menú Inicio.
+
+### Pasa el aviso de SmartScreen
+
+El instalador no tiene firma de código, así que Windows puede mostrar "Windows protegió tu PC". Haz clic en **Más información** y luego en **Ejecutar de todas formas**.
+
+</Steps>
+
+**Desinstalar.** Abre Configuración > Aplicaciones > Aplicaciones instaladas, busca Daily ZGT y elige **Desinstalar**. Tus datos se quedan en tu computadora.
+
+**Actualizar.** Desinstala la app y luego ejecuta el instalador nuevo. Tus datos se quedan.
+
+## macOS
+
+No hay descarga para macOS. Compilas la app en tu Mac a partir del código fuente. Necesitas macOS 14 o posterior, Xcode 26, XcodeGen y `just` (`brew install xcodegen just`).
+
+```bash
+git clone https://github.com/giancarlosisasi/daily-zgt.git
+cd daily-zgt
+just mac-install
+open /Applications/DailyZGT.app
+```
+
+`just mac-install` compila la app y la copia a tu carpeta Aplicaciones. La app no tiene ícono en el Dock. Haz clic en el ícono de diana de la barra de menús para abrir el panel.
+
+Para actualizar, cierra la app, ejecuta `git pull` y otra vez `just mac-install`.
+
+## Instalar con tu agente de IA
+
+Un agente de programación como Claude Code, Cursor o Codex puede hacer estos pasos por ti. Copia este prompt y pégalo en tu agente.
+
+```text
+Instala la app Daily ZGT en mi computadora. El código y las versiones están en https://github.com/giancarlosisasi/daily-zgt.
+
+Reglas:
+- Primero averigua si uso Windows o macOS.
+- Antes de cada paso, dime en palabras simples qué hace.
+- Pregúntame antes de cualquier paso que necesite mi contraseña o permisos de administrador.
+- Nunca cambies, muevas ni borres la carpeta de datos de Daily ZGT (%LOCALAPPDATA%\DailyZGT en Windows, ~/Library/Application Support/DailyZGT en macOS).
+- Si un paso falla, muéstrame el error y explícalo antes de intentar otra cosa.
+
+En Windows:
+1. Revisa que el sistema sea Windows 10 de 64 bits (compilación 19041 o posterior) o Windows 11.
+2. Descarga el último instalador desde https://github.com/giancarlosisasi/daily-zgt/releases/latest/download/DailyZGT.Windows-win-Setup.exe
+   (con GitHub CLI: gh release download --repo giancarlosisasi/daily-zgt --pattern "*Setup.exe").
+3. Ejecuta el instalador. Si Windows muestra "Windows protegió tu PC", dime que haga clic en "Más información" y luego en "Ejecutar de todas formas".
+4. Dime que busque el ícono de Daily ZGT en la bandeja del sistema, junto al reloj.
+
+En macOS:
+1. Revisa que macOS sea la versión 14 o posterior. Si es más antigua, detente y avísame.
+2. Revisa que Xcode 26 esté instalado. Si no lo está, pídeme que lo instale desde la App Store, que lo abra una vez y que te avise cuando esté listo. Asegúrate de que "xcode-select -p" apunte a Xcode y no a las Command Line Tools.
+3. Revisa que Homebrew esté instalado. Si no lo está, instálalo desde https://brew.sh.
+4. Instala las herramientas: brew install xcodegen just
+5. Clona el código en mi carpeta personal: git clone https://github.com/giancarlosisasi/daily-zgt.git
+6. En la carpeta daily-zgt, ejecuta: just mac-install
+7. Abre la app: open /Applications/DailyZGT.app
+8. Dime que haga clic en el ícono de diana de la barra de menús. La app no tiene ícono en el Dock.
+```

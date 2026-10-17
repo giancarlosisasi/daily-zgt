@@ -1,7 +1,5 @@
 [
   { "type": "dir", "name": "getting-started", "label": "Primeros pasos", "collapsible": false },
-  { "type": "dir", "name": "use", "label": "Usa la app", "collapsible": false },
-  { "type": "dir", "name": "data", "label": "Datos", "collapsible": false },
-  { "type": "dir", "name": "claude", "label": "Revisión con Claude", "collapsible": false },
+  { "type": "dir", "name": "features", "label": "Funciones", "collapsible": false },
   { "type": "dir", "name": "help", "label": "Ayuda", "collapsible": false }
 ]
