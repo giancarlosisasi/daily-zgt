@@ -180,7 +180,6 @@ html:root .rp-search-button,
 html:root .rp-sidebar-item--active,
 html:root .rp-sidebar-item--active:hover,
 html:root .rp-nav-menu__item--active > .rp-nav-menu__item__container,
-html:root .rp-nav__others .rp-nav-menu__item > .rp-nav-menu__item__container,
 html:root .rp-suggest-item--current .rp-suggest-item__link {
   background-color: var(--color-key);
   color: var(--color-key-t);
@@ -188,8 +187,7 @@ html:root .rp-suggest-item--current .rp-suggest-item__link {
 }
 
 html:root .rp-search-button,
-html:root .rp-nav-menu__item--active > .rp-nav-menu__item__container,
-html:root .rp-nav__others .rp-nav-menu__item > .rp-nav-menu__item__container {
+html:root .rp-nav-menu__item--active > .rp-nav-menu__item__container {
   height: 36px;
   margin-bottom: var(--key-side-height);
   padding: 0 12px;

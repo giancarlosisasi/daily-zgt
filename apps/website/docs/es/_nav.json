@@ -2,7 +2,7 @@
   {
     "text": "Guía",
     "link": "/guide/getting-started/introduction",
-    "activeMatch": "^/es/guide/"
+    "activeMatch": "^/es/guide/(?!getting-started/download)"
   },
   {
     "text": "Descargar",
