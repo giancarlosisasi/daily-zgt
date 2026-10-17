@@ -80,10 +80,11 @@ public partial class NoSpanishLiteralsTests
         Assert.DoesNotContain("Win", CatalogOnlySpanish.Value);
     }
 
+    // Gallery is a developer-only style sheet with sample rows; users never see it.
     private static bool IsExcluded(string relativePath)
     {
         var parts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return parts.Any(part => part is "Localization" or "obj" or "bin");
+        return parts.Any(part => part is "Localization" or "Gallery" or "obj" or "bin");
     }
 
     private static IEnumerable<string> Violations(string fileName, string text)
