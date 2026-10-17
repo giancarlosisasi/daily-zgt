@@ -1,0 +1,77 @@
+# Daily ZGT for Windows: architecture
+
+This file is the contract for everyone who writes code in `apps/windows`. Read it in full before you change anything here.
+
+The product reference is `docs/features.md` at the repo root (features F01–F22). The behavior reference is the macOS app in `apps/macos`. When the two disagree, `docs/features.md` wins, then the Swift code. The Windows app copies the macOS behavior and text exactly, except where the "Windows decisions" section below says otherwise.
+
+## Stack
+
+- C# on .NET 10, WPF. `net10.0` for the core library, `net10.0-windows10.0.19041.0` for the app (the Windows 10 SDK target gives the WinRT toast APIs).
+- SQLite through `Microsoft.Data.Sqlite`, with the same schema, column formats and `app_state` keys as the macOS app.
+- xUnit for tests.
+
+WPF and not WinUI 3: the app is a tray icon, a borderless popup panel and a floating capture window, all drawn with the custom Tecla design. WPF gives transparent borderless windows, a tray icon, full style control and UI Automation for end-to-end tests without a packaging step. WinUI 3 adds Fluent chrome that Tecla replaces anyway, and has no tray icon.
+
+## Layout
+
+```
+apps/windows/
+  DailyZGT.slnx
+  Directory.Build.props        nullable, implicit usings, warnings are errors
+  src/DailyZGT.Core/           pure logic and storage, no WPF
+    Domain/                    Records.cs (the data shape), LocalTime.cs
+    Store/                     schema, migrations, AppStore (every mutation), snapshot
+    Repeat/                    F14 repeat planner
+    Rules/                     presentation rules: chips, labels, done window, history, tray title, footer count
+    Alerts/                    F15 alert planner, copy, reconciler (pure)
+  src/DailyZGT/                the WPF app
+    Theme/                     TeclaTokens.cs (generated), resource dictionaries, control styles
+    Assets/Fonts/              static font instances (generated from the macOS variable fonts)
+    Assets/Icons/              icon geometry, app icon
+    Platform/                  tray icon, toast notifications, global hotkey, start with Windows, animation setting, single instance
+    Panel/                     panel window, navigation state, footer, settings, notes
+    Priorities/                list, row, new priority form, confirm and undo bars, done, history, detail
+    Capture/                   capture window
+  tests/DailyZGT.Core.Tests/   unit tests for DailyZGT.Core
+  tests/DailyZGT.UiTests/      end-to-end tests that launch the app and drive it with UI Automation
+```
+
+## Data
+
+- `Domain/Records.cs` is the data shape. Do not add a second model of a priority. Extend this file when a field is truly missing, and say so in your report.
+- The database file is `%LOCALAPPDATA%\DailyZGT\daily-zgt.sqlite`. The environment variable `DAILYZGT_DATA_DIR` replaces the folder. Tests and the end-to-end harness always set it.
+- Times are local wall-clock `DateTime` values, truncated to seconds, stored as `yyyy-MM-ddTHH:mm:ss` text (`LocalTime.Text` and `LocalTime.Parse`). Day keys are `yyyy-MM-dd`, week keys are `yyyy-Www` (ISO).
+- Enum values are stored as the macOS strings: `high`, `medium`, `low`, `today`, `week`, `none`, `daily`, `day`, `week`, `before_30m`, `at_due`, `snooze`, `scheduled`, `delivered`, `snoozed`, `cancelled`, `created`, `edited`, `moved`, `done`, `restored`, `subtask_done`.
+- WAL journal, foreign keys on, busy timeout 2 s.
+- All time-dependent code takes a `TimeProvider`. Never call `DateTime.Now` directly in Core.
+- The store is single-writer. The app calls it on the UI thread. After every write it reads a new `StoreSnapshot` and raises one change event.
+
+## Windows decisions
+
+These follow the "Adaptación a Windows" table in `docs/features.md`.
+
+| Feature | Decision |
+|---|---|
+| F01 | Tray icon. The icon is the crosshair with a badge that shows the open count of Hoy (`9+` above 9, no badge on a data error). The tooltip is `Daily ZGT · N` and, when the setting is on, a second line with the truncated title. A left click opens or closes the panel. A right click shows a menu with `Abrir` and `Salir`. |
+| F02 | The panel opens above the tray, at the bottom right of the work area (it follows the taskbar edge when the taskbar is on another side). It closes when it loses focus. No taskbar button. |
+| F15 | Alerts are Windows toast notifications. "Alertas apagadas" means Windows reports the app's notifications as disabled. There is no permission prompt, so the "never asked" state does not exist on Windows. `Abrir ajustes` opens `ms-settings:notifications`. |
+| F17 | Default shortcut `Ctrl+Alt+Mayús+P` (Ctrl+Alt+Shift+P). The shortcut is stored in `HKCU\Software\DailyZGT`, not in the database. |
+| F18 | Start with Windows uses `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`. When the user disabled it in Settings > Apps > Startup, the row shows `Falta tu aprobación en Configuración.` with `Abrir ajustes` (`ms-settings:startupapps`). Copy changes: `Abre Daily ZGT cuando inicias sesión en tu computadora.`, `Siguiente prioridad en la barra de tareas`, `Muestra al pasar sobre el ícono el título de la primera prioridad abierta de Hoy.`, `Windows no aceptó el cambio.` |
+| F22 | Windows "Animation effects" (`SPI_GETCLIENTAREAANIMATION`) off means no motion. |
+| Open decisions 1–7 | Windows copies the macOS behavior. The repo rule says a behavior change lands in both apps, so a fix for any of them is a separate change to both apps. |
+
+## Test seams
+
+- `DAILYZGT_DATA_DIR` sets the data folder.
+- `DAILYZGT_NO_HOTKEY=1` skips the global hotkey registration, so a test run does not steal the user's shortcut.
+- Command-line `--show-panel` opens the panel at start. `--show-capture` opens the capture window at start. A second launch of the exe passes its arguments to the running instance.
+- Every interactive or asserted element has an `AutomationProperties.AutomationId` in PascalCase that names its role: `TabPriorities`, `ScopeToday`, `NewPriorityButton`, `NewPriorityTitle`, `PriorityRow_<id>`, `RowCheckbox_<id>`, `ConfirmDone`, `UndoButton`, `FooterSummary`, and so on.
+
+## Rules for code
+
+- Read the Swift file that owns a behavior before you port it. Port its tests to xUnit as well, renamed to C# style.
+- Keep text in Spanish exactly as `docs/features.md` writes it.
+- Comments only for a non-obvious why. No comments that narrate what the code does.
+- Business rules live in `DailyZGT.Core`, pure and tested. Views stay thin.
+- `dotnet build apps/windows/DailyZGT.slnx` has zero warnings and `dotnet test apps/windows/DailyZGT.slnx` is green before every commit.
+- Commit messages: Conventional Commits, scope `windows`, feature codes in the body, for example `feat(windows): add the priority store` with `F03 F05 F07` in the body. Do not add a `Co-Authored-By` trailer.

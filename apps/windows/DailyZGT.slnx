@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DailyZGT.Core/DailyZGT.Core.csproj" />
+    <Project Path="src/DailyZGT/DailyZGT.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DailyZGT.Core.Tests/DailyZGT.Core.Tests.csproj" />
+  </Folder>
+</Solution>
