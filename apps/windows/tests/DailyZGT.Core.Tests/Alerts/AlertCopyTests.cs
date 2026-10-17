@@ -1,0 +1,74 @@
+using DailyZGT.Core.Alerts;
+using static DailyZGT.Core.Tests.Rules.RuleFixtures;
+
+namespace DailyZGT.Core.Tests.Alerts;
+
+public class AlertCopyTests
+{
+    private static readonly DateTime Due = At("2026-10-12T16:00:00");
+
+    private static string Title(string fireAt) => AlertCopy.Title(At(fireAt), Due);
+
+    [Fact]
+    public void TheAlertBeforeTheDueSaysVenceEn30Min() =>
+        Assert.Equal("Vence en 30 min", Title("2026-10-12T15:30:00"));
+
+    [Theory]
+    [InlineData("2026-10-12T16:00:00")]
+    [InlineData("2026-10-12T16:15:00")]
+    [InlineData("2026-10-12T15:59:40")]
+    public void AnAlertAtOrAfterTheDueOrLessThanHalfAMinuteBeforeSaysPrioridadVencida(string fireAt) =>
+        Assert.Equal("Prioridad vencida", Title(fireAt));
+
+    [Fact]
+    public void ThirtySecondsBeforeTheDueStillSaysTheMinutesThatAreLeft() =>
+        Assert.Equal("Vence en 1 min", Title("2026-10-12T15:59:30"));
+
+    [Fact]
+    public void ASnoozeBeforeTheDueSaysTheMinutesThatAreLeft()
+    {
+        Assert.Equal("Vence en 12 min", Title("2026-10-12T15:48:00"));
+        Assert.Equal("Vence en 1 min", Title("2026-10-12T15:59:00"));
+    }
+
+    [Fact]
+    public void ALongWaitUsesTheTextOfTheDueChip()
+    {
+        Assert.Equal("Vence en 1 h 20 min", Title("2026-10-12T14:40:00"));
+        Assert.Equal("Vence hoy 16:00", Title("2026-10-12T11:00:00"));
+        Assert.Equal("Vence lun 16:00", Title("2026-10-09T11:00:00"));
+    }
+
+    [Fact]
+    public void TheRequestOfAnAlertHasTheTitleOfThePriorityAsBody()
+    {
+        var priority = AlertFixtures.AlertPriority(due: "2026-10-12T16:00:00", title: "Terminar el brief");
+        var request = AlertRequest.From(AlertFixtures.Row("a1", Domain.AlertKind.Before30m, "2026-10-12T15:30:00"), priority);
+
+        Assert.Equal(
+            new AlertRequest("a1", "Vence en 30 min", "Terminar el brief", At("2026-10-12T15:30:00"), "p1"),
+            request);
+    }
+
+    [Fact]
+    public void APriorityWithNoDueHasNoRequest() =>
+        Assert.Null(AlertRequest.From(
+            AlertFixtures.Row("a1", Domain.AlertKind.AtDue, "2026-10-12T16:00:00"),
+            AlertFixtures.AlertPriority()));
+
+    [Fact]
+    public void TheTestAlertHasItsOwnIdAndItsOwnBody() =>
+        Assert.Equal(
+            new AlertRequest("test-alert", "Prioridad vencida", "Revisa tu lista de hoy", Due, null),
+            AlertRequest.Test(Due));
+
+    [Fact]
+    public void TheActionLabelsMatchTheDocument()
+    {
+        Assert.Equal("Abrir", AlertCopy.Open);
+        Assert.Equal("Posponer 15 min", AlertCopy.Snooze);
+        Assert.Equal("Probar alerta", AlertCopy.Test);
+        Assert.Equal("Las alertas están desactivadas.", AlertCopy.Off);
+        Assert.Equal("Abrir ajustes", AlertCopy.OpenSettings);
+    }
+}
