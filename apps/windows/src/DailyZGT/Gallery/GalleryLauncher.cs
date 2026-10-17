@@ -13,8 +13,9 @@ namespace DailyZGT.Gallery;
 // --preview-priorities opens the Priorities views on demo rows. --preview-priorities-snapshot <path.png>
 // renders them at 2x to a PNG and exits. --state <name> puts the preview in one situation first, and
 // --state all renders every state into the folder given as the path. --readme-snapshots <folder> renders the
-// README images (priorities, detail, notes, settings, capture and tray) offscreen. --lang es, en or pt picks
-// the language; the README images default to en.
+// README images (priorities, detail, notes, settings, capture and tray) offscreen. --docs-snapshots <folder>
+// renders the website docs images, the README ones and more (`just docs-shots`). --lang es, en or pt picks
+// the language; both sets default to en.
 internal static class GalleryLauncher
 {
     private const string GalleryFlag = "--gallery";
@@ -23,6 +24,7 @@ internal static class GalleryLauncher
     private const string PreviewSnapshotFlag = "--preview-priorities-snapshot";
     private const string StateFlag = "--state";
     private const string ReadmeFlag = "--readme-snapshots";
+    private const string DocsFlag = "--docs-snapshots";
     private const string LangFlag = "--lang";
     private const string AllStates = "all";
     private const double Scale = 2;
@@ -30,7 +32,9 @@ internal static class GalleryLauncher
 
     public static bool TryRun(Application app, string[] args)
     {
-        if (TryReadme(app, args) || TryPreview(app, args))
+        if (TrySnapshots(app, args, ReadmeFlag, ReadmeShots.Readme)
+            || TrySnapshots(app, args, DocsFlag, ReadmeShots.Docs)
+            || TryPreview(app, args))
         {
             return true;
         }
@@ -105,9 +109,9 @@ internal static class GalleryLauncher
         return true;
     }
 
-    private static bool TryReadme(Application app, string[] args)
+    private static bool TrySnapshots(Application app, string[] args, string flag, IReadOnlyList<string> shots)
     {
-        var at = Array.IndexOf(args, ReadmeFlag);
+        var at = Array.IndexOf(args, flag);
         if (at < 0)
         {
             return false;
@@ -116,7 +120,7 @@ internal static class GalleryLauncher
         var lang = Value(args, LangFlag) ?? nameof(AppLanguage.En);
         if (at + 1 >= args.Length || !Enum.TryParse<AppLanguage>(lang, ignoreCase: true, out var language))
         {
-            Console.Error.WriteLine($"{ReadmeFlag} needs a folder. {LangFlag} is es, en or pt.");
+            Console.Error.WriteLine($"{flag} needs a folder. {LangFlag} is es, en or pt.");
             app.Shutdown(2);
             return true;
         }
@@ -124,7 +128,7 @@ internal static class GalleryLauncher
         UseLanguage(app, language);
         try
         {
-            ReadmeShots.Run(args[at + 1]);
+            ReadmeShots.Run(args[at + 1], shots);
             app.Shutdown();
         }
         catch (Exception error)

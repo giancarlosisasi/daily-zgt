@@ -46,24 +46,51 @@ internal sealed class NoAlerts : IAlertSystem
     }
 }
 
-// The images of the README. Each one is drawn from a visual tree that no window shows, on a PanelState over
-// the English demo store, and rendered to a bitmap at 2x. Nothing reads the screen.
+// The images of the README and of the website docs. Each one is drawn from a visual tree that no window
+// shows, on a PanelState over the demo store in the current language, and rendered to a bitmap at 2x.
+// Nothing reads the screen. Every shot opens its own store, so the order of a set changes no image.
 internal static class ReadmeShots
 {
     private const double Scale = 2;
     private const double Margin = 24;
-    private const string CaptureDemoTitle = "Reply to Marta's email";
 
-    public static void Run(string folder)
+    public static readonly IReadOnlyList<string> Readme = ["priorities", "detail", "notes", "settings", "capture", "tray"];
+
+    public static readonly IReadOnlyList<string> Docs =
+    [
+        "tray", "priorities", "week", "new-priority", "confirm", "undo", "completed", "detail", "notes", "capture", "settings",
+    ];
+
+    private static readonly IReadOnlyDictionary<string, Action<string>> Shots = new Dictionary<string, Action<string>>
+    {
+        ["tray"] = Tray,
+        ["priorities"] = path => Panel(path, _ => { }),
+        ["week"] = path => Panel(path, scene => scene.Data.Panel.SelectScope(PriorityList.Week)),
+        ["new-priority"] = path => Panel(path, scene =>
+        {
+            var form = scene.Data.Panel.Form;
+            form.Open();
+            form.Title = DemoWords.For(UiText.Current.Language).NewTitle;
+            form.Level = PriorityLevel.High;
+            form.PickDefaultDue();
+        }),
+        ["confirm"] = path => Panel(path, scene => scene.Data.Panel.Flow.ToggleConfirmation(scene.Data.ProposalId)),
+        ["undo"] = path => Panel(path, scene => scene.Data.Panel.Flow.ConfirmDone(scene.Data.ProposalId, DoneOrigin.List)),
+        ["completed"] = path => Panel(path, scene => scene.Data.Panel.ToggleDone()),
+        ["detail"] = path => Panel(path, scene => scene.Data.Panel.OpenDetail(scene.Data.ProposalId)),
+        ["notes"] = path => Panel(path, scene => scene.Data.Panel.SelectTab(PanelTab.Notes)),
+        ["settings"] = path => Panel(path, scene => scene.Data.Panel.ToggleSettings()),
+        ["capture"] = Capture,
+    };
+
+    public static void Run(string folder, IReadOnlyList<string> names)
     {
         Motion.IsReduced = true;
         Directory.CreateDirectory(folder);
-        Panel(Path.Combine(folder, "priorities.png"), _ => { });
-        Panel(Path.Combine(folder, "detail.png"), scene => scene.Data.Panel.OpenDetail(scene.Data.ProposalId));
-        Panel(Path.Combine(folder, "notes.png"), scene => scene.Data.Panel.SelectTab(PanelTab.Notes));
-        Panel(Path.Combine(folder, "settings.png"), scene => scene.Data.Panel.ToggleSettings());
-        Capture(Path.Combine(folder, "capture.png"));
-        Tray(Path.Combine(folder, "tray.png"));
+        foreach (var name in names)
+        {
+            Shots[name](Path.Combine(folder, $"{name}.png"));
+        }
     }
 
     private sealed class Scene(PreviewData data, ShellModel shell) : IDisposable
@@ -99,7 +126,7 @@ internal static class ReadmeShots
     private static void Capture(string path)
     {
         using var data = new PreviewData(SynchronizationContext.Current, readme: true);
-        var model = new CaptureModel(data.Store) { Title = CaptureDemoTitle };
+        var model = new CaptureModel(data.Store) { Title = DemoWords.For(UiText.Current.Language).CaptureTitle };
         var window = new CaptureWindow(model);
         var surface = (ContentControl)window.Content;
         window.Content = null;

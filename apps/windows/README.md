@@ -40,6 +40,7 @@ Run these from the repo root with [`just`](https://github.com/casey/just).
 - `just win-e2e` builds the app, then runs the end-to-end tests in `tests/DailyZGT.UiTests`. Each test starts `DailyZGT.exe` with an empty data folder and uses it through UI Automation. The tests move the mouse and type, so do not use the computer while they run. They need a signed-in desktop, so CI does not run them. Set `DAILYZGT_EXE` to test another build of the exe.
 - `just win-pack` publishes the app self-contained for win-x64 and packs the installer with [Velopack](https://velopack.io) into `artifacts/releases` (ignored by git). `Setup.exe` is in that folder. `just win-pack -Version 0.2.0` packs another version. The `vpk` tool installs as a local dotnet tool from `.config/dotnet-tools.json`.
 - `just readme-shots` renders the images of the root README into `assets/readme`. It runs `DailyZGT.exe --readme-snapshots assets/readme --lang en`, which draws each screen from a visual tree offscreen over an English demo store, at 2x. It never captures the screen. The macOS app does not build on Windows, so these images come from the Windows app. The code is in `src/DailyZGT/Gallery`.
+- `just docs-shots` renders the screenshots of the website docs the same way, with `--docs-snapshots`, once per language into `apps/website/docs/public/shots/en`, `es` and `pt`.
 - `just win-run` starts the app with the panel open. Extra arguments go to the app, for example `just win-run --show-capture`.
 
 ## Environment variables and flags

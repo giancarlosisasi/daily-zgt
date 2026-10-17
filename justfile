@@ -65,3 +65,9 @@ win-run *args:
 # Render the README images from the Windows app, offscreen and in English, into assets/readme
 readme-shots:
     dotnet run --project apps/windows/src/DailyZGT -- --readme-snapshots assets/readme --lang en
+
+# Render the website docs images from the Windows app, offscreen, in English, Spanish and Portuguese
+docs-shots:
+    dotnet run --project apps/windows/src/DailyZGT -- --docs-snapshots apps/website/docs/public/shots/en --lang en
+    dotnet run --project apps/windows/src/DailyZGT -- --docs-snapshots apps/website/docs/public/shots/es --lang es
+    dotnet run --project apps/windows/src/DailyZGT -- --docs-snapshots apps/website/docs/public/shots/pt --lang pt
