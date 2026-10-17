@@ -4,5 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- The one place for the app version. The release workflow overrides it with -p:Version from the tag. -->
+    <Version>0.1.0</Version>
+    <!-- Velopack installs into %LOCALAPPDATA%\<this id> and deletes that folder on uninstall. It must never
+         be DailyZGT: %LOCALAPPDATA%\DailyZGT holds the person's database. -->
+    <VelopackPackId>DailyZGT.Windows</VelopackPackId>
   </PropertyGroup>
 </Project>

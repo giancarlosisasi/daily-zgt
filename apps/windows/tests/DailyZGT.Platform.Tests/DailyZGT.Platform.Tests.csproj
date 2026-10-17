@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -22,6 +22,8 @@
     <Compile Include="..\..\src\DailyZGT\Platform\Hotkey\HotkeyShortcut.cs" Link="Platform\HotkeyShortcut.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Hotkey\ShortcutFormatter.cs" Link="Platform\ShortcutFormatter.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Startup\IStartupRegistration.cs" Link="Platform\IStartupRegistration.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Install\LaunchPath.cs" Link="Platform\LaunchPath.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Install\UninstallCleanup.cs" Link="Platform\UninstallCleanup.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Tray\TrayBadge.cs" Link="Platform\TrayBadge.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Toast\IToastCenter.cs" Link="Platform\IToastCenter.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Toast\ToastModels.cs" Link="Platform\ToastModels.cs" />

@@ -11,6 +11,7 @@
     <AssemblyTitle>Daily ZGT</AssemblyTitle>
     <Product>Daily ZGT</Product>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <StartupObject>DailyZGT.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
   <ItemGroup>
