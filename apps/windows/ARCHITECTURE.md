@@ -60,6 +60,16 @@ These follow the "Adaptación a Windows" table in `docs/features.md`.
 | F22 | Windows "Animation effects" (`SPI_GETCLIENTAREAANIMATION`) off means no motion. |
 | Open decisions 1–7 | Windows copies the macOS behavior. The repo rule says a behavior change lands in both apps, so a fix for any of them is a separate change to both apps. |
 
+## Languages
+
+The app speaks Spanish, English and Portuguese. It follows the Windows display language (`CultureInfo.CurrentUICulture`): `es*` gives Spanish, `pt*` gives Portuguese, anything else gives English. The environment variable `DAILYZGT_LANG` (`es`, `en`, `pt`) overrides it.
+
+- Every user-facing string, plural and date pattern lives in one typed catalog in `src/DailyZGT.Core/Localization/`: a `Texts` type with `required` members and one instance per language (`Texts.Es`, `Texts.En`, `Texts.Pt`). A missing translation is a compile error. No string literal shown to the user lives anywhere else.
+- Plurals and patterns are functions on the catalog (for example `SubtasksLeft(int)`, `DueIn(int hours, int minutes)`, `DayLabel(DateTime)`), because word order differs between languages: `Lunes 12 oct`, `Monday Oct 12`, `Segunda 12 out`.
+- The Spanish text is exactly what `docs/features.md` writes. English and Portuguese reuse the website wording first (`apps/website/i18n.json`, the `demo.*` keys), so the app and the site say the same thing.
+- Rules in Core that build text take a `Texts` argument. Views bind to the current `Texts` instance.
+- macOS gets the same languages in separate work by another agent. Do not edit `apps/macos` here.
+
 ## Test seams
 
 - `DAILYZGT_DATA_DIR` sets the data folder.
@@ -70,7 +80,7 @@ These follow the "Adaptación a Windows" table in `docs/features.md`.
 ## Rules for code
 
 - Read the Swift file that owns a behavior before you port it. Port its tests to xUnit as well, renamed to C# style.
-- Keep text in Spanish exactly as `docs/features.md` writes it.
+- Put every user-facing string in the `Texts` catalog in all three languages (see "Languages"). The Spanish text is exactly what `docs/features.md` writes.
 - Comments only for a non-obvious why. No comments that narrate what the code does.
 - Business rules live in `DailyZGT.Core`, pure and tested. Views stay thin.
 - `dotnet build apps/windows/DailyZGT.slnx` has zero warnings and `dotnet test apps/windows/DailyZGT.slnx` is green before every commit.
