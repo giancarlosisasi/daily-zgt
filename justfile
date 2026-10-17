@@ -61,3 +61,7 @@ win-pack *args:
 # Start the Windows app in debug with the panel open
 win-run *args:
     dotnet run --project apps/windows/src/DailyZGT -- --show-panel {{args}}
+
+# Render the README images from the Windows app, offscreen and in English, into assets/readme
+readme-shots:
+    dotnet run --project apps/windows/src/DailyZGT -- --readme-snapshots assets/readme --lang en

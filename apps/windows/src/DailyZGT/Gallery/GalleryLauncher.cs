@@ -12,7 +12,9 @@ namespace DailyZGT.Gallery;
 // --gallery opens the style gallery. --gallery-snapshot <path.png> renders it at 2x to a PNG and exits.
 // --preview-priorities opens the Priorities views on demo rows. --preview-priorities-snapshot <path.png>
 // renders them at 2x to a PNG and exits. --state <name> puts the preview in one situation first, and
-// --state all renders every state into the folder given as the path. --lang es, en or pt picks the language.
+// --state all renders every state into the folder given as the path. --readme-snapshots <folder> renders the
+// README images (priorities, detail, notes, settings, capture and tray) offscreen. --lang es, en or pt picks
+// the language; the README images default to en.
 internal static class GalleryLauncher
 {
     private const string GalleryFlag = "--gallery";
@@ -20,6 +22,7 @@ internal static class GalleryLauncher
     private const string PreviewFlag = "--preview-priorities";
     private const string PreviewSnapshotFlag = "--preview-priorities-snapshot";
     private const string StateFlag = "--state";
+    private const string ReadmeFlag = "--readme-snapshots";
     private const string LangFlag = "--lang";
     private const string AllStates = "all";
     private const double Scale = 2;
@@ -27,7 +30,7 @@ internal static class GalleryLauncher
 
     public static bool TryRun(Application app, string[] args)
     {
-        if (TryPreview(app, args))
+        if (TryReadme(app, args) || TryPreview(app, args))
         {
             return true;
         }
@@ -82,7 +85,7 @@ internal static class GalleryLauncher
 
         if (lang is not null)
         {
-            UiText.Current = Texts.For(Enum.Parse<AppLanguage>(lang, ignoreCase: true));
+            UseLanguage(app, Enum.Parse<AppLanguage>(lang, ignoreCase: true));
         }
         if (snapshot < 0)
         {
@@ -100,6 +103,44 @@ internal static class GalleryLauncher
             : [(state, path)];
         SnapNext(app, shots, 0);
         return true;
+    }
+
+    private static bool TryReadme(Application app, string[] args)
+    {
+        var at = Array.IndexOf(args, ReadmeFlag);
+        if (at < 0)
+        {
+            return false;
+        }
+
+        var lang = Value(args, LangFlag) ?? nameof(AppLanguage.En);
+        if (at + 1 >= args.Length || !Enum.TryParse<AppLanguage>(lang, ignoreCase: true, out var language))
+        {
+            Console.Error.WriteLine($"{ReadmeFlag} needs a folder. {LangFlag} is es, en or pt.");
+            app.Shutdown(2);
+            return true;
+        }
+
+        UseLanguage(app, language);
+        try
+        {
+            ReadmeShots.Run(args[at + 1]);
+            app.Shutdown();
+        }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(error);
+            app.Shutdown(1);
+        }
+
+        return true;
+    }
+
+    // The XAML bindings read the catalog from the Texts resource, which App.xaml filled before this ran.
+    private static void UseLanguage(Application app, AppLanguage language)
+    {
+        UiText.Current = Texts.For(language);
+        app.Resources["Texts"] = UiText.Current;
     }
 
     // One window per state, so every state starts from the same demo rows.

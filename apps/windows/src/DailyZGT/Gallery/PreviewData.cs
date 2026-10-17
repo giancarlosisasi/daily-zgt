@@ -6,12 +6,17 @@ using DailyZGT.Theme;
 namespace DailyZGT.Gallery;
 
 // Real time that can be moved back while the demo rows are written, so the store logs "created yesterday",
-// "done three days ago" and so on. After seeding the shift is zero and the clock is the wall clock.
-internal sealed class ShiftedTime : TimeProvider
+// "done three days ago" and so on. After seeding the shift is zero and the clock is the wall clock. With a
+// fixed moment the clock stands still on it, in UTC, so a rendered image does not depend on the day or the
+// time zone of the machine.
+internal sealed class ShiftedTime(DateTime? fixedAt = null) : TimeProvider
 {
     public TimeSpan Shift { get; set; }
 
-    public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + Shift;
+    public override TimeZoneInfo LocalTimeZone => fixedAt is null ? base.LocalTimeZone : TimeZoneInfo.Utc;
+
+    public override DateTimeOffset GetUtcNow() =>
+        (fixedAt is { } moment ? new DateTimeOffset(DateTime.SpecifyKind(moment, DateTimeKind.Utc)) : base.GetUtcNow()) + Shift;
 }
 
 internal sealed class PreviewMotion : IAnimationSource
@@ -27,9 +32,9 @@ internal sealed class PreviewMotion : IAnimationSource
     }
 }
 
-internal sealed class NoStartup : IStartupService
+internal sealed class NoStartup(StartupStatus state = StartupStatus.Off) : IStartupService
 {
-    public StartupStatus State => StartupStatus.Off;
+    public StartupStatus State => state;
 
     public void Enable()
     {
@@ -40,9 +45,9 @@ internal sealed class NoStartup : IStartupService
     }
 }
 
-internal sealed class NoHotkey : ICaptureHotkey
+internal sealed class NoHotkey(CaptureShortcut? current = null) : ICaptureHotkey
 {
-    public CaptureShortcut? Current => null;
+    public CaptureShortcut? Current => current;
 
     public event EventHandler? Pressed
     {
@@ -61,18 +66,30 @@ internal sealed class NoHotkey : ICaptureHotkey
     }
 }
 
-// A PanelState on an in-memory store with rows of every kind the Priorities views draw.
+// A PanelState on an in-memory store with rows of every kind the Priorities views draw. The readme set is
+// the English demo of the README images: a stopped clock on Monday 12 October, the wording of the website
+// demo, login on, the tray title on and the default shortcut.
 internal sealed class PreviewData : IDisposable
 {
-    public PreviewData(SynchronizationContext? ui)
+    public static readonly DateTime ReadmeNow = new(2026, 10, 12, 10, 24, 0);
+
+    private static readonly CaptureShortcut DefaultShortcut =
+        new(ShortcutModifiers.Control | ShortcutModifiers.Alt | ShortcutModifiers.Shift, 'P');
+
+    private readonly bool _readme;
+
+    public PreviewData(SynchronizationContext? ui, bool readme = false)
     {
-        Time = new ShiftedTime();
+        _readme = readme;
+        Time = new ShiftedTime(readme ? ReadmeNow : null);
         Store = AppStore.OpenInMemory(Time);
         Seed();
         Clock = new UiClock(Time, ui);
         Motion = new PreviewMotion();
         Policy = new MotionPolicy(Motion, TeclaTokens.Durations.Slow);
-        Panel = new PanelState(Store, Clock, Policy, new StartupSettings(new NoStartup()), new ShortcutSettings(new NoHotkey()));
+        var startup = new NoStartup(readme ? StartupStatus.On : StartupStatus.Off);
+        var hotkey = new NoHotkey(readme ? DefaultShortcut : null);
+        Panel = new PanelState(Store, Clock, Policy, new StartupSettings(startup), new ShortcutSettings(hotkey));
     }
 
     public ShiftedTime Time { get; }
@@ -100,6 +117,46 @@ internal sealed class PreviewData : IDisposable
     }
 
     private void Seed()
+    {
+        if (_readme)
+        {
+            SeedReadme();
+        }
+        else
+        {
+            SeedPreview();
+        }
+    }
+
+    private void SeedReadme()
+    {
+        var now = LocalTime.Now(Time);
+
+        At(TimeSpan.FromDays(-1), () => Add("Tidy the desk", PriorityList.Today, PriorityLevel.Low));
+        At(TimeSpan.Zero, () =>
+        {
+            var contract = Add("Review the Lima contract", PriorityList.Today, PriorityLevel.High, now.Date.AddHours(11).AddMinutes(30));
+            ContractId = contract.Id;
+            Store.SetNote(contract.Id, "Check clause 4 with legal before you sign.");
+            var proposal = Add("Send the proposal", PriorityList.Today, PriorityLevel.High, now.Date.AddHours(13));
+            ProposalId = proposal.Id;
+            Store.SetNote(proposal.Id, "Use the new price list.");
+            var first = Store.AddSubtask(proposal.Id, "Build the PDF")!;
+            Store.AddSubtask(proposal.Id, "Check the prices");
+            Store.AddSubtask(proposal.Id, "Send the email");
+            Store.ToggleSubtask(first.Id);
+            Add("Prepare Thursday's demo", PriorityList.Today, PriorityLevel.Medium, now.Date.AddHours(16));
+            Done(Add("Call Marta", PriorityList.Today, PriorityLevel.Medium));
+            Add("Plan the quarter", PriorityList.Week, PriorityLevel.Medium, now.Date.AddDays(4).AddHours(18));
+            Add("Pay the hosting", PriorityList.Week, PriorityLevel.Low);
+            Add("Write the sprint summary", PriorityList.Week, PriorityLevel.High, now.Date.AddDays(2).AddHours(17));
+            Store.SaveNote(NoteScope.Day, "Call Marta before 5");
+            Store.SaveNote(NoteScope.Week, "Close the Lima contract on Friday");
+            Store.SetValue(AppStateKeys.TrayTitle, true);
+        });
+    }
+
+    private void SeedPreview()
     {
         var now = LocalTime.Now(Time);
 
