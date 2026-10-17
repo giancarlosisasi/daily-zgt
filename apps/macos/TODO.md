@@ -48,3 +48,20 @@ What macOS needs:
 - Removal: on macOS the user drags the app to the Trash. The login item and the notification permission go with it; the data in `~/Library/Application Support/DailyZGT` stays, the same rule as on Windows.
 
 How to verify: download the release on a Mac that never ran the app, open it without a Gatekeeper block, add a priority, delete the app, and check that the database is still there.
+
+## 4. The app shows Spanish only (all features, product rule on languages)
+
+What the user sees now: every label, message and alert in the macOS app is Spanish, whatever the system language is. The strings are literals in the Swift views and label files, for example `"Hoy"` in `apps/macos/DailyZGT/App/PanelLabels.swift` and `todayLimitTitle` in `apps/macos/DailyZGT/Settings/SettingsView.swift`. The app has no `.xcstrings` or `.lproj` files.
+
+What the Windows app does: it speaks Spanish, English and Portuguese. It follows the system display language, and any other language shows English. The variable `DAILYZGT_LANG` (`es`, `en`, `pt`) overrides it. Every string lives in one table per language: `apps/windows/src/DailyZGT.Core/Localization/SpanishTexts.cs`, `EnglishTexts.cs` and `PortugueseTexts.cs`. `Texts.cs` makes every member `required`, so a missing translation does not compile. The language rule is in `AppLanguage.cs`.
+
+What macOS needs:
+
+- A String Catalog (`Localizable.xcstrings`) with `es`, `en` and `pt`, listed in `project.yml` (`knownRegions`, and Spanish as the development language). Take the English and Portuguese words from the Windows tables, so the two apps say the same thing. Change the Windows words "Windows", "taskbar" and "Settings" to "macOS", "menu bar" and "System Settings".
+- The same fallback: a system language other than Spanish, English or Portuguese shows English. A launch argument or environment variable like `DAILYZGT_LANG` helps the tests and the screenshots.
+- Dates in the panel (`Lunes 12 oct`, `Semana 42 · 12–18 oct`), the due chip and the footer count in the three languages, with the same formats as the Windows `DayLabel` and `WeekLabel`.
+- Alert text and alert actions (`Abrir`, `Posponer 15 min`) in the three languages.
+
+How to verify: a test per language that reads a few known keys, and a check that no key is missing in `en` or `pt`. Then run the app with the system language set to English, to Portuguese and to French (English expected), and check the panel, the settings, the capture window and a test alert.
+
+After this, update the product rule on languages in `docs/features.md` (it says the macOS app still has only Spanish), the root `README.md`, and the website pages that say the macOS app is Spanish only.
