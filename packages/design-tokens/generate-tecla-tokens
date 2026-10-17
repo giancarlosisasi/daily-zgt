@@ -5,8 +5,8 @@ import keyword
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "design-system-prototypes" / "tokens" / "tecla.json"
+ROOT = Path(__file__).resolve().parent.parent.parent
+SOURCE = ROOT / "packages" / "design-tokens" / "tecla.json"
 OUTPUT = ROOT / "apps" / "macos" / "DailyZGT" / "App" / "TeclaTokens.swift"
 SWIFT_KEYWORDS = {"default", "in", "is", "as", "do", "for", "if", "let", "var", "case", "func", "enum", "self", "static"}
 
@@ -166,7 +166,7 @@ def main():
     if "--check" in sys.argv[1:]:
         current = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
         if current != expected:
-            print("%s does not match %s. Run scripts/generate-tecla-tokens." % (OUTPUT.name, SOURCE.name))
+            print("%s does not match %s. Run packages/design-tokens/generate-tecla-tokens." % (OUTPUT.name, SOURCE.name))
             return 1
         print("%s matches %s." % (OUTPUT.name, SOURCE.name))
         return 0

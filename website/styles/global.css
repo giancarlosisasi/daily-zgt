@@ -1,4 +1,4 @@
-@import '../../design-system-prototypes/tokens/tecla.css';
+@import '../../packages/design-tokens/tecla.css';
 @import './fonts.css';
 
 html:root {

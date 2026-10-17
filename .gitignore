@@ -13,8 +13,4 @@ doc_build/
 .claude/
 CLAUDE.md
 /docs/
-/design-system-prototypes/*
-!/design-system-prototypes/tokens/
-/design-system-prototypes/tokens/*
-!/design-system-prototypes/tokens/tecla.json
-!/design-system-prototypes/tokens/tecla.css
+/design-system-prototypes/
