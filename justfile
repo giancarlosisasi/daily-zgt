@@ -47,6 +47,9 @@ win-build:
 win-test:
     dotnet test apps/windows/DailyZGT.slnx --filter "Category!=UI"
 
+# Build, then drive the real app through UI Automation (takes the mouse and keyboard while it runs)
+win-e2e: win-build
+    dotnet test apps/windows/tests/DailyZGT.UiTests --no-build
 
 # Build, test and check the tokens; run before every Windows commit
 win-check: tokens-check win-build win-test

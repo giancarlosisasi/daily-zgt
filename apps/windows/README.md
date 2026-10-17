@@ -16,8 +16,9 @@ Daily ZGT for Windows is the native Windows version of Daily ZGT. It runs in the
 Run these from the repo root with [`just`](https://github.com/casey/just).
 
 - `just win-build` builds the solution.
-- `just win-test` runs the tests.
+- `just win-test` runs the tests, except the end-to-end UI tests.
 - `just win-check` checks the design tokens, builds, and runs the tests. Run it before every commit.
+- `just win-e2e` builds the app, then runs the end-to-end tests in `tests/DailyZGT.UiTests`. Each test starts `DailyZGT.exe` with an empty data folder and uses it through UI Automation. The tests move the mouse and type, so do not use the computer while they run. They need a signed-in desktop, so CI does not run them. Set `DAILYZGT_EXE` to test another build of the exe.
 - `just win-run` starts the app with the panel open. Extra arguments go to the app, for example `just win-run --show-capture`.
 
 ## Environment variables and flags
