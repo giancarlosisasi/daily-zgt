@@ -31,11 +31,14 @@ apps/windows/
     Assets/Fonts/              static font instances (generated from the macOS variable fonts)
     Assets/Icons/              icon geometry, app icon
     Platform/                  tray icon, toast notifications, global hotkey, start with Windows, animation setting, single instance
-    Panel/                     panel window, navigation state, footer, settings, notes
+    Shell/                     app host, panel window, shell view, footer, data error view
+    Notes/                     notes tab
+    Settings/                  settings page
+    Capture/                   capture window
     Priorities/                PrioritiesView (list, rows, form, confirm bar, done), HistoryView, DetailView, UndoBarView
     UiText.cs                  UiText.Current, the Texts instance every view reads
-    Capture/                   capture window
   tests/DailyZGT.Core.Tests/   unit tests for DailyZGT.Core
+  tests/DailyZGT.Platform.Tests/ unit tests for the pure parts of the app project (shortcut, tray badge, placement, adapters)
   tests/DailyZGT.UiTests/      end-to-end tests that launch the app and drive it with UI Automation
 ```
 
