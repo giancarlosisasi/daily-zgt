@@ -1,0 +1,42 @@
+name: Windows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/windows/**
+      - packages/design-tokens/**
+      - .github/workflows/windows.yml
+  pull_request:
+    paths:
+      - apps/windows/**
+      - packages/design-tokens/**
+      - .github/workflows/windows.yml
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Show .NET version
+        run: dotnet --version
+
+      - name: Check the generated tokens
+        run: python packages/design-tokens/generate-tecla-tokens --check
+
+      - name: Build the app
+        run: dotnet build apps/windows/DailyZGT.slnx -c Release
+
+      - name: Run the tests
+        run: dotnet test apps/windows/DailyZGT.slnx -c Release --no-build
