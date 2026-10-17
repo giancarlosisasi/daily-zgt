@@ -7,6 +7,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>DailyZGT</RootNamespace>
     <AssemblyName>DailyZGT</AssemblyName>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,13 @@
+<Window x:Class="DailyZGT.Gallery.GalleryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gallery="clr-namespace:DailyZGT.Gallery"
+        Title="Tecla gallery"
+        Width="460"
+        Height="900"
+        Background="{DynamicResource Brush.Colors.Ground}"
+        UseLayoutRounding="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <gallery:GalleryView Margin="40,40,40,80" HorizontalAlignment="Center" />
+    </ScrollViewer>
+</Window>
