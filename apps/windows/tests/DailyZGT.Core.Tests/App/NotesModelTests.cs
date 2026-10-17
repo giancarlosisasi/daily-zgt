@@ -164,6 +164,60 @@ public sealed class NotesModelTests : IDisposable
     }
 
     [Fact]
+    public void TheDayNoteSwitchesAtMidnightWithoutWaitingForTheCheck()
+    {
+        _app.Set("2026-10-12T23:59:40");
+        var model = Model();
+
+        _app.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal("2026-10-13", model.Period);
+    }
+
+    [Fact]
+    public void AnUnsavedEditLandsOnTheOldDayWhenMidnightPasses()
+    {
+        _app.Set("2026-10-12T23:59:40");
+        var model = Model();
+        model.Edit("Late thought");
+
+        _app.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal("2026-10-13", model.Period);
+        Assert.Equal("", model.Text);
+        Assert.False(model.HasUnsavedEdit);
+        Assert.Equal("Late thought", _app.Store.NoteBody(NoteScope.Day, "2026-10-12"));
+        Assert.Equal("", _app.Store.NoteBody(NoteScope.Day, "2026-10-13"));
+    }
+
+    [Fact]
+    public void TheWeekNoteSwitchesAtMidnightOfTheNextIsoWeek()
+    {
+        _app.Set("2026-10-18T23:59:40");
+        var model = Model(NoteScope.Week);
+        model.Edit("Week 42");
+
+        _app.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal("2026-W43", model.Period);
+        Assert.Equal("", model.Text);
+        Assert.Equal("Week 42", _app.Store.NoteBody(NoteScope.Week, "2026-W42"));
+    }
+
+    [Fact]
+    public void TheWeekNoteStaysOnTheSameWeekWhenOnlyTheDayChanges()
+    {
+        _app.Set("2026-10-13T23:59:40");
+        var model = Model(NoteScope.Week);
+        model.Edit("Week 42");
+
+        _app.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal("2026-W42", model.Period);
+        Assert.Equal("Week 42", model.Text);
+    }
+
+    [Fact]
     public void ANewWeekShowsAnEmptyNote()
     {
         var model = Model(NoteScope.Week);

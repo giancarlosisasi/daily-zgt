@@ -5,8 +5,8 @@ namespace DailyZGT.Core.App;
 
 // F16. The note of the current day or ISO week. It saves 400 ms after the last keystroke and at once on
 // Flush, which the panel calls on a tab or scope change, when the settings open, on focus loss and on quit.
-// Sync finds a new day (on focus, after a change of the data, and every 30 s) and takes a change from
-// outside only while the person has no unsaved edit.
+// Sync finds a new day or week (at the midnight tick of the clock, on focus, after a change of the data,
+// and every 30 s) and takes a change from outside only while the person has no unsaved edit.
 public sealed class NotesModel : ObservableModel, IDisposable
 {
     public static readonly TimeSpan SaveDelay = TimeSpan.FromMilliseconds(400);
@@ -30,6 +30,7 @@ public sealed class NotesModel : ObservableModel, IDisposable
         _period = store.Period(scope);
         _text = store.NoteBody(scope, _period);
         _check = clock.Every(CheckInterval, Sync);
+        clock.DayChanged += OnDayChanged;
     }
 
     // "Notas de hoy" or "Notas de la semana".
@@ -131,7 +132,10 @@ public sealed class NotesModel : ObservableModel, IDisposable
     {
         CancelTimer();
         _check.Dispose();
+        _clock.DayChanged -= OnDayChanged;
     }
+
+    private void OnDayChanged(object? sender, EventArgs e) => Sync();
 
     private void Reload()
     {

@@ -64,7 +64,8 @@ These follow the "Adaptación a Windows" table in `docs/features.md`.
 | F17 | Default shortcut `Ctrl+Alt+Mayús+P` (Ctrl+Alt+Shift+P). The shortcut is stored in `HKCU\Software\DailyZGT`, not in the database. |
 | F18 | Start with Windows uses `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`. When the user disabled it in Settings > Apps > Startup, the row shows `Falta tu aprobación en Configuración.` with `Abrir ajustes` (`ms-settings:startupapps`). Copy changes: `Abre Daily ZGT cuando inicias sesión en tu computadora.`, `Siguiente prioridad en la barra de tareas`, `Muestra al pasar sobre el ícono el título de la primera prioridad abierta de Hoy.`, `Windows no aceptó el cambio.` |
 | F22 | Windows "Animation effects" (`SPI_GETCLIENTAREAANIMATION`) off means no motion. |
-| Open decisions 1–7 | Windows copies the macOS behavior. The repo rule says a behavior change lands in both apps, so a fix for any of them is a separate change to both apps. |
+| Open decisions 1 and 2 | Windows fixes both. The date next to the scope tabs follows the minute tick and the day change (`ShellModel`). The day and week notes switch on `UiClock.DayChanged` (`NotesModel`), saving a pending edit to the old period first. `apps/macos/TODO.md` lists the matching macOS change. |
+| Open decisions 3–7 | Windows copies the macOS behavior. The repo rule says a behavior change lands in both apps, so a fix for any of them is a separate change to both apps. |
 
 ## Languages
 
