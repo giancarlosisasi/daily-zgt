@@ -8,9 +8,6 @@ using DailyZGT.Core.Rules;
 
 namespace DailyZGT.Priorities;
 
-// F03. What fills the list when it has no open priority.
-public enum EmptyList { None, AllDone, NothingPending }
-
 // F03 to F08, F12, F13. The rows of the open list, its empty state and the Hechas section of the list the
 // panel shows. It redraws after every change of the data, of the flow, of the list and at each minute.
 public sealed class PriorityListModel : ObservableModel, IDisposable
@@ -76,7 +73,6 @@ public sealed class PriorityListModel : ObservableModel, IDisposable
 
     public bool IsNothingPending => Empty == EmptyList.NothingPending;
 
-    // F08. The section shows while the list has any done priority, also when all are older than 24 hours.
     public bool ShowsDone
     {
         get => _showsDone;
@@ -135,18 +131,18 @@ public sealed class PriorityListModel : ObservableModel, IDisposable
             (row, priority) => row.Update(priority, store.Subtasks(priority.Id), EnteredToday(priority), now, Flow));
         _drawn = true;
 
-        var done = store.DonePriorities(list);
-        var recent = done.Where(priority => DoneWindow.IsRecent(priority.DoneAt!.Value, now)).ToList();
-        Empty = open.Count > 0 ? EmptyList.None : recent.Count > 0 ? EmptyList.AllDone : EmptyList.NothingPending;
-        ShowsDone = done.Count > 0;
-        DoneHeader = _texts.DoneHeader(recent.Count);
+        var sections = ListSections.Of(list, store.Snapshot, now);
+        var recent = sections.RecentDone;
+        Empty = sections.Empty;
+        ShowsDone = sections.ShowsDone;
+        DoneHeader = sections.DoneHeader(_texts);
         if (!DoneRows.Select(row => row.Id).SequenceEqual(recent.Select(priority => priority.Id))
             || !DoneRows.Select(row => row.Title).SequenceEqual(recent.Select(priority => priority.Title)))
         {
             DoneRows = recent.Select(priority => new DoneRowItem(priority, Flow)).ToList();
         }
 
-        HistoryCount = done.Count - recent.Count;
+        HistoryCount = sections.HistoryCount;
     }
 
     public void Dispose()
