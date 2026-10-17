@@ -91,10 +91,10 @@ Run the tests.
 xcodebuild -project DailyZGT.xcodeproj -scheme DailyZGT -destination 'platform=macOS' -derivedDataPath build test
 ```
 
-The folder `website/` holds the site: a landing page and the Guide, in English and Spanish.
+The folder `apps/website/` holds the site: a landing page and the Guide, in English, Spanish and Portuguese.
 
 ```bash
-cd website && pnpm install && pnpm dev
+cd apps/website && pnpm install && pnpm dev
 ```
 
 ## Stack

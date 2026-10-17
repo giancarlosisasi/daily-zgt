@@ -14,3 +14,4 @@ doc_build/
 CLAUDE.md
 /docs/
 /design-system-prototypes/
+.playwright-cli/
