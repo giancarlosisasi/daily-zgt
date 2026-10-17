@@ -2,6 +2,7 @@
   "name": "daily-zgt-website",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@12.14.0",
   "scripts": {
     "dev": "rspress dev",
     "build": "rspress build",
