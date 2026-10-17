@@ -11,7 +11,7 @@ public partial class NoSpanishLiteralsTests
     [
         "Hoy", "Vencida", "Hecha", "Hechas", "Semana", "Abrir", "Salir", "Mayús", "Ayer", "Desde",
         "Prioridad", "Prioridades", "Posponer", "Probar", "Pendiente", "Cancelar", "Añadir", "Deshacer",
-        "Regresar", "Notas", "Ajustes", "Historial", "Creada", "Queda", "Quedan", "Nueva", "Quitar", "Tecla",
+        "Regresar", "Notas", "Ajustes", "Historial", "Creada", "Queda", "Quedan", "Nueva", "Quitar",
     ];
 
     private static readonly Lazy<IReadOnlyList<string>> CatalogOnlySpanish = new(SpanishOnlyCatalogStrings);

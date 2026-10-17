@@ -38,3 +38,18 @@ web-dev:
 # Build the website
 web-build:
     cd apps/website && pnpm build
+
+# Build the Windows app with warnings as errors
+win-build:
+    dotnet build apps/windows/DailyZGT.slnx
+
+# Run the Windows tests
+win-test:
+    dotnet test apps/windows/DailyZGT.slnx
+
+# Build, test and check the tokens; run before every Windows commit
+win-check: tokens-check win-build win-test
+
+# Start the Windows app in debug with the panel open
+win-run *args:
+    dotnet run --project apps/windows/src/DailyZGT -- --show-panel {{args}}
