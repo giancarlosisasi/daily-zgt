@@ -1,6 +1,7 @@
 using DailyZGT.Core.Domain;
 using DailyZGT.Core.Rules;
 using static DailyZGT.Core.Tests.Rules.RuleFixtures;
+using static DailyZGT.Core.Tests.Rules.Languages;
 
 namespace DailyZGT.Core.Tests.Rules;
 
@@ -145,17 +146,17 @@ public class DoneHistoryTests
     [InlineData("2026-10-08T12:00:00", "Jueves 8 oct")]
     [InlineData("2026-09-30T12:00:00", "Miércoles 30 sep")]
     public void TheDayTitlesUseTheSpanishLabelOfThePanel(string date, string title) =>
-        Assert.Equal(title, PanelLabels.HistoryDay(At(date), At("2026-10-13T09:00:00")));
+        Assert.Equal(title, Es.HistoryGroupTitle(At(date), At("2026-10-13T09:00:00")));
 
     [Fact]
     public void ADayInTheSameWeekReadsAsDayLabel() =>
-        Assert.Equal("Lunes 5 oct", PanelLabels.HistoryDay(At("2026-10-05T12:00:00"), At("2026-10-12T09:00:00")));
+        Assert.Equal("Lunes 5 oct", Es.HistoryGroupTitle(At("2026-10-05T12:00:00"), At("2026-10-12T09:00:00")));
 
     [Fact]
     public void YesterdayAcrossAMonthBoundaryReadsAyer() =>
-        Assert.Equal("Ayer", PanelLabels.HistoryDay(At("2026-09-30T08:00:00"), At("2026-10-01T09:00:00")));
+        Assert.Equal("Ayer", Es.HistoryGroupTitle(At("2026-09-30T08:00:00"), At("2026-10-01T09:00:00")));
 
     [Fact]
     public void YesterdayAcrossAYearBoundaryReadsAyer() =>
-        Assert.Equal("Ayer", PanelLabels.HistoryDay(At("2025-12-31T08:00:00"), At("2026-01-01T09:00:00")));
+        Assert.Equal("Ayer", Es.HistoryGroupTitle(At("2025-12-31T08:00:00"), At("2026-01-01T09:00:00")));
 }

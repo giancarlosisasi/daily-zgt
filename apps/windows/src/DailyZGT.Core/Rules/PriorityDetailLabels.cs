@@ -1,12 +1,15 @@
 using DailyZGT.Core.Domain;
+using DailyZGT.Core.Localization;
 
 namespace DailyZGT.Core.Rules;
 
 public static class DomainTitles
 {
-    public static string Title(this PriorityList list) => list == PriorityList.Today ? "Hoy" : "Semana";
+    public static string Title(this PriorityList list, Texts texts) =>
+        list == PriorityList.Today ? texts.ScopeToday : texts.ScopeWeek;
 
-    public static string Title(this RepeatRule rule) => rule == RepeatRule.None ? "No" : "Cada día";
+    public static string Title(this RepeatRule rule, Texts texts) =>
+        rule == RepeatRule.None ? texts.RepeatNo : texts.RepeatDaily;
 }
 
 public readonly record struct SubtaskProgress(int Done, int Total)
@@ -14,15 +17,10 @@ public readonly record struct SubtaskProgress(int Done, int Total)
     public int OpenCount => Total - Done;
 
     // F04. The row meta, for example `1/3`.
-    public string? RatioLabel => Total > 0 ? $"{Done}/{Total}" : null;
+    public string? RatioLabel(Texts texts) => Total > 0 ? texts.SubtaskRatio(Done, Total) : null;
 
     // F07. The line of the confirm bar.
-    public string? OpenSubtasksLabel => OpenCount switch
-    {
-        < 1 => null,
-        1 => "Queda 1 subtarea abierta.",
-        _ => $"Quedan {OpenCount} subtareas abiertas.",
-    };
+    public string? OpenSubtasksLabel(Texts texts) => OpenCount < 1 ? null : texts.SubtasksLeft(OpenCount);
 
     public static SubtaskProgress Of(IEnumerable<Subtask> subtasks)
     {
@@ -34,16 +32,14 @@ public readonly record struct SubtaskProgress(int Done, int Total)
 public static class PriorityDetailLabels
 {
     // F09. `Creada hoy` or `Creada vie 9 oct · 16:00`.
-    public static string Created(DateTime createdAt, DateTime now) =>
-        createdAt.Date == now.Date
-            ? "Creada hoy"
-            : $"Creada {SpanishNames.ShortWeekday(createdAt)} {createdAt.Day} {SpanishNames.ShortMonth(createdAt)} · {SpanishNames.Clock(createdAt)}";
+    public static string Created(DateTime createdAt, DateTime now, Texts texts) =>
+        createdAt.Date == now.Date ? texts.CreatedToday : texts.CreatedOn(createdAt);
 
-    public static string Alert(DateTime? due) => due is null ? "Sin fecha, sin alerta" : "30 min antes y al vencer";
+    public static string Alert(DateTime? due, Texts texts) => due is null ? texts.AlertLineNoDate : texts.AlertLine;
 
-    public static string State(Priority priority) => priority.IsDone ? "Hecha" : "Pendiente";
+    public static string State(Priority priority, Texts texts) => priority.IsDone ? texts.StateDone : texts.StateOpen;
 
     // F09. The chip `1/3 subtareas`, only when the priority has subtasks.
-    public static string? Subtasks(SubtaskProgress progress) =>
-        progress.Total > 0 ? $"{progress.Done}/{progress.Total} subtareas" : null;
+    public static string? Subtasks(SubtaskProgress progress, Texts texts) =>
+        progress.Total > 0 ? texts.SubtasksChip(progress.Done, progress.Total) : null;
 }

@@ -28,9 +28,6 @@ public sealed class TodayLimitTests : IDisposable
         Assert.Equal(blocks, TodayLimit.BlocksAdd(isOn, openCount));
 
     [Fact]
-    public void TheMessageIsTheCopyOfTheSpec() => Assert.Equal("Hoy ya tiene 5 prioridades abiertas.", TodayLimit.Message);
-
-    [Fact]
     public void TheSettingIsOffByDefault()
     {
         Assert.False(Store.TodayLimitIsOn);

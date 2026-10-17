@@ -1,5 +1,6 @@
 using DailyZGT.Core.Alerts;
 using DailyZGT.Core.Domain;
+using DailyZGT.Core.Localization;
 using static DailyZGT.Core.Tests.Rules.RuleFixtures;
 
 namespace DailyZGT.Core.Tests.Alerts;
@@ -40,6 +41,7 @@ internal sealed class AlertWorld
             Pending.Values.ToList(),
             Authorization,
             Now,
+            Texts.Es,
             () => $"row-{++nextId}");
 
         foreach (var row in plan.Save)
@@ -278,7 +280,7 @@ public class AlertReconcilerTests
         var world = new AlertWorld();
         world.AddBrief();
         world.Pending["unknown"] = new AlertRequest("unknown", "Prioridad vencida", "Old", At("2026-10-12T13:00:00"), "gone");
-        world.Pending[AlertRequest.TestId] = AlertRequest.Test(At("2026-10-12T10:00:05"));
+        world.Pending[AlertRequest.TestId] = AlertRequest.Test(At("2026-10-12T10:00:05"), Texts.Es);
 
         world.Reconcile();
 
@@ -377,7 +379,7 @@ public class AlertReconcilerTests
         world.AddBrief();
         world.Reconcile();
 
-        var plan = AlertReconciler.Plan(world.Open, world.Rows.Values, world.Pending.Values, AlertAuthorization.Authorized, world.Now);
+        var plan = AlertReconciler.Plan(world.Open, world.Rows.Values, world.Pending.Values, AlertAuthorization.Authorized, world.Now, Texts.Es);
 
         Assert.Empty(plan.Save);
         Assert.Empty(plan.Add);

@@ -1,6 +1,14 @@
 using DailyZGT.Core.Domain;
+using DailyZGT.Core.Localization;
 
 namespace DailyZGT.Core.Tests.Rules;
+
+internal static class Languages
+{
+    public static readonly Texts Es = Texts.Es;
+    public static readonly Texts En = Texts.En;
+    public static readonly Texts Pt = Texts.Pt;
+}
 
 internal static class RuleFixtures
 {

@@ -190,7 +190,7 @@ static class Tray
     public static void Run(string shotDir, Action<string> log, Action<TimeSpan> runFor, Action<TimeSpan, Action> after)
     {
         System.IO.Directory.CreateDirectory(shotDir);
-        using var tray = new WindowsTrayIcon();
+        using var tray = new WindowsTrayIcon(DailyZGT.Core.Localization.Texts.Es);
         tray.Clicked += (_, _) => log("EVENT Clicked");
         tray.OpenRequested += (_, _) => log("EVENT OpenRequested (menu Abrir)");
         tray.QuitRequested += (_, _) => log("EVENT QuitRequested (menu Salir)");
@@ -265,7 +265,7 @@ static class Hotkey
         const string subKey = @"Software\DailyZGT-SpikeTest";
         try
         {
-            log($"default formats as: {ShortcutFormatter.Format(HotkeyShortcut.Default)}");
+            log($"default formats as: {ShortcutFormatter.Format(HotkeyShortcut.Default, DailyZGT.Core.Localization.Texts.Es)}");
             var store = new RegistryShortcutStore(subKey);
             log($"empty store loads default: {store.Load() == HotkeyShortcut.Default}");
 
@@ -326,7 +326,7 @@ static class Hotkey
         }
     }
 
-    private static string Format(HotkeyShortcut? shortcut) => shortcut is { } s ? ShortcutFormatter.Format(s) : "none";
+    private static string Format(HotkeyShortcut? shortcut) => shortcut is { } s ? ShortcutFormatter.Format(s, DailyZGT.Core.Localization.Texts.Es) : "none";
 }
 
 static class Startup

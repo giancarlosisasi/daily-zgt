@@ -1,4 +1,5 @@
 using CommunityToolkit.WinUI.Notifications;
+using DailyZGT.Core.Localization;
 using Windows.UI.Notifications;
 
 namespace DailyZGT.Platform;
@@ -10,18 +11,18 @@ public sealed class WindowsToastCenter : IToastCenter
     public const string ActionKey = "action";
     public const string OpenAction = "open";
     public const string SnoozeAction = "snooze";
-    public const string OpenLabel = "Abrir";
-    public const string SnoozeLabel = "Posponer 15 min";
     public const string Group = "alerts";
 
     private static readonly TimeSpan MinimumLead = TimeSpan.FromSeconds(1);
 
+    private readonly Texts texts;
     private readonly TimeProvider time;
     private SynchronizationContext? context;
     private bool started;
 
-    public WindowsToastCenter(TimeProvider? time = null)
+    public WindowsToastCenter(Texts texts, TimeProvider? time = null)
     {
+        this.texts = texts;
         this.time = time ?? TimeProvider.System;
     }
 
@@ -131,7 +132,7 @@ public sealed class WindowsToastCenter : IToastCenter
 
     private static ToastNotifierCompat Notifier() => ToastNotificationManagerCompat.CreateToastNotifier();
 
-    private static ToastContent Content(ToastRequest request)
+    private ToastContent Content(ToastRequest request)
     {
         var builder = new ToastContentBuilder()
             .AddText(request.Title)
@@ -142,8 +143,8 @@ public sealed class WindowsToastCenter : IToastCenter
             builder.AddArgument(PriorityKey, priorityId);
         }
 
-        builder.AddButton(Button(OpenLabel, OpenAction, request, background: false));
-        builder.AddButton(Button(SnoozeLabel, SnoozeAction, request, background: true));
+        builder.AddButton(Button(texts.AlertOpen, OpenAction, request, background: false));
+        builder.AddButton(Button(texts.AlertSnooze, SnoozeAction, request, background: true));
         return builder.GetToastContent();
     }
 

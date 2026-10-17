@@ -28,7 +28,7 @@ if (passive)
     Log($"mode={args[0]}");
 }
 
-using var center = new WindowsToastCenter();
+using var center = new WindowsToastCenter(DailyZGT.Core.Localization.Texts.Es);
 center.Activated += (_, a) => Log($"ACTIVATED alert={a.AlertId} priority={a.PriorityId} action={a.Action}");
 var mode = coldStart ? "wait" : args.Length > 0 ? args[0] : "run";
 if (coldStart)
