@@ -33,14 +33,11 @@ public sealed class AppStore : IDisposable
 
     public static AppStore Open(TimeProvider clock) => OpenFile(AppDatabase.DefaultPath(), clock);
 
-    public static AppStore OpenFile(string path, TimeProvider clock) =>
-        Opening(() => new AppStore(AppDatabase.OpenFile(path), clock));
+    public static AppStore OpenFile(string path, TimeProvider clock) => Opening(() => AppDatabase.OpenFile(path), clock);
 
-    public static AppStore OpenInMemory(TimeProvider clock) =>
-        Opening(() => new AppStore(AppDatabase.OpenInMemory(), clock));
+    public static AppStore OpenInMemory(TimeProvider clock) => Opening(AppDatabase.OpenInMemory, clock);
 
     public void Dispose() => _connection.Dispose();
-
 
     public IReadOnlyList<Priority> OpenPriorities(PriorityList list) => Snapshot.Open.Where(p => p.List == list).ToList();
 
@@ -66,7 +63,6 @@ public sealed class AppStore : IDisposable
 
     public string NoteBody(NoteScope scope, string? period = null) =>
         Snapshot.Notes.TryGetValue(scope, out var notes) && notes.TryGetValue(period ?? Period(scope), out var body) ? body : "";
-
 
     public IReadOnlyList<Priority> DonePrioritiesAfter(PriorityList list, DateTime cutoff) => Read(() => Query(
         $"SELECT {PriorityColumns} FROM priority WHERE list = $list AND done_at IS NOT NULL AND done_at > $cutoff ORDER BY done_at DESC, position DESC, id",
@@ -107,7 +103,6 @@ public sealed class AppStore : IDisposable
     public PriorityAlert? Alert(string id) => Read(() =>
         Query($"SELECT {AlertColumns} FROM alert WHERE id = $id", ReadAlert, ("$id", id)).FirstOrDefault());
 
-
     // True when another connection or process committed since the last check. Then the snapshot is fresh
     // and Changed was raised. PRAGMA data_version ignores this connection's own commits.
     public bool CheckForExternalChanges() => Guard(() =>
@@ -119,7 +114,6 @@ public sealed class AppStore : IDisposable
         Publish();
         return true;
     });
-
 
     // F05 and F17. Trims the title. In Hoy, the limit of F06 blocks the add.
     public AddOutcome AddPriority(
@@ -277,7 +271,6 @@ public sealed class AppStore : IDisposable
         });
     }
 
-
     // Trims the title. A blank title adds nothing and returns null.
     public Subtask? AddSubtask(string priorityId, string title)
     {
@@ -312,7 +305,6 @@ public sealed class AppStore : IDisposable
         });
     }
 
-
     // A body equal to the stored one writes nothing, so clearing a note that was never saved saves nothing.
     public void SaveNote(NoteScope scope, string body, string? period = null)
     {
@@ -336,11 +328,9 @@ public sealed class AppStore : IDisposable
         });
     }
 
-
     public void SetValue<T>(AppStateKey<T> key, T value) => Write(() => Execute(
         "INSERT INTO app_state (key, value) VALUES ($key, $value) ON CONFLICT (key) DO UPDATE SET value = excluded.value",
         ("$key", key.Name), ("$value", key.Encode(value))));
-
 
     // Inserts or updates each row by id. A row of a priority that is gone is skipped.
     public void SaveAlerts(IEnumerable<PriorityAlert> alerts)
@@ -369,7 +359,6 @@ public sealed class AppStore : IDisposable
             return 0;
         });
     }
-
 
     private Priority Edit(string id, Func<Priority, Priority> change) =>
         Write(() =>
@@ -467,7 +456,6 @@ public sealed class AppStore : IDisposable
         ("$id", s.Id), ("$priority", s.PriorityId), ("$title", s.Title), ("$done", TextOrNull(s.DoneAt)),
         ("$position", s.Position), ("$created", LocalTime.Text(s.CreatedAt)));
 
-
     private StoreSnapshot ReadSnapshot() => Read(() =>
     {
         var open = Query(
@@ -503,7 +491,6 @@ public sealed class AppStore : IDisposable
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-
     private static Priority ReadPriority(SqliteDataReader r) => new(
         r.GetString(0),
         r.GetString(1),
@@ -533,7 +520,6 @@ public sealed class AppStore : IDisposable
     private static DateTime? OptionalTime(SqliteDataReader r, int column) => r.IsDBNull(column) ? null : RequiredTime(r, column);
 
     private static string? TextOrNull(DateTime? time) => time is { } value ? LocalTime.Text(value) : null;
-
 
     private DateTime Now() => LocalTime.Now(_clock);
 
@@ -596,15 +582,18 @@ public sealed class AppStore : IDisposable
         }
     }
 
-    private static AppStore Opening(Func<AppStore> open)
+    private static AppStore Opening(Func<SqliteConnection> connect, TimeProvider clock)
     {
+        SqliteConnection? connection = null;
         try
         {
-            return open();
+            connection = connect();
+            return new AppStore(connection, clock);
         }
-        catch (Exception error) when (error is SqliteException or IOException or UnauthorizedAccessException)
+        catch (Exception error) when (error is SqliteException or IOException or UnauthorizedAccessException or StoreException)
         {
-            throw new StoreException(error.Message, error);
+            connection?.Dispose();
+            throw error as StoreException ?? new StoreException(error.Message, error);
         }
     }
 

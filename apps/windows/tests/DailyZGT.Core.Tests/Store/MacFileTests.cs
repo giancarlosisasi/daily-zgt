@@ -254,6 +254,18 @@ public sealed class MacFileTests : IDisposable
     }
 
     [Fact]
+    public void ARowWithAnUnreadableTimeFailsTheOpenAndReleasesTheFile()
+    {
+        MacFile.Write(_path, withSecondMigration: true);
+        OutsideConnection.Execute(_path, "UPDATE priority SET created_at = '12/10/2026 09:00' WHERE id = 'p3'");
+
+        Assert.Throws<StoreException>(() => Open());
+
+        File.Delete(_path);
+        Assert.False(File.Exists(_path));
+    }
+
+    [Fact]
     public void TheWindowsAppWritesRowsTheMacOSAppReadsTheSameWay()
     {
         MacFile.Write(_path, withSecondMigration: true);
