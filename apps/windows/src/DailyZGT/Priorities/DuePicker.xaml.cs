@@ -14,8 +14,6 @@ public partial class DuePicker : UserControl
 {
     private const int Weeks = 6;
 
-    private static int openCount;
-
     private readonly Texts _texts = UiText.Current;
     private readonly Button[] _days = new Button[Weeks * 7];
     private DateTime _month;
@@ -55,11 +53,6 @@ public partial class DuePicker : UserControl
         PreviewKeyDown += OnKey;
     }
 
-    // True while any due picker is open. The panel shell checks it before it hides on deactivation.
-    public static bool IsOpen => openCount > 0;
-
-    public static event EventHandler? IsOpenChanged;
-
     public event EventHandler? Done;
 
     public event EventHandler? Cancelled;
@@ -77,12 +70,6 @@ public partial class DuePicker : UserControl
     }
 
     public void FocusDay() => _days.FirstOrDefault(day => Equals(day.Tag, "selected"))?.Focus();
-
-    internal static void SetOpen(bool open)
-    {
-        openCount = Math.Max(0, openCount + (open ? 1 : -1));
-        IsOpenChanged?.Invoke(null, EventArgs.Empty);
-    }
 
     private void Draw()
     {

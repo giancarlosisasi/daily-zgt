@@ -114,9 +114,12 @@ public partial class PanelWindow : Window
     }
 
     // The shadow around the surface is part of the window. A click there is a click outside the panel.
+    // A click in a popup of the panel, such as the due date picker, routes through here too, but its visual
+    // lives in the popup's own tree, so only a visual of this window's tree counts.
     private void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.OriginalSource is Visual target && target != Surface && !Surface.IsAncestorOf(target))
+        if (e.OriginalSource is Visual target && (target == this || IsAncestorOf(target))
+            && target != Surface && !Surface.IsAncestorOf(target))
         {
             e.Handled = true;
             HideAfterFocusLoss();

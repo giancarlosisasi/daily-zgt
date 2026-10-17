@@ -44,12 +44,7 @@ public partial class PriorityPreviewWindow : Window
             panel.OnDeactivated();
             ShowStatus();
         };
-        DuePicker.IsOpenChanged += OnPickerChanged;
-        Closed += (_, _) =>
-        {
-            DuePicker.IsOpenChanged -= OnPickerChanged;
-            _data.Dispose();
-        };
+        Closed += (_, _) => _data.Dispose();
         ShowPage();
         ShowStatus();
     }
@@ -172,10 +167,8 @@ public partial class PriorityPreviewWindow : Window
         HistoryPage.Visibility = page is PanelPage.History ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void OnPickerChanged(object? sender, EventArgs e) => ShowStatus();
-
     private void ShowStatus() =>
-        Status.Text = $"Desactivaciones: {_deactivations}\nSelector abierto: {DuePicker.IsOpen}\n"
+        Status.Text = $"Desactivaciones: {_deactivations}\n"
             + $"Alertas apagadas: {AlertsNotice.GetIsOff(PanelHost)}\nMovimiento reducido: {Theme.Motion.IsReduced}\n"
             + $"Límite: {_data.Panel.TodayLimitIsOn}";
 

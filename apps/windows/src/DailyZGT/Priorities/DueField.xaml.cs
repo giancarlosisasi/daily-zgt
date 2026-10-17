@@ -19,7 +19,6 @@ public partial class DueField : UserControl
 
     private readonly Texts _texts = UiText.Current;
     private bool _cancelled;
-    private bool _isOpen;
 
     public DueField()
     {
@@ -97,21 +96,10 @@ public partial class DueField : UserControl
         PickerPopup.IsOpen = true;
     }
 
-    private void OnPopupOpened(object? sender, EventArgs e)
-    {
-        _isOpen = true;
-        DuePicker.SetOpen(true);
-        Picker.FocusDay();
-    }
+    private void OnPopupOpened(object? sender, EventArgs e) => Picker.FocusDay();
 
     private void OnPopupClosed(object? sender, EventArgs e)
     {
-        if (_isOpen)
-        {
-            _isOpen = false;
-            DuePicker.SetOpen(false);
-        }
-
         if (!_cancelled && Value is { } before && Picker.Value != before)
         {
             Picked?.Invoke(this, Picker.Value);
