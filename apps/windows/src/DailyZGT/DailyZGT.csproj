@@ -7,6 +7,9 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>DailyZGT</RootNamespace>
     <AssemblyName>DailyZGT</AssemblyName>
+    <!-- The toast library registers this title as the app name that Windows shows on every toast. -->
+    <AssemblyTitle>Daily ZGT</AssemblyTitle>
+    <Product>Daily ZGT</Product>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
