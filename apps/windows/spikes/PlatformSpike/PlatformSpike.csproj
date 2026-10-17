@@ -17,4 +17,8 @@
     <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DailyZGT.Core\DailyZGT.Core.csproj" />
+  </ItemGroup>
+
 </Project>

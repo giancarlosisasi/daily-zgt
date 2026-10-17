@@ -1,72 +1,70 @@
+using DailyZGT.Core.Localization;
+
 namespace DailyZGT.Platform;
 
 public static class ShortcutFormatter
 {
-    private static readonly Dictionary<int, string> Names = new()
-    {
-        [0x08] = "Retroceso",
-        [0x09] = "Tab",
-        [0x0D] = "Entrar",
-        [0x13] = "Pausa",
-        [0x14] = "Bloq Mayús",
-        [0x1B] = "Esc",
-        [0x20] = "Espacio",
-        [0x21] = "Re Pág",
-        [0x22] = "Av Pág",
-        [0x23] = "Fin",
-        [0x24] = "Inicio",
-        [0x25] = "Izquierda",
-        [0x26] = "Arriba",
-        [0x27] = "Derecha",
-        [0x28] = "Abajo",
-        [0x2C] = "Impr Pant",
-        [0x2D] = "Insertar",
-        [0x2E] = "Supr",
-        [0xBA] = ";",
-        [0xBB] = "=",
-        [0xBC] = ",",
-        [0xBD] = "-",
-        [0xBE] = ".",
-        [0xBF] = "/",
-        [0xC0] = "`",
-        [0xDB] = "[",
-        [0xDC] = "\\",
-        [0xDD] = "]",
-        [0xDE] = "'",
-    };
-
-    public static string Format(HotkeyShortcut shortcut)
+    public static string Format(HotkeyShortcut shortcut, Texts texts)
     {
         var parts = new List<string>(5);
         if (shortcut.Modifiers.HasFlag(HotkeyModifiers.Control))
         {
-            parts.Add("Ctrl");
+            parts.Add(texts.KeyCtrl);
         }
 
         if (shortcut.Modifiers.HasFlag(HotkeyModifiers.Alt))
         {
-            parts.Add("Alt");
+            parts.Add(texts.KeyAlt);
         }
 
         if (shortcut.Modifiers.HasFlag(HotkeyModifiers.Shift))
         {
-            parts.Add("Mayús");
+            parts.Add(texts.KeyShift);
         }
 
         if (shortcut.Modifiers.HasFlag(HotkeyModifiers.Win))
         {
-            parts.Add("Win");
+            parts.Add(texts.KeyWin);
         }
 
-        parts.Add(KeyName(shortcut.VirtualKey));
+        parts.Add(KeyName(shortcut.VirtualKey, texts));
         return string.Join('+', parts);
     }
 
-    private static string KeyName(int key) => key switch
+    private static string KeyName(int key, Texts texts) => key switch
     {
         >= 'A' and <= 'Z' or >= '0' and <= '9' => ((char)key).ToString(),
-        >= 0x60 and <= 0x69 => $"Num {key - 0x60}",
+        >= 0x60 and <= 0x69 => texts.KeyNumpad(key - 0x60),
         >= 0x70 and <= 0x87 => $"F{key - 0x6F}",
-        _ => Names.TryGetValue(key, out var name) ? name : $"Tecla {key:X2}",
+        0x08 => texts.KeyBackspace,
+        0x09 => texts.KeyTab,
+        0x0D => texts.KeyEnter,
+        0x13 => texts.KeyPause,
+        0x14 => texts.KeyCapsLock,
+        0x1B => texts.KeyEscape,
+        0x20 => texts.KeySpace,
+        0x21 => texts.KeyPageUp,
+        0x22 => texts.KeyPageDown,
+        0x23 => texts.KeyEnd,
+        0x24 => texts.KeyHome,
+        0x25 => texts.KeyLeft,
+        0x26 => texts.KeyUp,
+        0x27 => texts.KeyRight,
+        0x28 => texts.KeyDown,
+        0x2C => texts.KeyPrintScreen,
+        0x2D => texts.KeyInsert,
+        0x2E => texts.KeyDelete,
+        0xBA => ";",
+        0xBB => "=",
+        0xBC => ",",
+        0xBD => "-",
+        0xBE => ".",
+        0xBF => "/",
+        0xC0 => "`",
+        0xDB => "[",
+        0xDC => "\\",
+        0xDD => "]",
+        0xDE => "'",
+        _ => texts.KeyOther(key),
     };
 }

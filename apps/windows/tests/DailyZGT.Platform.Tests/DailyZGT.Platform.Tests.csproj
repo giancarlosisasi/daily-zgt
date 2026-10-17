@@ -24,4 +24,10 @@
     <Compile Include="..\..\src\DailyZGT\Platform\Tray\TrayBadge.cs" Link="Platform\TrayBadge.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DailyZGT.Core\DailyZGT.Core.csproj" />
+  </ItemGroup>
+
 </Project>
+
+

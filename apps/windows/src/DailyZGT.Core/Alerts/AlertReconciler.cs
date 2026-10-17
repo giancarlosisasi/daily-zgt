@@ -1,4 +1,5 @@
 using DailyZGT.Core.Domain;
+using DailyZGT.Core.Localization;
 
 namespace DailyZGT.Core.Alerts;
 
@@ -22,6 +23,7 @@ public static class AlertReconciler
         IEnumerable<AlertRequest> pending,
         AlertAuthorization authorization,
         DateTime now,
+        Texts texts,
         Func<string>? makeId = null)
     {
         var authorized = authorization == AlertAuthorization.Authorized;
@@ -49,7 +51,7 @@ public static class AlertReconciler
             foreach (var row in changes.Scheduled)
             {
                 if (!priorities.TryGetValue(row.PriorityId, out var priority)
-                    || AlertRequest.From(row, priority) is not { } request
+                    || AlertRequest.From(row, priority, texts) is not { } request
                     || (pendingById.TryGetValue(request.Id, out var held) && held == request))
                 {
                     continue;

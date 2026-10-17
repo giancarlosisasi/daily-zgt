@@ -150,7 +150,6 @@ public sealed class Texts
     public required Func<DateTime, string> SinceDay { get; init; }
 
     // F15. Alerts.
-    public required string AlertBeforeTitle { get; init; }
     public required string AlertOverdueTitle { get; init; }
     public required string AlertDuePrefix { get; init; }
     public required string AlertTestBody { get; init; }
@@ -196,6 +195,32 @@ public sealed class Texts
     public required string KeyAlt { get; init; }
     public required string KeyShift { get; init; }
     public required string KeyWin { get; init; }
+
+    // Names of the keys a shortcut can hold. Letters, digits, punctuation and function keys print as they are.
+    public required string KeyBackspace { get; init; }
+    public required string KeyTab { get; init; }
+    public required string KeyEnter { get; init; }
+    public required string KeyPause { get; init; }
+    public required string KeyCapsLock { get; init; }
+    public required string KeyEscape { get; init; }
+    public required string KeySpace { get; init; }
+    public required string KeyPageUp { get; init; }
+    public required string KeyPageDown { get; init; }
+    public required string KeyEnd { get; init; }
+    public required string KeyHome { get; init; }
+    public required string KeyLeft { get; init; }
+    public required string KeyUp { get; init; }
+    public required string KeyRight { get; init; }
+    public required string KeyDown { get; init; }
+    public required string KeyPrintScreen { get; init; }
+    public required string KeyInsert { get; init; }
+    public required string KeyDelete { get; init; }
+
+    // `Num 5` for a digit of the numeric keypad.
+    public required Func<int, string> KeyNumpad { get; init; }
+
+    // A key with no name here, by its virtual-key code in hexadecimal: `Tecla 9A`.
+    public required Func<int, string> KeyOther { get; init; }
 
     // F19. Footer.
     public required Func<int, int, string> FooterToday { get; init; }

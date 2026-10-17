@@ -1,4 +1,5 @@
 using DailyZGT.Core.Domain;
+using DailyZGT.Core.Localization;
 
 namespace DailyZGT.Core.Alerts;
 
@@ -10,11 +11,11 @@ public sealed record AlertRequest(string Id, string Title, string Body, DateTime
 {
     public const string TestId = "test-alert";
 
-    public static AlertRequest Test(DateTime fireAt) =>
-        new(TestId, AlertCopy.Overdue, AlertCopy.TestBody, fireAt, null);
+    public static AlertRequest Test(DateTime fireAt, Texts texts) =>
+        new(TestId, texts.AlertOverdueTitle, texts.AlertTestBody, fireAt, null);
 
-    public static AlertRequest? From(PriorityAlert alert, Priority priority) =>
+    public static AlertRequest? From(PriorityAlert alert, Priority priority, Texts texts) =>
         priority.DueAt is { } due
-            ? new AlertRequest(alert.Id, AlertCopy.Title(alert.FireAt, due), priority.Title, alert.FireAt, priority.Id)
+            ? new AlertRequest(alert.Id, AlertCopy.Title(alert.FireAt, due, texts), priority.Title, alert.FireAt, priority.Id)
             : null;
 }

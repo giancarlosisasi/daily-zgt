@@ -11,7 +11,7 @@ public abstract record AddOutcome
     // F05, F17: a blank title adds nothing and shows no message.
     public sealed record EmptyTitle : AddOutcome;
 
-    // F06: the form or the capture window keeps its text and shows TodayLimit.Message.
+    // F06: the form or the capture window keeps its text and shows Texts.TodayLimitMessage.
     public sealed record BlockedByTodayLimit : AddOutcome;
 }
 

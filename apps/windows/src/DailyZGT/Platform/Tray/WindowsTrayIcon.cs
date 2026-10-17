@@ -1,10 +1,11 @@
 using System.Runtime.InteropServices;
+using DailyZGT.Core.Localization;
 using DailyZGT.Platform.Native;
 using Microsoft.Win32;
 
 namespace DailyZGT.Platform;
 
-public sealed class WindowsTrayIcon : ITrayIcon
+public sealed class WindowsTrayIcon(Texts texts) : ITrayIcon
 {
     private const uint IconId = 1;
     private const int CallbackMessage = 0x8000 + 1;
@@ -198,8 +199,8 @@ public sealed class WindowsTrayIcon : ITrayIcon
         var menu = Win32.CreatePopupMenu();
         try
         {
-            Win32.AppendMenu(menu, Win32.MF_STRING, OpenCommand, "Abrir");
-            Win32.AppendMenu(menu, Win32.MF_STRING, QuitCommand, "Salir");
+            Win32.AppendMenu(menu, Win32.MF_STRING, OpenCommand, texts.TrayMenuOpen);
+            Win32.AppendMenu(menu, Win32.MF_STRING, QuitCommand, texts.TrayMenuQuit);
             Win32.SetForegroundWindow(window!.Handle);
             var command = Win32.TrackPopupMenuEx(
                 menu,

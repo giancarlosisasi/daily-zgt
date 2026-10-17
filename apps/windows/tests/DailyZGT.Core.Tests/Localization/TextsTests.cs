@@ -146,7 +146,6 @@ public class TextsTests
         Assert.Equal("30 min antes y al vencer", es.AlertLine);
         Assert.Equal("Añadir subtarea y Enter", es.SubtaskPlaceholder);
         Assert.Equal("Contexto, links, lo que falta", es.NotePlaceholder);
-        Assert.Equal("Vence en 30 min", es.AlertBeforeTitle);
         Assert.Equal("Prioridad vencida", es.AlertOverdueTitle);
         Assert.Equal("Revisa tu lista de hoy", es.AlertTestBody);
         Assert.Equal("Las alertas están desactivadas.", es.AlertsOff);
