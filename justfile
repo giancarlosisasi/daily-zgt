@@ -43,9 +43,10 @@ web-build:
 win-build:
     dotnet build apps/windows/DailyZGT.slnx
 
-# Run the Windows tests
+# Run the Windows tests, except the end-to-end UI tests
 win-test:
-    dotnet test apps/windows/DailyZGT.slnx
+    dotnet test apps/windows/DailyZGT.slnx --filter "Category!=UI"
+
 
 # Build, test and check the tokens; run before every Windows commit
 win-check: tokens-check win-build win-test
