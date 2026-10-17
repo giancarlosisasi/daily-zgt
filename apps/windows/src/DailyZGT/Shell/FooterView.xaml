@@ -1,0 +1,45 @@
+<UserControl x:Class="DailyZGT.Shell.FooterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             Focusable="False">
+    <Border Style="{StaticResource Tecla.Footer}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Summary"
+                       Style="{StaticResource Tecla.Text.Label}"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       AutomationProperties.AutomationId="FooterSummary" />
+            <Button x:Name="BellButton"
+                    Grid.Column="1"
+                    Style="{StaticResource Tecla.IconButton}"
+                    Margin="0,0,2,0"
+                    AutomationProperties.AutomationId="TestAlertButton"
+                    AutomationProperties.Name="{Binding TestAlert, Source={StaticResource Texts}}"
+                    Click="OnBell">
+                <theme:IconView x:Name="BellIcon" Kind="Bell" Size="13" />
+            </Button>
+            <Button x:Name="GearButton"
+                    Grid.Column="2"
+                    Style="{StaticResource Tecla.IconButton}"
+                    Margin="0,0,2,0"
+                    AutomationProperties.AutomationId="SettingsButton"
+                    AutomationProperties.Name="{Binding SettingsTitle, Source={StaticResource Texts}}"
+                    ToolTip="{Binding SettingsTitle, Source={StaticResource Texts}}"
+                    Click="OnGear">
+                <theme:IconView Kind="Gear" Size="13" />
+            </Button>
+            <Button Grid.Column="3"
+                    Style="{StaticResource Tecla.GhostButton}"
+                    Content="{Binding Quit, Source={StaticResource Texts}}"
+                    AutomationProperties.AutomationId="QuitButton"
+                    Click="OnQuit" />
+        </Grid>
+    </Border>
+</UserControl>

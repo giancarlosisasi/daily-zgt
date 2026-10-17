@@ -1,0 +1,80 @@
+<UserControl x:Class="DailyZGT.Shell.PanelShellView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             xmlns:shell="clr-namespace:DailyZGT.Shell"
+             xmlns:notes="clr-namespace:DailyZGT.Notes"
+             xmlns:settings="clr-namespace:DailyZGT.Settings"
+             xmlns:priorities="clr-namespace:DailyZGT.Priorities"
+             Focusable="False">
+    <StackPanel>
+        <StackPanel x:Name="Tabs" Margin="0,0,0,10">
+            <Border Style="{StaticResource Tecla.SegmentTrack.Top}">
+                <UniformGrid Columns="2">
+                    <RadioButton x:Name="TabPriorities"
+                                 Style="{StaticResource Tecla.SegmentButton.Top}"
+                                 Margin="0,0,1,0"
+                                 Content="{Binding TabPriorities, Source={StaticResource Texts}}"
+                                 AutomationProperties.AutomationId="TabPriorities"
+                                 Checked="OnTab" />
+                    <RadioButton x:Name="TabNotes"
+                                 Style="{StaticResource Tecla.SegmentButton.Top}"
+                                 Margin="1,0,0,0"
+                                 Content="{Binding TabNotes, Source={StaticResource Texts}}"
+                                 AutomationProperties.AutomationId="TabNotes"
+                                 Checked="OnTab" />
+                </UniformGrid>
+            </Border>
+            <Grid Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource Tecla.SegmentTrack.Scope}">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="ScopeToday"
+                                     Style="{StaticResource Tecla.SegmentButton.Scope}"
+                                     Margin="0,0,2,0"
+                                     Content="{Binding TodayTab}"
+                                     AutomationProperties.AutomationId="ScopeToday"
+                                     Checked="OnScope" />
+                        <RadioButton x:Name="ScopeWeek"
+                                     Style="{StaticResource Tecla.SegmentButton.Scope}"
+                                     Content="{Binding WeekTab}"
+                                     AutomationProperties.AutomationId="ScopeWeek"
+                                     Checked="OnScope" />
+                    </StackPanel>
+                </Border>
+                <TextBlock Grid.Column="1"
+                           Style="{StaticResource Tecla.Text.Label}"
+                           Margin="8,0,0,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Text="{Binding Date}"
+                           AutomationProperties.AutomationId="PanelDate" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Name="Slots">
+            <Grid x:Name="Main">
+                <priorities:PrioritiesView x:Name="PrioritiesPage" />
+                <notes:NotesView x:Name="NotesPage" />
+                <priorities:DetailView x:Name="DetailPage" />
+                <priorities:HistoryView x:Name="HistoryPage" />
+                <settings:SettingsView x:Name="SettingsPage" />
+            </Grid>
+            <priorities:UndoBarView x:Name="UndoBar" />
+        </StackPanel>
+
+        <TextBlock x:Name="SaveFailed"
+                   Style="{StaticResource Tecla.Text.Meta}"
+                   Foreground="{DynamicResource Brush.Panel.Text2}"
+                   Margin="0,10,0,0"
+                   TextWrapping="Wrap"
+                   Text="{Binding ListSaveFailed, Source={StaticResource Texts}}"
+                   AutomationProperties.AutomationId="PanelSaveFailed" />
+
+        <shell:FooterView x:Name="Footer" Margin="0,10,0,0" />
+    </StackPanel>
+</UserControl>
