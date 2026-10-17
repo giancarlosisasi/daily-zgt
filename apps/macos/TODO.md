@@ -34,3 +34,17 @@ Swift files that likely own it:
 How to verify: add a test in `DailyZGTTests/Notes` that builds a `NotesModel`, edits, moves the store clock past midnight, triggers the new day signal, and checks that the old day holds the edit and `period` and `text` are the new day's. Then run the app with the panel open on Notes at 23:59 and watch it switch at 00:00 with no click.
 
 After both fixes, update the "Decisiones abiertas" items 1 and 2 in `docs/features.md`, and the F16 rule that lists when the app detects the new day.
+
+## 3. No installer and no release (distribution)
+
+What the user sees now: there is no download. A person builds the app from source (`apps/macos/scripts/install.sh` copies a Release build to `/Applications`).
+
+What the Windows app does: `just win-pack` makes a per-user `Setup.exe` with Velopack. Pushing a tag `windows-v*` runs `.github/workflows/release-windows.yml`, which builds, packs and uploads the installer to GitHub Releases. Uninstall removes the app and its system entries and keeps the user's data. See `apps/windows/README.md` ("Install" and "Release") and `apps/windows/ARCHITECTURE.md` ("Install and release").
+
+What macOS needs:
+
+- A signed and notarized `.app` in a `.dmg` or `.zip`. This needs an Apple Developer account (Developer ID certificate) and notarization with `notarytool`; without it Gatekeeper blocks the first launch.
+- A `release-macos.yml` workflow on a `macos-v*` tag that builds Release, signs, notarizes, staples and uploads to GitHub Releases. Velopack also packs macOS apps, so the same tool can give updates on both platforms.
+- Removal: on macOS the user drags the app to the Trash. The login item and the notification permission go with it; the data in `~/Library/Application Support/DailyZGT` stays, the same rule as on Windows.
+
+How to verify: download the release on a Mac that never ran the app, open it without a Gatekeeper block, add a priority, delete the app, and check that the database is still there.
