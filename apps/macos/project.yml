@@ -45,7 +45,7 @@ targets:
     platform: macOS
     sources:
       - DailyZGTTests
-      - path: design-system-prototypes/tokens/tecla.json
+      - path: ../../design-system-prototypes/tokens/tecla.json
         buildPhase: resources
       - path: DailyZGT/App/TeclaTokens.swift
         buildPhase:

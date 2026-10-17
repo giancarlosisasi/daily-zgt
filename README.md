@@ -60,7 +60,7 @@ Start at login, the limit of 5, the title in the menu bar and the global shortcu
 You need macOS 14 or later, Xcode 26 and XcodeGen (`brew install xcodegen`).
 
 ```bash
-./scripts/install.sh
+./apps/macos/scripts/install.sh
 open /Applications/DailyZGT.app
 ```
 
@@ -70,9 +70,12 @@ The app has no Dock icon. Click the target icon in the menu bar to open the pane
 
 ## Develop
 
+The macOS app lives in `apps/macos/`. Run the commands below from that folder.
+
 Generate the Xcode project. Run this command again after each change to `project.yml`.
 
 ```bash
+cd apps/macos
 xcodegen generate
 ```
 

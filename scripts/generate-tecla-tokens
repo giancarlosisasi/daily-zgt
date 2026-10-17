@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "design-system-prototypes" / "tokens" / "tecla.json"
-OUTPUT = ROOT / "DailyZGT" / "App" / "TeclaTokens.swift"
+OUTPUT = ROOT / "apps" / "macos" / "DailyZGT" / "App" / "TeclaTokens.swift"
 SWIFT_KEYWORDS = {"default", "in", "is", "as", "do", "for", "if", "let", "var", "case", "func", "enum", "self", "static"}
 
 

@@ -21,11 +21,11 @@ The command `brew install xcodegen` needs Homebrew. Install Homebrew from [brew.
 
 ## XcodeGen
 
-XcodeGen reads the file `project.yml` and writes the Xcode project. The Xcode project is not in git. You make it on your Mac with `xcodegen generate`.
+XcodeGen reads the file `apps/macos/project.yml` and writes the Xcode project. The Xcode project is not in git. You make it on your Mac with `xcodegen generate`.
 
 ## Network
 
-The first build downloads the Swift packages that `project.yml` lists. The list has two packages: GRDB, the SQLite library, and KeyboardShortcuts, which records and listens to the global shortcut.
+The first build downloads the Swift packages that `apps/macos/project.yml` lists. The list has two packages: GRDB, the SQLite library, and KeyboardShortcuts, which records and listens to the global shortcut.
 
 ## Signing
 

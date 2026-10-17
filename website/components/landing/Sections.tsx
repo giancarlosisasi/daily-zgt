@@ -604,7 +604,7 @@ function LocalSection() {
 
 const COMMANDS = [
   { label: 'build.cmd1', code: 'git clone https://github.com/giancarlosisasi/daily-zgt.git' },
-  { label: 'build.cmd2', code: 'cd daily-zgt && ./scripts/install.sh' },
+  { label: 'build.cmd2', code: 'cd daily-zgt && ./apps/macos/scripts/install.sh' },
   { label: 'build.cmd3', code: 'open /Applications/DailyZGT.app' },
 ];
 

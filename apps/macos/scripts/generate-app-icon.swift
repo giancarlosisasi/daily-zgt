@@ -60,7 +60,8 @@ let shadowOffset: CGFloat = 12
 let shadowBlur: CGFloat = 28
 
 let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
-let tokensURL = root.appending(path: "design-system-prototypes/tokens/tecla.json")
+let repositoryRoot = root.deletingLastPathComponent().deletingLastPathComponent()
+let tokensURL = repositoryRoot.appending(path: "design-system-prototypes/tokens/tecla.json")
 let iconset = root.appending(path: "DailyZGT/Resources/Icons.xcassets/AppIcon.appiconset")
 let tokens = try JSONDecoder().decode(Tokens.self, from: Data(contentsOf: tokensURL))
 

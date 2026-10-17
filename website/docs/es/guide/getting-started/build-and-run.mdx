@@ -28,7 +28,7 @@ cd daily-zgt
 ### Instala la app
 
 ```bash
-./scripts/install.sh
+./apps/macos/scripts/install.sh
 ```
 
 El script genera el proyecto de Xcode, compila la configuración Release y copia la app a `/Applications/DailyZGT.app`. Si Daily ZGT está abierta desde `/Applications`, ciérrala antes. El script no continúa mientras la app está abierta.
@@ -56,9 +56,10 @@ kill $(pgrep -x DailyZGT)
 ## Ejecuta las pruebas
 
 ```bash
+cd apps/macos
 xcodebuild -project DailyZGT.xcodeproj -scheme DailyZGT -destination 'platform=macOS' -derivedDataPath build test
 ```
 
 ## Actualiza la app
 
-Cuando cambias el código, cierra la app y ejecuta `./scripts/install.sh` otra vez. Después inicia la app.
+Cuando cambias el código, cierra la app y ejecuta `./apps/macos/scripts/install.sh` otra vez. Después inicia la app.

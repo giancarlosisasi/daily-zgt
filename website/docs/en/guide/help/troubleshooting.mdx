@@ -46,6 +46,7 @@ See [Capture window](/guide/use/capture).
 1. Run `xcodegen generate` again. The Xcode project is not in git. It can be missing or old.
 
 ```bash
+cd apps/macos
 xcodegen generate
 ```
 
@@ -57,9 +58,10 @@ xcode-select -p
 ```
 
 3. Check your network. The first build downloads the Swift packages GRDB and KeyboardShortcuts.
-4. Delete the folder `build/` and build again. It only holds build output.
+4. Delete the folder `apps/macos/build/` and build again. It only holds build output.
 
 ```bash
+cd apps/macos
 rm -rf build
 xcodegen generate
 ```

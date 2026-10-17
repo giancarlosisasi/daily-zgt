@@ -46,6 +46,7 @@ Veja [Janela de captura](/guide/use/capture).
 1. Execute `xcodegen generate` de novo. O projeto do Xcode não está no git. Ele pode estar ausente ou desatualizado.
 
 ```bash
+cd apps/macos
 xcodegen generate
 ```
 
@@ -57,9 +58,10 @@ xcode-select -p
 ```
 
 3. Verifique a sua rede. A primeira compilação baixa os pacotes do Swift GRDB e KeyboardShortcuts.
-4. Apague a pasta `build/` e compile de novo. Ela guarda apenas resultados de compilação.
+4. Apague a pasta `apps/macos/build/` e compile de novo. Ela guarda apenas resultados de compilação.
 
 ```bash
+cd apps/macos
 rm -rf build
 xcodegen generate
 ```
