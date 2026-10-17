@@ -22,6 +22,9 @@
     <Compile Include="..\..\src\DailyZGT\Platform\Hotkey\ShortcutFormatter.cs" Link="Platform\ShortcutFormatter.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Startup\IStartupRegistration.cs" Link="Platform\IStartupRegistration.cs" />
     <Compile Include="..\..\src\DailyZGT\Platform\Tray\TrayBadge.cs" Link="Platform\TrayBadge.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Toast\IToastCenter.cs" Link="Platform\IToastCenter.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Toast\ToastModels.cs" Link="Platform\ToastModels.cs" />
+    <Compile Include="..\..\src\DailyZGT\Platform\Toast\ToastAlertSystem.cs" Link="Platform\ToastAlertSystem.cs" />
   </ItemGroup>
 
   <ItemGroup>
