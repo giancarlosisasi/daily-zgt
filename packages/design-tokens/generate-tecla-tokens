@@ -309,7 +309,8 @@ def render_csharp(raw):
 
 
 def main():
-    raw = SOURCE.read_bytes()
+    # A Windows checkout may turn the json into CRLF; the digest must follow the content, not the line endings.
+    raw = SOURCE.read_bytes().replace(b"\r\n", b"\n")
     outputs = [(OUTPUT, render(raw)), (CSHARP_OUTPUT, render_csharp(raw))]
     if "--check" in sys.argv[1:]:
         failed = False
