@@ -69,6 +69,11 @@ public sealed class PanelState : ObservableModel, IDisposable
         store.Changed += OnStoreChanged;
     }
 
+    // The views read the rows from the store and redraw their chips on the clock.
+    public AppStore Store => _store;
+
+    public UiClock Clock => _clock;
+
     public PriorityFlow Flow { get; }
 
     public NotesModel Notes { get; }

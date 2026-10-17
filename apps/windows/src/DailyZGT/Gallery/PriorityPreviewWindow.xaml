@@ -1,0 +1,36 @@
+<Window x:Class="DailyZGT.Gallery.PriorityPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:DailyZGT.Priorities"
+        Title="Priorities preview"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="CanMinimize"
+        Background="{DynamicResource Brush.Colors.Ground}"
+        UseLayoutRounding="True">
+    <StackPanel Orientation="Horizontal" Margin="24">
+        <StackPanel x:Name="Stage" VerticalAlignment="Top">
+            <ContentControl x:Name="PanelHost" Style="{StaticResource Tecla.Panel}" AutomationProperties.AutomationId="PreviewPanel">
+                <StackPanel>
+                    <Grid>
+                        <p:PrioritiesView x:Name="ListPage" />
+                        <p:DetailView x:Name="DetailPage" Visibility="Collapsed" />
+                        <p:HistoryView x:Name="HistoryPage" Visibility="Collapsed" />
+                    </Grid>
+                    <p:UndoBarView x:Name="UndoBar" Margin="0,10,0,0" />
+                </StackPanel>
+            </ContentControl>
+            <ContentControl x:Name="PickerSample" HorizontalAlignment="Left" Margin="40,0,0,0" />
+        </StackPanel>
+        <StackPanel x:Name="Tools" Width="190" Margin="24,0,0,0" VerticalAlignment="Top"
+                    TextElement.Foreground="{DynamicResource Brush.Panel.Text}">
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Lista" Click="OnList" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Detalle" Click="OnDetail" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Historial" Click="OnHistory" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Hoy / Semana" Click="OnScope" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Alertas apagadas" Click="OnAlerts" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Movimiento reducido" Click="OnMotion" />
+            <Button Style="{StaticResource Tecla.KeyButton}" Margin="0,0,0,8" Content="Límite de 5" Click="OnLimit" />
+            <TextBlock x:Name="Status" Style="{StaticResource Tecla.Text.Meta}" TextWrapping="Wrap" Margin="0,8,0,0" />
+        </StackPanel>
+    </StackPanel>
+</Window>

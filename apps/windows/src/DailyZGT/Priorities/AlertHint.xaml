@@ -1,0 +1,32 @@
+<UserControl x:Class="DailyZGT.Priorities.AlertHint"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:DailyZGT.Theme"
+             xmlns:p="clr-namespace:DailyZGT.Priorities"
+             x:Name="Self"
+             AutomationProperties.AutomationId="AlertHint"
+             Focusable="False">
+    <UserControl.Resources>
+        <ResourceDictionary Source="PriorityStyles.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <theme:IconView x:Name="Bell" Kind="Bell" Size="12" VerticalAlignment="Top" Margin="0,2,6,0" />
+        <TextBlock x:Name="Line" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center"
+                   Text="{Binding Text, ElementName=Self}" />
+        <p:GroupBorder x:Name="OffLine" Grid.Column="1" Visibility="Collapsed" VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="AlertsOff">
+            <WrapPanel>
+                <TextBlock Text="{p:Text AlertsOff}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                <Button Style="{StaticResource Priorities.Link}"
+                        Command="{x:Static p:AlertsNotice.OpenSettings}"
+                        Content="{p:Text OpenSettings}"
+                        VerticalAlignment="Center"
+                        AutomationProperties.AutomationId="OpenAlertSettings" />
+            </WrapPanel>
+        </p:GroupBorder>
+    </Grid>
+</UserControl>

@@ -1,0 +1,222 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:theme="clr-namespace:DailyZGT.Theme"
+                    xmlns:p="clr-namespace:DailyZGT.Priorities">
+
+    <!-- Read-only text the person can select and copy (F04, F08, F10). The text box draws only its text. -->
+    <Style x:Key="Priorities.SelectableText" TargetType="TextBox">
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="IsReadOnlyCaretVisible" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="-2,0" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Panel}" />
+        <Setter Property="FontWeight" Value="{DynamicResource FontWeight.Panel}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextBlock.LineHeight" Value="{DynamicResource LineHeight.Panel}" />
+        <Setter Property="TextBlock.LineStackingStrategy" Value="BlockLineHeight" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Palette.Blue}" />
+        <Setter Property="SelectionOpacity" Value="0.45" />
+        <Setter Property="ContextMenu" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <ScrollViewer x:Name="PART_ContentHost"
+                                  Focusable="False"
+                                  Background="Transparent"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Disabled" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- F04. The title of an open row: underlined while the pointer is over it, like the macOS row. -->
+    <Style x:Key="Priorities.RowTitle" TargetType="TextBox" BasedOn="{StaticResource Priorities.SelectableText}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="TextDecorations">
+                    <Setter.Value>
+                        <TextDecorationCollection>
+                            <TextDecoration Location="Underline" PenOffset="1">
+                                <TextDecoration.Pen>
+                                    <Pen Brush="{DynamicResource Brush.Panel.TitleUnderline}" Thickness="1" />
+                                </TextDecoration.Pen>
+                            </TextDecoration>
+                        </TextDecorationCollection>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- F08, F10. A done title: dim and struck through. -->
+    <Style x:Key="Priorities.DoneText" TargetType="TextBox" BasedOn="{StaticResource Priorities.SelectableText}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Dim}" />
+        <Setter Property="TextDecorations">
+            <Setter.Value>
+                <TextDecorationCollection>
+                    <TextDecoration Location="Strikethrough">
+                        <TextDecoration.Pen>
+                            <Pen Brush="{DynamicResource Brush.Panel.Dim}" Thickness="1" />
+                        </TextDecoration.Pen>
+                    </TextDecoration>
+                </TextDecorationCollection>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A button that draws only its content: the row caret and the alerts-off link. -->
+    <Style x:Key="Priorities.PlainButton" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Tecla.FocusVisual}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- F15. "Abrir ajustes" next to the alerts-off line. -->
+    <Style x:Key="Priorities.Link" TargetType="Button" BasedOn="{StaticResource Priorities.PlainButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Link}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- F05, F09. The due row: the input chrome of the form around "Sin fecha" or the date. -->
+    <Style x:Key="Priorities.DueInput" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True">
+                        <Border Background="{DynamicResource Brush.Panel.In}"
+                                BorderBrush="{DynamicResource Brush.Panel.Line}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource Radius.Input}" />
+                        <Border x:Name="Ring"
+                                BorderBrush="{DynamicResource Brush.Panel.Focus}"
+                                BorderThickness="2"
+                                CornerRadius="{DynamicResource Radius.Input}"
+                                Visibility="Collapsed" />
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Ring" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A day of the due picker. Tag "selected" fills it with the accent, "today" draws a ring, "outside"
+         dims a day of the next or previous month. -->
+    <Style x:Key="Priorities.PickerDay" TargetType="Button">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource Tecla.FocusVisual}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Text}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.PanelLabel}" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Margin" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Chrome"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource Radius.Ghost}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Panel.Hover2}" />
+                        </Trigger>
+                        <Trigger Property="Tag" Value="today">
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.Panel.Dash}" />
+                        </Trigger>
+                        <Trigger Property="Tag" Value="outside">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Dim}" />
+                        </Trigger>
+                        <Trigger Property="Tag" Value="selected">
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Panel.Accent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.OnAccent}" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- F09. SUBTAREAS and NOTAS. -->
+    <Style x:Key="Priorities.SectionTitle" TargetType="TextBlock" BasedOn="{StaticResource Tecla.Text.MetaStrong}" />
+
+    <!-- F06. "Hoy ya tiene 5 prioridades abiertas." -->
+    <Style x:Key="Priorities.Notice" TargetType="TextBlock" BasedOn="{StaticResource Tecla.Text.Meta}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Panel.Text2}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- F08. A row of Hechas or of the history. -->
+    <DataTemplate x:Key="Priorities.DoneRow" DataType="{x:Type p:DoneRowItem}">
+        <p:GroupBorder Style="{StaticResource Tecla.Row}"
+                       MinHeight="34"
+                       Padding="{Binding Indent}"
+                       Margin="0,0,0,2"
+                       AutomationProperties.AutomationId="{Binding RowId}"
+                       AutomationProperties.Name="{Binding Title}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <theme:IconView Kind="Check" Size="12" VerticalAlignment="Center"
+                                Foreground="{DynamicResource Brush.Panel.Done}"
+                                AutomationProperties.Name="{p:Text DoneMark}" />
+                <TextBox Grid.Column="1" Style="{StaticResource Priorities.DoneText}" Text="{Binding Title, Mode=OneWay}"
+                         Margin="8,7,8,7" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Style="{StaticResource Tecla.KeyButton}"
+                        Height="24" Padding="8,0" Margin="0,0,0,2"
+                        Foreground="{DynamicResource Brush.Panel.Ghost}"
+                        Command="{Binding Reopen}"
+                        AutomationProperties.AutomationId="{Binding ReopenId}"
+                        AutomationProperties.Name="{p:Text Reopen}">
+                    <StackPanel Orientation="Horizontal">
+                        <theme:IconView Kind="ArrowBack" Size="11" Margin="0,0,4,0" VerticalAlignment="Center" />
+                        <TextBlock Text="{p:Text Reopen}" FontSize="{DynamicResource FontSize.PanelMeta}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="3" Style="{StaticResource Tecla.IconButton.Remove}" Margin="8,0,0,0"
+                        Command="{Binding Delete}"
+                        AutomationProperties.AutomationId="{Binding DeleteId}"
+                        AutomationProperties.Name="{p:Text RemoveRow}">
+                    <theme:IconView Kind="Trash" Size="12" />
+                </Button>
+            </Grid>
+        </p:GroupBorder>
+    </DataTemplate>
+</ResourceDictionary>
