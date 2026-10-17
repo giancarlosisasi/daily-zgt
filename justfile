@@ -54,6 +54,10 @@ win-e2e: win-build
 # Build, test and check the tokens; run before every Windows commit
 win-check: tokens-check win-build win-test
 
+# Publish the Windows app self-contained and pack the Velopack installer into apps/windows/artifacts/releases
+win-pack *args:
+    powershell -NoProfile -ExecutionPolicy Bypass -File apps/windows/scripts/pack.ps1 {{args}}
+
 # Start the Windows app in debug with the panel open
 win-run *args:
     dotnet run --project apps/windows/src/DailyZGT -- --show-panel {{args}}
