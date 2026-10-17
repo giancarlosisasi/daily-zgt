@@ -1,0 +1,89 @@
+name: Release Windows
+
+on:
+  push:
+    tags:
+      - "windows-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to pack, for example 0.1.0. A manual run leaves the release as a draft.
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Work out the version
+        id: version
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT_NAME" = "push" ]; then
+            version="${GITHUB_REF_NAME#windows-v}"
+          else
+            version="$INPUT_VERSION"
+          fi
+          if ! echo "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$version' is not a version like 1.2.3"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check the generated tokens
+        run: python packages/design-tokens/generate-tecla-tokens --check
+
+      - name: Build the app
+        run: dotnet build apps/windows/DailyZGT.slnx -c Release
+
+      - name: Run the tests
+        run: dotnet test apps/windows/DailyZGT.slnx -c Release --no-build --filter "Category!=UI"
+
+      # The first release has nothing to download. Later releases use the previous one to build delta updates.
+      - name: Download the previous release
+        continue-on-error: true
+        working-directory: apps/windows
+        run: |
+          dotnet tool restore
+          dotnet vpk download github --repoUrl "https://github.com/${{ github.repository }}" --token "${{ secrets.GITHUB_TOKEN }}" --outputDir artifacts/releases
+
+      # Code signing is off until these secrets exist. WINDOWS_SIGN_TEMPLATE is a vpk --signTemplate string, for
+      # example a jsign command for Azure Artifact Signing or a certificate file, ending in {{file}}.
+      # See https://docs.velopack.io/packaging/signing.
+      - name: Pack the installer
+        env:
+          DAILYZGT_SIGN_TEMPLATE: ${{ secrets.WINDOWS_SIGN_TEMPLATE }}
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File apps/windows/scripts/pack.ps1 -Version "${{ steps.version.outputs.version }}"
+
+      - name: Upload to the GitHub Release
+        shell: bash
+        working-directory: apps/windows
+        run: |
+          publish=""
+          if [ "${{ github.event_name }}" = "push" ]; then publish="--publish"; fi
+          dotnet vpk upload github \
+            --repoUrl "https://github.com/${{ github.repository }}" \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --outputDir artifacts/releases \
+            --releaseName "Daily ZGT for Windows ${{ steps.version.outputs.version }}" \
+            --tag "windows-v${{ steps.version.outputs.version }}" \
+            --targetCommitish "${{ github.sha }}" \
+            $publish

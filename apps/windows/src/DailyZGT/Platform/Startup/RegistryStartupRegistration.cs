@@ -23,7 +23,7 @@ public sealed class RegistryStartupRegistration : IStartupRegistration
         this.runKeyPath = runKeyPath;
         this.approvedKeyPath = approvedKeyPath;
         this.valueName = valueName;
-        this.exePath = exePath ?? (() => Environment.ProcessPath);
+        this.exePath = exePath ?? InstalledApp.CurrentLaunchPath;
     }
 
     public StartupState State

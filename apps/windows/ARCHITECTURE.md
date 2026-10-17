@@ -30,7 +30,8 @@ apps/windows/
     Theme/                     TeclaTokens.cs (generated), resource dictionaries, control styles
     Assets/Fonts/              static font instances (generated from the macOS variable fonts)
     Assets/Icons/              icon geometry, app icon
-    Platform/                  tray icon, toast notifications, global hotkey, start with Windows, animation setting, single instance
+    Program.cs                 Main: runs the Velopack hooks first, then starts WPF
+    Platform/                  tray icon, toast notifications, global hotkey, start with Windows, animation setting, single instance, install and uninstall cleanup
     Shell/                     app host, panel window, shell view, footer, data error view
     Notes/                     notes tab
     Settings/                  settings page
@@ -62,10 +63,14 @@ These follow the "Adaptación a Windows" table in `docs/features.md`.
 | F02 | The panel opens above the tray, at the bottom right of the work area (it follows the taskbar edge when the taskbar is on another side). It closes when it loses focus. No taskbar button. |
 | F15 | Alerts are Windows toast notifications. "Alertas apagadas" means Windows reports the app's notifications as disabled. There is no permission prompt, so the "never asked" state does not exist on Windows. `Abrir ajustes` opens `ms-settings:notifications`. |
 | F17 | Default shortcut `Ctrl+Alt+Mayús+P` (Ctrl+Alt+Shift+P). The shortcut is stored in `HKCU\Software\DailyZGT`, not in the database. |
-| F18 | Start with Windows uses `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`. When the user disabled it in Settings > Apps > Startup, the row shows `Falta tu aprobación en Configuración.` with `Abrir ajustes` (`ms-settings:startupapps`). Copy changes: `Abre Daily ZGT cuando inicias sesión en tu computadora.`, `Siguiente prioridad en la barra de tareas`, `Muestra al pasar sobre el ícono el título de la primera prioridad abierta de Hoy.`, `Windows no aceptó el cambio.` |
+| F18 | Start with Windows uses `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`. When the user disabled it in Settings > Apps > Startup, the row shows `Falta tu aprobación en Configuración.` with `Abrir ajustes` (`ms-settings:startupapps`). Copy changes: `Abre Daily ZGT cuando inicias sesión en tu computadora.`, `Siguiente prioridad en la barra de tareas`, `Muestra al pasar sobre el ícono el título de la primera prioridad abierta de Hoy.`, `Windows no aceptó el cambio.` In an installed copy (Velopack) the Run value points at the launcher `%LOCALAPPDATA%\DailyZGT.Windows\Daily ZGT.exe`, which survives updates, not at `current\DailyZGT.exe`. |
 | F22 | Windows "Animation effects" (`SPI_GETCLIENTAREAANIMATION`) off means no motion. |
 | Open decisions 1 and 2 | Windows fixes both. The date next to the scope tabs follows the minute tick and the day change (`ShellModel`). The day and week notes switch on `UiClock.DayChanged` (`NotesModel`), saving a pending edit to the old period first. `apps/macos/TODO.md` lists the matching macOS change. |
 | Open decisions 3–7 | Windows copies the macOS behavior. The repo rule says a behavior change lands in both apps, so a fix for any of them is a separate change to both apps. |
+
+## Install and release
+
+Velopack packs the app. `Program.Main` calls `VelopackApp.Build()...Run()` before anything else, because Velopack runs the install, update and uninstall hooks by starting the exe with a flag. The uninstall hook (`UninstallCleanup`) removes the Run value, the toast registration and `HKCU\Software\DailyZGT`. It never touches the data folder. The package id is not `DailyZGT`, because Velopack deletes `%LOCALAPPDATA%\<packId>` on uninstall and `%LOCALAPPDATA%\DailyZGT` holds the database. The version is `Version` in `Directory.Build.props`. See the README for `just win-pack` and the release workflow.
 
 ## Languages
 
