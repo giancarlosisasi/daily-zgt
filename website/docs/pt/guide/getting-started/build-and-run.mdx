@@ -1,0 +1,64 @@
+---
+title: Compilar e executar
+description: Os comandos exatos que compilam o Daily ZGT a partir da pasta do código-fonte, instalam em /Applications e iniciam o app.
+---
+
+import { Steps } from '@rspress/core/theme';
+
+# Compilar e executar
+
+Não há versão da App Store nem download. Você compila o app a partir da pasta do código-fonte, no seu próprio Mac.
+
+<Steps>
+
+### Clone o repositório
+
+```bash
+git clone https://github.com/giancarlosisasi/daily-zgt.git
+```
+
+O comando cria a pasta do código-fonte, chamada `daily-zgt`.
+
+### Abra um terminal na pasta do código-fonte
+
+```bash
+cd daily-zgt
+```
+
+### Instale o app
+
+```bash
+./scripts/install.sh
+```
+
+O script gera o projeto do Xcode, compila a configuração Release e copia o app para `/Applications/DailyZGT.app`. Se o Daily ZGT estiver aberto a partir de `/Applications`, feche-o antes. O script não continua enquanto o app está aberto.
+
+### Inicie o app
+
+```bash
+open /Applications/DailyZGT.app
+```
+
+O app não tem ícone no Dock. Procure o ícone do alvo na barra de menus. Clique nele para abrir o painel.
+
+</Steps>
+
+## Pare o app
+
+O rodapé do painel tem um botão **Salir**. Ele fecha o app.
+
+Você também pode parar o app pelo terminal.
+
+```bash
+kill $(pgrep -x DailyZGT)
+```
+
+## Execute os testes
+
+```bash
+xcodebuild -project DailyZGT.xcodeproj -scheme DailyZGT -destination 'platform=macOS' -derivedDataPath build test
+```
+
+## Atualize o app
+
+Quando você muda o código, feche o app e execute `./scripts/install.sh` de novo. Depois inicie o app.

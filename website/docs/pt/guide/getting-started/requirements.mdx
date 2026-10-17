@@ -1,0 +1,37 @@
+---
+title: Requisitos
+description: O que o seu Mac precisa antes de compilar o Daily ZGT.
+---
+
+# Requisitos
+
+Você precisa de três coisas no seu Mac.
+
+| Ferramenta | Versão | Como obter |
+|---|---|---|
+| macOS | 14 ou superior | O app usa `@Observable`, que precisa do macOS 14. |
+| Xcode | 26 | Instale pela App Store ou por [developer.apple.com/xcode](https://developer.apple.com/xcode/). |
+| XcodeGen | qualquer versão atual | `brew install xcodegen` |
+
+O plano foi escrito em um Mac com macOS 26.1, Xcode 26.1.1 e Swift 6.2.1.
+
+## Homebrew
+
+O comando `brew install xcodegen` precisa do Homebrew. Instale o Homebrew em [brew.sh](https://brew.sh) se o comando `brew` não existir.
+
+## XcodeGen
+
+O XcodeGen lê o arquivo `project.yml` e escreve o projeto do Xcode. O projeto do Xcode não está no git. Você o cria no seu Mac com `xcodegen generate`.
+
+## Rede
+
+A primeira compilação baixa os pacotes do Swift que o `project.yml` lista. A lista tem dois pacotes: GRDB, a biblioteca de SQLite, e KeyboardShortcuts, que registra e escuta o atalho global.
+
+## Assinatura
+
+O projeto assina o app com a identidade ad hoc (`CODE_SIGN_IDENTITY: "-"`). Você não precisa de uma conta Apple Developer.
+
+## Ferramentas opcionais
+
+- O `sqlite3` lê o banco de dados. O macOS já o inclui. Veja [Banco de dados](/guide/data/database).
+- Uma chave de API da Anthropic só serve para a revisão planejada para a v2. Veja [Revisão com Claude e chave de API](/guide/claude/api-key).

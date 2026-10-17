@@ -21,6 +21,13 @@ export default defineConfig({
       description:
         'Una app de barra de menús de macOS para las prioridades y las notas del día y de la semana.',
     },
+    {
+      lang: 'pt',
+      label: 'Português',
+      title: 'Daily ZGT',
+      description:
+        'Um app de barra de menus do macOS para as prioridades e as notas do dia e da semana.',
+    },
   ],
   icon: '/favicon.svg',
   logo: '/logo.svg',

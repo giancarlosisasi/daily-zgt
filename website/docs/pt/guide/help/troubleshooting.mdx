@@ -1,0 +1,71 @@
+---
+title: Solução de problemas
+description: Soluções para um ícone que não aparece na barra de menus, alertas que não aparecem, um atalho que não funciona, iniciar ao abrir a sessão e uma compilação que falha.
+---
+
+# Solução de problemas
+
+## O ícone não aparece
+
+1. Verifique se o app está em execução.
+
+```bash
+pgrep -x DailyZGT
+```
+
+Se o comando não imprimir nada, o app não está em execução. Inicie o app de novo. Veja [Compilar e executar](/guide/getting-started/build-and-run).
+
+2. Procure o ícone do alvo no lado direito da barra de menus. O app não tem ícone no Dock. Isso é normal.
+3. Se a barra de menus estiver cheia, o macOS pode esconder os últimos ícones. Em um Mac com notch, os ícones podem ficar atrás do notch. Feche outro app da barra de menus para abrir espaço. Você também pode desligar o ajuste `Siguiente prioridad en la barra de menús`. Sem o título, o item fica mais curto. Veja [Ajustes](/guide/use/settings).
+4. Se a compilação não terminou, veja [A compilação falha](#build-fails).
+
+## Nenhum alerta aparece \{#no-alert}
+
+1. Olhe o botão de sino do rodapé. Se o sino tiver um traço, ou se aparecer a linha `Las alertas están desactivadas.`, os alertas do macOS estão desligados para o app. Clique em `Abrir ajustes` para abrir os ajustes de notificações do macOS. Veja [Alertas](/guide/use/alerts).
+2. Clique no botão de sino **Probar alerta** do rodapé. O alerta de teste chega 5 segundos depois. Se nenhum alerta de teste aparecer, o problema está no macOS.
+3. Abra **Ajustes do Sistema**, depois **Notificações**, depois **Daily ZGT**. Ative **Permitir notificações**. Verifique se o estilo de alerta não é **Nenhum**. Ative o som.
+4. O app pede a permissão na primeira vez que você define um prazo. Se o app não estiver na lista, defina um prazo em uma prioridade e responda ao diálogo.
+5. Verifique se não há um modo de foco ativo. Um modo de foco pode silenciar os alertas.
+6. Verifique se a prioridade tem um prazo no futuro. Uma prioridade sem prazo não recebe alertas. Um horário limite em menos de 30 minutos recebe só o alerta no horário limite.
+
+## O atalho não abre a janela de captura
+
+1. Verifique se o app está em execução. O atalho só funciona enquanto o app roda.
+2. Abra os ajustes com o botão de engrenagem. Olhe a linha `Atajo global`. Se o texto disser `Sin atajo: la ventana de captura no se abre desde otras apps.`, o atalho está apagado. Clique no campo e pressione teclas novas.
+3. Outro app pode usar as mesmas teclas. Clique no campo e pressione outras teclas.
+
+Veja [Janela de captura](/guide/use/capture).
+
+## Iniciar ao abrir a sessão não fica ligado
+
+1. Abra os ajustes com o botão de engrenagem. Se a linha `Abrir al iniciar sesión` mostrar `Falta tu aprobación en Ajustes del Sistema.`, clique em `Abrir ajustes`. Aprove o Daily ZGT na página de itens de início dos Ajustes do Sistema.
+2. Se a linha mostrar `macOS no aceptó el cambio.`, desligue o interruptor e ligue de novo.
+
+## A compilação falha \{#build-fails}
+
+1. Execute `xcodegen generate` de novo. O projeto do Xcode não está no git. Ele pode estar ausente ou desatualizado.
+
+```bash
+xcodegen generate
+```
+
+2. Verifique se o `xcodebuild` usa o Xcode 26.
+
+```bash
+xcodebuild -version
+xcode-select -p
+```
+
+3. Verifique a sua rede. A primeira compilação baixa os pacotes do Swift GRDB e KeyboardShortcuts.
+4. Apague a pasta `build/` e compile de novo. Ela guarda apenas resultados de compilação.
+
+```bash
+rm -rf build
+xcodegen generate
+```
+
+5. Verifique se o seu Mac usa macOS 14 ou superior.
+
+## O arquivo do banco de dados não existe
+
+O app cria o arquivo na primeira vez que inicia. Inicie o app uma vez. Depois liste as tabelas de novo. Veja [Banco de dados](/guide/data/database).

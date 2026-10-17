@@ -1,0 +1,71 @@
+---
+title: Repetir todo dia
+description: Como uma prioridade se repete todo dia, quando o app adiciona uma cópia e o que fazem uma restauração e uma exclusão.
+---
+
+# Repetir todo dia
+
+Uma prioridade pode se repetir todo dia. Você não a escreve de novo toda manhã.
+
+## Defina a repetição
+
+1. Abra a tela de detalhe da prioridade. Veja [Detalhe e subtarefas](/guide/use/detail-and-subtasks).
+2. Na linha **Repetir**, escolha **Cada día**.
+
+A outra tecla é **No**. É o valor inicial.
+
+## Quando uma cópia chega
+
+Uma série é uma prioridade e as cópias dela. O app adiciona uma cópia aberta a Hoy quando as três regras são verdadeiras:
+
+1. A série não tem nenhuma cópia aberta.
+2. A prioridade da série que você marcou como concluída por último tem **Cada día**.
+3. Você marcou essa prioridade como concluída em um dia anterior a hoje (horário local).
+
+Então, se você marcar uma prioridade diária como concluída hoje, a cópia chega amanhã.
+
+O app verifica as regras quando inicia, quando o dia muda, quando o app fica ativo e depois de cada mudança nos dados. A cópia vai para Hoy, mesmo que a prioridade estivesse em Semana.
+
+A cópia tem:
+
+- O mesmo título, nível e nota.
+- As subtarefas da prioridade, todas abertas.
+- Um horário limite na mesma hora do dia, no dia de hoje. Se essa hora já passou, o chip mostra `Vencida`.
+- **Cada día**, para que a série continue.
+
+A cópia não mostra o chip `De ayer`. Ela começa hoje.
+
+Nunca há duas cópias abertas de uma mesma série.
+
+## O que uma restauração faz
+
+**Regresar** e **Deshacer** podem trazer de volta uma prioridade que tem uma cópia aberta.
+
+- Se você não mudou a cópia aberta, o app apaga a cópia. A prioridade que você restaurou ocupa o lugar dela.
+- Se você mudou a cópia aberta, o app a mantém. A prioridade que você restaurou sai da série, e a repetição dela passa a **No**.
+
+Uma mudança é qualquer edição da cópia: título, nível, prazo, nota, lista, uma subtarefa ou um movimento. A caixa de seleção de uma subtarefa conta como uma mudança.
+
+## O que uma exclusão faz
+
+Se você exclui uma prioridade aberta de uma série, a série termina. O app coloca **No** em cada prioridade da série. Nenhuma cópia nova chega.
+
+Se você exclui uma prioridade concluída, a série continua.
+
+## Pare a repetição
+
+Faça uma destas coisas:
+
+- Abra a prioridade aberta e escolha **No** na linha **Repetir**.
+- Exclua a prioridade aberta.
+
+## No banco de dados
+
+A tabela `priority` tem duas colunas para isso:
+
+| Coluna | Valores |
+|---|---|
+| `repeat_rule` | `none` ou `daily` |
+| `repeat_series_id` | `null` para uma série de uma única prioridade. Cada cópia guarda o `id` da primeira prioridade da série dela. |
+
+Veja [Banco de dados](/guide/data/database).
