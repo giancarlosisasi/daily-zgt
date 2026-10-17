@@ -97,6 +97,19 @@ The folder `apps/website/` holds the site: a landing page and the Guide, in Engl
 cd apps/website && pnpm install && pnpm dev
 ```
 
+## Repository layout
+
+The repository is a monorepo. Each app uses its own native build tool.
+
+| Folder | Content |
+| --- | --- |
+| `apps/macos/` | The macOS app (Swift, SwiftUI, XcodeGen) |
+| `apps/windows/` | The Windows app (C#). Not built yet. |
+| `apps/website/` | The site (Rspress) |
+| `packages/design-tokens/` | `tecla.json`, the one source of the colors, sizes and motion of all apps |
+
+The `justfile` at the root runs the common tasks. Run `just` to list them, for example `just mac-test` or `just web-dev`.
+
 ## Stack
 
 Swift 6, SwiftUI, GRDB (SQLite), KeyboardShortcuts and XcodeGen. The site uses Rspress.
