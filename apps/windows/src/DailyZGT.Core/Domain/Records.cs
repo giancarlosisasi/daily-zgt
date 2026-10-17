@@ -14,6 +14,9 @@ public enum AlertStatus { Scheduled, Delivered, Snoozed, Cancelled }
 
 public enum PriorityEventType { Created, Edited, Moved, Done, Restored, SubtaskDone }
 
+// The open panel tab, stored in app_state under "open_tab" as "priorities" or "notes".
+public enum PanelTab { Priorities, Notes }
+
 // Times are local wall-clock DateTime values (Kind = Local), truncated to whole seconds.
 // The database stores them as "yyyy-MM-ddTHH:mm:ss" text, the same format the macOS app writes.
 public sealed record Priority(
