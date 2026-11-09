@@ -42,6 +42,10 @@ final class ClickableTitleView: NSTextView {
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
+    override func updateDragTypeRegistration() {
+        unregisterDraggedTypes()
+    }
+
     override func resetCursorRects() {
         addCursorRect(bounds, cursor: .pointingHand)
     }

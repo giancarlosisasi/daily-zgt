@@ -30,7 +30,7 @@ How to check: press the bell, wait for the toast and press "Posponer 15 min" (a 
 
 The macOS branch `feat/macos-reorder-and-window` changes five behaviors. Windows still has the old behavior. This machine has no .NET, so the Windows side is not done.
 
-- Manual order. The open list sorts by `position` only, not by level and due. A new priority goes to the end. On the first start, `AppStore.adoptManualOrder` writes the old level and due order into `position` one time, and sets the `manual_order` key in `app_state`. Drag a row onto another row to move it.
+- Manual order. The open list sorts by `position` only, not by level and due. A new priority goes to the end. On the first start, `AppStore.adoptManualOrder` writes the old level and due order into `position` one time, and sets the `manual_order` key in `app_state`. A drag starts only from the handle icon at the left of a row. During the drag, a line shows where the row lands, and the database gets one write on the drop.
 - Row hover. The trash button stays visible while the pointer is on it. macOS uses a tracking area on the full row for this.
 - Done detail. A click on a done row opens its detail. The controls are off, and "Regresar" restores the priority. Back returns to "Historial" when the detail opened from there.
 - Desktop window. The footer button "Abrir en ventana" opens a resizable window: the list on the left and the detail on the right. The Notes tab fills the window.

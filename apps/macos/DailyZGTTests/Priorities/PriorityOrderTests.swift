@@ -1,3 +1,4 @@
+import CoreGraphics
 import Testing
 @testable import DailyZGT
 
@@ -8,20 +9,42 @@ struct PriorityOrderTests {
     let recorder = ScheduleRecorder()
 
     @Test
-    func movingDownPutsTheRowInTheTargetSlot() {
-        #expect(PriorityOrder.moving("a", to: "c", in: ["a", "b", "c", "d"]) == ["b", "c", "a", "d"])
+    func movingDownPutsTheRowAboveTheGap() {
+        #expect(PriorityOrder.moving("a", toGap: 3, in: ["a", "b", "c", "d"]) == ["b", "c", "a", "d"])
+        #expect(PriorityOrder.moving("a", toGap: 4, in: ["a", "b", "c", "d"]) == ["b", "c", "d", "a"])
     }
 
     @Test
-    func movingUpPutsTheRowInTheTargetSlot() {
-        #expect(PriorityOrder.moving("d", to: "b", in: ["a", "b", "c", "d"]) == ["a", "d", "b", "c"])
+    func movingUpPutsTheRowAtTheGap() {
+        #expect(PriorityOrder.moving("d", toGap: 1, in: ["a", "b", "c", "d"]) == ["a", "d", "b", "c"])
+        #expect(PriorityOrder.moving("d", toGap: 0, in: ["a", "b", "c", "d"]) == ["d", "a", "b", "c"])
     }
 
     @Test
-    func theSameOrAnUnknownRowKeepsTheOrder() {
-        #expect(PriorityOrder.moving("a", to: "a", in: ["a", "b"]) == ["a", "b"])
-        #expect(PriorityOrder.moving("x", to: "a", in: ["a", "b"]) == ["a", "b"])
-        #expect(PriorityOrder.moving("a", to: "x", in: ["a", "b"]) == ["a", "b"])
+    func theGapsNextToTheRowOrAnUnknownRowKeepTheOrder() {
+        let ids = ["a", "b", "c"]
+        #expect(!PriorityOrder.changesOrder("b", gap: 1, in: ids))
+        #expect(!PriorityOrder.changesOrder("b", gap: 2, in: ids))
+        #expect(PriorityOrder.changesOrder("b", gap: 0, in: ids))
+        #expect(PriorityOrder.changesOrder("b", gap: 3, in: ids))
+        #expect(PriorityOrder.moving("x", toGap: 0, in: ids) == ids)
+        #expect(PriorityOrder.moving("a", toGap: 9, in: ids) == ids)
+    }
+
+    @Test
+    func theGapIsBeforeTheFirstRowWhoseMiddleIsBelowThePointer() {
+        let midpoints: [CGFloat] = [18, 56, 94]
+        #expect(PriorityOrder.gap(at: 0, midpoints: midpoints) == 0)
+        #expect(PriorityOrder.gap(at: 20, midpoints: midpoints) == 1)
+        #expect(PriorityOrder.gap(at: 55, midpoints: midpoints) == 1)
+        #expect(PriorityOrder.gap(at: 200, midpoints: midpoints) == 3)
+        #expect(PriorityOrder.gap(at: 10, midpoints: []) == 0)
+    }
+
+    @Test
+    func aDragStartsOnlyAfterTheMouseMovesThreePoints() {
+        #expect(!DragStartRule.hasMoved(from: .zero, to: CGPoint(x: 2, y: 2)))
+        #expect(DragStartRule.hasMoved(from: .zero, to: CGPoint(x: 0, y: 3)))
     }
 
     @Test
@@ -66,28 +89,69 @@ struct PriorityOrderTests {
     }
 
     @Test
-    func draggingOverAnotherRowMovesTheDraggedRow() throws {
+    func aDragWritesTheNewOrderOnceOnDrop() throws {
         let store = try makeStore(clock)
         let flow = PriorityFlow(store: store, schedule: recorder.schedule)
         let first = try store.addPriority(title: "first", list: .today)
         try store.addPriority(title: "second", list: .today)
-        let third = try store.addPriority(title: "third", list: .today)
+        try store.addPriority(title: "third", list: .today)
 
         flow.startDrag(first.id)
-        flow.dragEntered(third.id, in: .today)
+        #expect(flow.isDragging(first.id))
+        flow.hover(gap: 2, in: .today)
+        flow.hover(gap: 3, in: .today)
+        #expect(flow.drag?.gap == 3)
+        #expect(store.openPriorities(in: .today).map(\.title) == ["first", "second", "third"])
+
+        flow.drop(in: .today)
         #expect(store.openPriorities(in: .today).map(\.title) == ["second", "third", "first"])
+        #expect(flow.drag == nil)
         flow.endDrag()
-        #expect(flow.draggingID == nil)
+        #expect(flow.drag == nil)
     }
 
     @Test
-    func enteringARowWithNoDragDoesNothing() throws {
+    func aGapNextToTheDraggedRowShowsNoLine() throws {
+        let store = try makeStore(clock)
+        let flow = PriorityFlow(store: store, schedule: recorder.schedule)
+        try store.addPriority(title: "first", list: .today)
+        let second = try store.addPriority(title: "second", list: .today)
+
+        flow.startDrag(second.id)
+        flow.hover(gap: 0, in: .today)
+        #expect(flow.drag?.gap == 0)
+        flow.hover(gap: 2, in: .today)
+        #expect(flow.drag?.gap == nil)
+        flow.hover(gap: 0, in: .today)
+        flow.hover(gap: nil, in: .today)
+        #expect(flow.drag?.gap == nil)
+    }
+
+    @Test
+    func aCancelledDragOrADropWithNoGapKeepsTheOrder() throws {
         let store = try makeStore(clock)
         let flow = PriorityFlow(store: store, schedule: recorder.schedule)
         let first = try store.addPriority(title: "first", list: .today)
         try store.addPriority(title: "second", list: .today)
 
-        flow.dragEntered(first.id, in: .today)
+        flow.startDrag(first.id)
+        flow.hover(gap: 2, in: .today)
+        flow.endDrag()
+        #expect(flow.drag == nil)
+        flow.drop(in: .today)
+
+        flow.startDrag(first.id)
+        flow.drop(in: .today)
         #expect(store.openPriorities(in: .today).map(\.title) == ["first", "second"])
+    }
+
+    @Test
+    func hoveringWithNoDragDoesNothing() throws {
+        let store = try makeStore(clock)
+        let flow = PriorityFlow(store: store, schedule: recorder.schedule)
+        try store.addPriority(title: "first", list: .today)
+
+        flow.hover(gap: 0, in: .today)
+        #expect(flow.drag == nil)
     }
 }
