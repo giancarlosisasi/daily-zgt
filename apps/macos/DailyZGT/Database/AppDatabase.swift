@@ -2,8 +2,21 @@ import Foundation
 import GRDB
 
 enum AppDatabase {
+    static var isDebugBuild: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
+
     static var defaultURL: URL {
-        URL.applicationSupportDirectory.appending(path: "DailyZGT/daily-zgt.sqlite")
+        url(isDebugBuild: isDebugBuild)
+    }
+
+    static func url(isDebugBuild: Bool) -> URL {
+        let name = isDebugBuild ? "daily-zgt-dev.sqlite" : "daily-zgt.sqlite"
+        return URL.applicationSupportDirectory.appending(path: "DailyZGT/\(name)")
     }
 
     static var isTestHost: Bool {

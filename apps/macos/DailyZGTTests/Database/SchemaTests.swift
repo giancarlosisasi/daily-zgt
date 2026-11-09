@@ -146,6 +146,13 @@ struct SchemaTests {
     func appDatabaseIsInMemoryInATestHost() throws {
         #expect(AppDatabase.isTestHost)
         #expect(try AppDatabase.forApp().path == ":memory:")
-        #expect(AppDatabase.defaultURL.path.hasSuffix("/Library/Application Support/DailyZGT/daily-zgt.sqlite"))
+        #expect(AppDatabase.url(isDebugBuild: false).path.hasSuffix("/Library/Application Support/DailyZGT/daily-zgt.sqlite"))
+    }
+
+    @Test
+    func aDebugBuildKeepsItsDataOutOfTheReleaseDatabase() {
+        #expect(AppDatabase.url(isDebugBuild: true).path.hasSuffix("/Library/Application Support/DailyZGT/daily-zgt-dev.sqlite"))
+        #expect(AppDatabase.isDebugBuild)
+        #expect(AppDatabase.defaultURL == AppDatabase.url(isDebugBuild: true))
     }
 }
