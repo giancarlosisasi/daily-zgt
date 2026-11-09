@@ -55,6 +55,7 @@ struct PriorityRow: View {
     let progress: SubtaskProgress
     let now: Date
     var isHighlighted = false
+    var isSelected = false
     var isChecked = false
     var isExpanded = false
     var todayChip: DueChipState?
@@ -71,6 +72,7 @@ struct PriorityRow: View {
         progress: SubtaskProgress,
         now: Date,
         isHighlighted: Bool = false,
+        isSelected: Bool = false,
         isChecked: Bool = false,
         isExpanded: Bool = false,
         isHoveringAtStart: Bool = false,
@@ -84,6 +86,7 @@ struct PriorityRow: View {
         self.progress = progress
         self.now = now
         self.isHighlighted = isHighlighted
+        self.isSelected = isSelected
         self.isChecked = isChecked
         self.isExpanded = isExpanded
         self.todayChip = todayChip
@@ -113,7 +116,7 @@ struct PriorityRow: View {
         .padding(.horizontal, Theme.Row.horizontalPadding)
         .frame(minHeight: Theme.Row.minHeight)
         .background(
-            isHighlighted ? Theme.Row.highlight : Color.clear,
+            isHighlighted ? Theme.Row.highlight : isSelected ? Theme.Row.selected : Color.clear,
             in: RoundedRectangle(cornerRadius: Theme.Row.radius, style: .continuous)
         )
         .overlay(
@@ -123,7 +126,7 @@ struct PriorityRow: View {
         )
         .motion(.fade, value: isHovering)
         .motion(.fade, value: isHighlighted)
-        .onHover { isHovering = $0 }
+        .hoverArea { isHovering = $0 }
     }
 
     private var caret: some View {
@@ -144,13 +147,13 @@ struct PriorityRow: View {
         VStack(alignment: .leading, spacing: Theme.Row.titleSpacing) {
             SelectableTitle(text: priority.title, isUnderlined: isTitleHovering, onOpen: onOpen)
             meta
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onOpen)
         }
         .padding(.vertical, Theme.Row.titleVerticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .onHover { isTitleHovering = $0 }
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onOpen)
+        .hoverArea { isTitleHovering = $0 }
+        .linkCursor()
     }
 
     private var meta: some View {

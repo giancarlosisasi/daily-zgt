@@ -1,9 +1,22 @@
 import AppKit
 import SwiftUI
 
+enum TitleLook: Equatable {
+    case open
+    case done
+
+    var color: Color {
+        switch self {
+        case .open: Theme.Text.primary
+        case .done: Theme.DoneSection.title
+        }
+    }
+}
+
 final class ClickableTitleView: NSTextView {
     var onOpen: () -> Void = {}
     private var appliedText: String?
+    private var appliedLook = TitleLook.open
     private var appliedUnderline = false
 
     static func make() -> ClickableTitleView {
@@ -29,6 +42,18 @@ final class ClickableTitleView: NSTextView {
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
+    override func resetCursorRects() {
+        addCursorRect(bounds, cursor: .pointingHand)
+    }
+
+    override func cursorUpdate(with event: NSEvent) {
+        NSCursor.pointingHand.set()
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        NSCursor.pointingHand.set()
+    }
+
     override func mouseDown(with event: NSEvent) {
         let down = event.locationInWindow
         super.mouseDown(with: event)
@@ -44,19 +69,24 @@ final class ClickableTitleView: NSTextView {
         return true
     }
 
-    func apply(text: String, isUnderlined: Bool) {
+    func apply(text: String, isUnderlined: Bool, look: TitleLook = .open) {
         guard let storage = textStorage else { return }
-        if appliedText != text {
+        if appliedText != text || appliedLook != look {
             let style = NSMutableParagraphStyle()
             style.minimumLineHeight = Theme.Font.rowTitleLineHeight
             style.maximumLineHeight = Theme.Font.rowTitleLineHeight
-            let attributes: [NSAttributedString.Key: Any] = [
+            var attributes: [NSAttributedString.Key: Any] = [
                 .font: Theme.Font.rowTitle,
-                .foregroundColor: NSColor(Theme.Text.primary),
+                .foregroundColor: NSColor(look.color),
                 .paragraphStyle: style,
             ]
+            if look == .done {
+                attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+                attributes[.strikethroughColor] = NSColor(look.color)
+            }
             storage.setAttributedString(NSAttributedString(string: text, attributes: attributes))
             appliedText = text
+            appliedLook = look
             appliedUnderline = false
             setAccessibilityLabel(text)
         }
@@ -86,6 +116,7 @@ final class ClickableTitleView: NSTextView {
 struct SelectableTitle: NSViewRepresentable {
     let text: String
     let isUnderlined: Bool
+    var look = TitleLook.open
     let onOpen: () -> Void
 
     func makeNSView(context: Context) -> ClickableTitleView {
@@ -94,12 +125,12 @@ struct SelectableTitle: NSViewRepresentable {
 
     func updateNSView(_ view: ClickableTitleView, context: Context) {
         view.onOpen = onOpen
-        view.apply(text: text, isUnderlined: isUnderlined)
+        view.apply(text: text, isUnderlined: isUnderlined, look: look)
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: ClickableTitleView, context: Context) -> CGSize? {
-        nsView.apply(text: text, isUnderlined: isUnderlined)
+        nsView.apply(text: text, isUnderlined: isUnderlined, look: look)
         let size = nsView.size(fittingWidth: proposal.width ?? 10_000)
-        return CGSize(width: proposal.width ?? size.width, height: size.height)
+        return CGSize(width: min(size.width, proposal.width ?? size.width), height: size.height)
     }
 }

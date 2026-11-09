@@ -1,13 +1,15 @@
 import SwiftUI
 
-struct MarkDoneButton: View {
+struct DetailKeyButton: View {
+    let icon: Icon
+    let title: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: Theme.Detail.markDoneSpacing) {
-                IconView(icon: .check, size: Theme.Detail.markDoneIconSize)
-                Text("Marcar como hecha")
+                IconView(icon: icon, size: Theme.Detail.markDoneIconSize)
+                Text(title)
                     .font(Theme.Detail.markDoneFont)
             }
             .foregroundStyle(Theme.Detail.markDoneText)
@@ -15,6 +17,22 @@ struct MarkDoneButton: View {
             .frame(height: Theme.Detail.markDoneHeight)
         }
         .buttonStyle(KeyButtonStyle(role: .graphite, radius: Theme.Detail.markDoneRadius))
+    }
+}
+
+struct MarkDoneButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        DetailKeyButton(icon: .check, title: "Marcar como hecha", action: action)
+    }
+}
+
+struct RestoreDoneButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        DetailKeyButton(icon: .arrowBack, title: "Regresar", action: action)
     }
 }
 
@@ -44,13 +62,14 @@ struct PriorityDetailView: View {
         VStack(alignment: .leading, spacing: Theme.Detail.spacing) {
             PriorityDetailHeader(
                 backLabel: priority.list.title,
-                onBack: { panel.closeDetail() },
+                onBack: { panel.backFromDetail() },
                 onDelete: { flow.delete(priority.id) }
             )
             VStack(alignment: .leading, spacing: Theme.Detail.headSpacing) {
                 PriorityDetailTitleField(title: priority.title, showsEditState: titleShowsEditState) { draft in
                     attempt { try actions.commitTitle(draft) } ?? priority.title
                 }
+                .disabled(priority.isDone)
                 TimelineView(.everyMinute) { _ in
                     PriorityDetailChips(
                         priority: priority,
@@ -84,8 +103,11 @@ struct PriorityDetailView: View {
                 },
                 onRepeat: { rule in attempt { try actions.setRepeat(rule) } }
             )
+            .disabled(priority.isDone)
             PriorityDetailSubtasksSection(priority: priority)
+                .disabled(priority.isDone)
             PriorityDetailNoteSection(priority: priority)
+                .disabled(priority.isDone)
             doneControl(progress)
             Text(PriorityDetailLabels.created(priority.createdAt, now: store.now()))
                 .font(Theme.Font.meta)
@@ -102,7 +124,8 @@ struct PriorityDetailView: View {
     private func doneControl(_ progress: SubtaskProgress) -> some View {
         Group {
             if priority.isDone {
-                EmptyView()
+                RestoreDoneButton { panel.restoreFromDetail() }
+                    .motionTransition(.rowIn)
             } else if flow.isConfirming(priority.id) {
                 DoneConfirmationBar(
                     openSubtasksLabel: progress.openSubtasksLabel,

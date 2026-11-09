@@ -11,20 +11,24 @@ struct DoneCheckIcon: View {
 
 struct DoneRow: View {
     let priority: Priority
+    let onOpen: () -> Void
     let onRestore: () -> Void
     let onRemove: () -> Void
     let leadingPadding: CGFloat
 
     @State private var isHovering: Bool
+    @State private var isTitleHovering = false
 
     init(
         priority: Priority,
         isHoveringAtStart: Bool = false,
         leadingPadding: CGFloat = Theme.DoneSection.rowLeadingPadding,
+        onOpen: @escaping () -> Void = {},
         onRestore: @escaping () -> Void = {},
         onRemove: @escaping () -> Void = {}
     ) {
         self.priority = priority
+        self.onOpen = onOpen
         self.onRestore = onRestore
         self.onRemove = onRemove
         self.leadingPadding = leadingPadding
@@ -34,13 +38,12 @@ struct DoneRow: View {
     var body: some View {
         HStack(spacing: Theme.DoneSection.rowSpacing) {
             DoneCheckIcon()
-            Text(priority.title)
-                .font(Theme.Font.body)
-                .strikethrough(true, color: Theme.DoneSection.title)
-                .foregroundStyle(Theme.DoneSection.title)
-                .multilineTextAlignment(.leading)
+            SelectableTitle(text: priority.title, isUnderlined: isTitleHovering, look: .done, onOpen: onOpen)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .textSelection(.enabled)
+                .contentShape(Rectangle())
+                .onTapGesture(perform: onOpen)
+                .hoverArea { isTitleHovering = $0 }
+                .linkCursor()
             Button(action: onRestore) {
                 HStack(spacing: Theme.DoneSection.restoreSpacing) {
                     IconView(icon: .arrowBack, size: Theme.DoneSection.restoreIconSize)
@@ -73,7 +76,7 @@ struct DoneRow: View {
                 .allowsHitTesting(false)
         )
         .motion(.fade, value: isHovering)
-        .onHover { isHovering = $0 }
+        .hoverArea { isHovering = $0 }
     }
 }
 
@@ -145,6 +148,7 @@ struct DoneSectionContent: View {
                             ForEach(recent) { priority in
                                 DoneRow(
                                     priority: priority,
+                                    onOpen: { panel.openDetail(priority.id) },
                                     onRestore: { panel.priorityFlow.restore(priority.id) },
                                     onRemove: { panel.priorityFlow.delete(priority.id) }
                                 )

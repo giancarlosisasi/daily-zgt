@@ -22,6 +22,7 @@ enum AppBoot {
     static func start() -> AppBoot {
         do {
             let store = AppStore(database: try AppDatabase.forApp())
+            try store.adoptManualOrder()
             let center: any NotificationCenterClient = AppDatabase.isTestHost
                 ? InertNotificationCenter()
                 : SystemNotificationCenter()

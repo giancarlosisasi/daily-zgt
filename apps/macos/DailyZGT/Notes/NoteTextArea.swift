@@ -3,7 +3,7 @@ import SwiftUI
 struct NoteTextArea: View {
     @Binding var text: String
     let placeholder: String
-    var height = Theme.Notes.height
+    var height: CGFloat? = Theme.Notes.height
     var horizontalPadding = Theme.Notes.padding
     var verticalPadding = Theme.Notes.padding
 
@@ -20,7 +20,7 @@ struct NoteTextArea: View {
             .focused($isFocused)
             .padding(.horizontal, horizontalPadding + Theme.Notes.borderWidth - Theme.Notes.editorInset)
             .padding(.vertical, verticalPadding + Theme.Notes.borderWidth)
-            .frame(height: height)
+            .frame(minHeight: height ?? Theme.Notes.height, maxHeight: height ?? .infinity)
             .background(Theme.Notes.background, in: shape)
             .overlay(alignment: .topLeading) {
                 if text.isEmpty {

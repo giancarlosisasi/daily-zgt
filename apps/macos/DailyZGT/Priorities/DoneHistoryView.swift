@@ -56,6 +56,7 @@ struct DoneHistoryContent: View {
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var panel
+    @Environment(\.panelLayout) private var layout
 
     var body: some View {
         let cutoff = DoneWindow.cutoff(now: now)
@@ -75,7 +76,7 @@ struct DoneHistoryContent: View {
                     }
                 }
             }
-            .frame(maxHeight: Theme.Row.listMaxHeight)
+            .frame(maxHeight: layout == .window ? .infinity : Theme.Row.listMaxHeight)
         }
     }
 
@@ -90,6 +91,7 @@ struct DoneHistoryContent: View {
                 DoneRow(
                     priority: priority,
                     leadingPadding: Theme.History.doneRowLeadingPadding,
+                    onOpen: { panel.openDetail(priority.id) },
                     onRestore: { panel.priorityFlow.restore(priority.id) },
                     onRemove: { panel.priorityFlow.delete(priority.id) }
                 )

@@ -2,6 +2,7 @@ import SwiftUI
 
 enum Icon: String, CaseIterable {
     case arrowBack = "arrow-u-up-left-bold"
+    case arrowsOut = "arrows-out-simple-bold"
     case bell = "bell-bold"
     case bellSlash = "bell-slash-bold"
     case calendar = "calendar-blank-bold"

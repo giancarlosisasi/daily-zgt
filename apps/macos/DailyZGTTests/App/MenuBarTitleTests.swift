@@ -110,21 +110,15 @@ struct MenuBarTitleStoreTests {
     @Test
     func theTitleIsTheFirstOpenPriorityOfTodayInTheStoreOrder() throws {
         let store = try makeStore(clock)
-        try store.addPriority(title: "Low", level: .low, list: .today)
-        try store.addPriority(title: "Medium late", level: .medium, list: .today, dueAt: localDate("2026-10-12T18:00:00"))
+        let low = try store.addPriority(title: "Low", level: .low, list: .today)
         try store.addPriority(title: "Medium soon", level: .medium, list: .today, dueAt: localDate("2026-10-12T12:00:00"))
-        try store.addPriority(title: "High", level: .high, list: .today)
+        let high = try store.addPriority(title: "High", level: .high, list: .today)
         try store.addPriority(title: "Week high", level: .high, list: .week)
+        #expect(readyBoot(store).menuBarTitle == "Low")
+        let order = store.openPriorities(in: .today).map(\.id)
+        try store.reorderPriorities([high.id] + order.filter { $0 != high.id })
         #expect(readyBoot(store).menuBarTitle == "High")
-    }
-
-    @Test
-    func theDueBreaksATieOfLevel() throws {
-        let store = try makeStore(clock)
-        try store.addPriority(title: "No due", list: .today)
-        try store.addPriority(title: "Late", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
-        try store.addPriority(title: "Soon", list: .today, dueAt: localDate("2026-10-12T12:00:00"))
-        #expect(readyBoot(store).menuBarTitle == "Soon")
+        #expect(store.openPriorities(in: .today).last?.id != low.id)
     }
 
     @Test
@@ -157,6 +151,9 @@ struct MenuBarTitleStoreTests {
         var second: Priority?
         try await nextChange(of: store) { second = try store.addPriority(title: "Second", level: .high, list: .today) }
         let two = try #require(second)
+        #expect(boot.menuBarTitle == "First")
+
+        try await nextChange(of: store) { try store.reorderPriorities([two.id, one.id]) }
         #expect(boot.menuBarTitle == "Second")
 
         try await nextChange(of: store) { try store.markDone(two.id) }
@@ -169,14 +166,6 @@ struct MenuBarTitleStoreTests {
         #expect(boot.menuBarTitle == "Second edited")
 
         try await nextChange(of: store) { try store.editPriority(two.id) { $0.level = .low } }
-        #expect(boot.menuBarTitle == "First")
-
-        try await nextChange(of: store) {
-            try store.editPriority(two.id) {
-                $0.level = .medium
-                $0.dueAt = localDate("2026-10-12T11:00:00")
-            }
-        }
         #expect(boot.menuBarTitle == "Second edited")
 
         try await nextChange(of: store) { try store.movePriority(two.id, to: .week) }

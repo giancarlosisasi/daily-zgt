@@ -50,6 +50,7 @@ final class PriorityFlow {
     @ObservationIgnored private let highlightLifetime: Duration
     @ObservationIgnored private var nextToken = 0
     @ObservationIgnored private var nextHighlightToken = 0
+    @ObservationIgnored private(set) var draggingID: Priority.ID?
 
     init(
         store: AppStore,
@@ -160,6 +161,27 @@ final class PriorityFlow {
             if undo?.priorityID == id {
                 undo = nil
             }
+        } catch {
+            writeFailed = true
+        }
+    }
+
+    func startDrag(_ id: Priority.ID) {
+        draggingID = id
+    }
+
+    func endDrag() {
+        draggingID = nil
+    }
+
+    func dragEntered(_ target: Priority.ID, in list: PriorityList) {
+        guard let draggingID, draggingID != target else { return }
+        let ids = store.openPriorities(in: list).map(\.id)
+        let next = PriorityOrder.moving(draggingID, to: target, in: ids)
+        guard next != ids else { return }
+        do {
+            try store.reorderPriorities(next)
+            writeFailed = false
         } catch {
             writeFailed = true
         }

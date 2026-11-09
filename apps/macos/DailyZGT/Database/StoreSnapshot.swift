@@ -12,12 +12,7 @@ struct StoreSnapshot: Equatable, Sendable {
         snapshot.open = try Priority.fetchAll(database, sql: """
             SELECT * FROM priority
             WHERE done_at IS NULL
-            ORDER BY
-                CASE level WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END,
-                due_at IS NULL,
-                due_at,
-                position,
-                id
+            ORDER BY position, id
             """)
         snapshot.done = try Priority.fetchAll(database, sql: """
             SELECT * FROM priority

@@ -47,16 +47,62 @@ struct PanelDetailNavigationTests {
     }
 
     @Test
-    func openingAnUnknownOrDoneIDDoesNothing() throws {
+    func openingAnUnknownIDDoesNothing() throws {
+        let state = makeState(try makeStore(clock))
+        state.openDetail("missing")
+        #expect(state.openPriorityID == nil)
+    }
+
+    @Test
+    func aDonePriorityOpensItsDetailToReadOnly() throws {
+        let store = try makeStore(clock)
+        let state = makeState(store)
+        let done = try store.addPriority(title: "Done", list: .week)
+        try store.markDone(done.id)
+
+        state.openDetail(done.id)
+        #expect(state.detailPriority?.id == done.id)
+        #expect(state.detailPriority?.isDone == true)
+        #expect(state.scope == .week)
+        state.closeDetailIfGone()
+        #expect(state.openPriorityID == done.id)
+    }
+
+    @Test
+    func backFromADoneDetailReturnsToTheHistoryItCameFrom() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
         let done = try store.addPriority(title: "Done", list: .today)
         try store.markDone(done.id)
 
-        state.openDetail("missing")
-        #expect(state.openPriorityID == nil)
+        state.openHistory()
         state.openDetail(done.id)
+        #expect(state.page == .browse)
+        state.backFromDetail()
         #expect(state.openPriorityID == nil)
+        #expect(state.page == .history)
+
+        state.closeHistory()
+        state.openDetail(done.id)
+        state.backFromDetail()
+        #expect(state.page == .browse)
+    }
+
+    @Test
+    func restoringFromTheDoneDetailKeepsTheDetailOpenToEdit() throws {
+        let store = try makeStore(clock)
+        let state = makeState(store)
+        let done = try store.addPriority(title: "Done", list: .today)
+        try store.markDone(done.id)
+
+        state.openDetail(done.id)
+        state.restoreFromDetail()
+        #expect(store.priority(id: done.id)?.isDone == false)
+        #expect(state.detailPriority?.id == done.id)
+        #expect(state.detailOpenedDone == false)
+
+        state.priorityFlow.confirmDone(done.id)
+        #expect(state.detailPriority == nil)
     }
 
     @Test
