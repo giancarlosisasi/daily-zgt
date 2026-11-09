@@ -35,23 +35,14 @@ struct PriorityListViewTests {
     }
 
     @Test
-    func openRowsFollowLevelThenDueAndNoDueGoesLast() throws {
+    func openRowsFollowTheManualOrderNotTheLevelOrTheDue() throws {
         let store = try makeStore(clock)
         try store.addPriority(title: "low no due", level: .low, list: .today)
-        try store.addPriority(title: "low early", level: .low, list: .today, dueAt: localDate("2026-10-12T09:00:00"))
-        try store.addPriority(title: "medium no due", level: .medium, list: .today)
-        try store.addPriority(title: "high late", level: .high, list: .today, dueAt: localDate("2026-10-12T18:00:00"))
-        try store.addPriority(title: "medium late", level: .medium, list: .today, dueAt: localDate("2026-10-12T17:00:00"))
-        try store.addPriority(title: "high no due", level: .high, list: .today)
         try store.addPriority(title: "high early", level: .high, list: .today, dueAt: localDate("2026-10-12T12:00:00"))
+        try store.addPriority(title: "medium late", level: .medium, list: .today, dueAt: localDate("2026-10-12T17:00:00"))
         try store.addPriority(title: "week item", level: .high, list: .week, dueAt: localDate("2026-10-12T08:00:00"))
 
-        let titles = store.openPriorities(in: .today).map(\.title)
-        #expect(titles == [
-            "high early", "high late", "high no due",
-            "medium late", "medium no due",
-            "low early", "low no due",
-        ])
+        #expect(store.openPriorities(in: .today).map(\.title) == ["low no due", "high early", "medium late"])
         #expect(store.openPriorities(in: .week).map(\.title) == ["week item"])
     }
 
@@ -103,6 +94,48 @@ struct PriorityListViewTests {
             try store.addPriority(title: "Prioridad número \(index)", level: .medium, list: .today)
         }
         try render(PriorityListView(list: .today).environment(store).environment(PanelState(store: store)), named: "priorities-long")
+    }
+
+    @Test
+    func rendersTheDesktopWindowWithTheListAndTheOpenDetail() throws {
+        let store = try sampleStore()
+        let state = PanelState(store: store)
+        let brief = try #require(store.openPriorities(in: .today).first { $0.title.hasPrefix("Terminar") })
+        state.openDetail(brief.id)
+        let view = MainWindowView()
+            .environment(store)
+            .environment(state)
+            .frame(width: Theme.Window.defaultWidth, height: Theme.Window.defaultHeight)
+        let url = try Screenshot.writeHosted(view, named: "window-priorities")
+        let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+        #expect(size > 0)
+    }
+
+    @Test
+    func rendersTheDesktopWindowWithNoOpenDetail() throws {
+        let store = try sampleStore()
+        let view = MainWindowView()
+            .environment(store)
+            .environment(PanelState(store: store))
+            .frame(width: Theme.Window.defaultWidth, height: Theme.Window.defaultHeight)
+        let url = try Screenshot.writeHosted(view, named: "window-empty-detail")
+        let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+        #expect(size > 0)
+    }
+
+    @Test
+    func rendersTheDesktopWindowOnTheNotesTab() throws {
+        let store = try sampleStore()
+        let state = PanelState(store: store)
+        try store.saveNote("Revisar el brief antes de las 11.\nLlamar a Ana.", scope: .day)
+        state.select(tab: .notes)
+        let view = MainWindowView()
+            .environment(store)
+            .environment(state)
+            .frame(width: Theme.Window.defaultWidth, height: Theme.Window.defaultHeight)
+        let url = try Screenshot.writeHosted(view, named: "window-notes")
+        let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
+        #expect(size > 0)
     }
 
     @Test

@@ -249,6 +249,52 @@ final class AppStore {
         }
     }
 
+    static let manualOrderKey = AppStateKey(name: "manual_order", defaultValue: false)
+
+    func adoptManualOrder() throws {
+        guard !value(for: Self.manualOrderKey) else { return }
+        let keyName = Self.manualOrderKey.name
+        try write { database in
+            try database.execute(sql: """
+                UPDATE priority SET position = (
+                    SELECT rank FROM (
+                        SELECT id, ROW_NUMBER() OVER (
+                            ORDER BY
+                                done_at IS NOT NULL,
+                                CASE WHEN done_at IS NULL THEN
+                                    CASE level WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END
+                                END,
+                                CASE WHEN done_at IS NULL THEN due_at IS NULL END,
+                                CASE WHEN done_at IS NULL THEN due_at END,
+                                position,
+                                id
+                        ) AS rank FROM priority
+                    ) ranked WHERE ranked.id = priority.id
+                )
+                """)
+            try database.execute(
+                sql: """
+                    INSERT INTO app_state (key, value) VALUES (?, 'true')
+                    ON CONFLICT (key) DO UPDATE SET value = excluded.value
+                    """,
+                arguments: [keyName]
+            )
+        }
+    }
+
+    func reorderPriorities(_ ids: [Priority.ID]) throws {
+        try write { database in
+            var slots: [Int] = []
+            for id in ids {
+                slots.append(try Self.priority(id, in: database).position)
+            }
+            slots.sort()
+            for (id, position) in zip(ids, slots) {
+                try database.execute(sql: "UPDATE priority SET position = ? WHERE id = ?", arguments: [position, id])
+            }
+        }
+    }
+
     @discardableResult
     func movePriority(_ id: Priority.ID, to list: PriorityList) throws -> Priority {
         try editPriority(id) { $0.list = list }

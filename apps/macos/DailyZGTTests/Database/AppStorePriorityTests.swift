@@ -169,7 +169,7 @@ struct AppStorePriorityTests {
     }
 
     @Test
-    func openPrioritiesSortByLevelThenDueThenAge() throws {
+    func openPrioritiesKeepTheManualOrderWhateverTheLevelAndDue() throws {
         let store = try makeStore(clock)
         let rows: [(String, PriorityLevel, String?)] = [
             ("low, no due", .low, nil),
@@ -187,17 +187,7 @@ struct AppStorePriorityTests {
         }
         try store.addPriority(title: "other list", level: .high, list: .week)
 
-        #expect(store.openPriorities(in: .today).map(\.title) == [
-            "high, the day before",
-            "high, 16:00",
-            "high, 18:00",
-            "high, no due",
-            "medium, 10:00, first",
-            "medium, 10:00, second",
-            "medium, no due",
-            "low, 08:00",
-            "low, no due",
-        ])
+        #expect(store.openPriorities(in: .today).map(\.title) == rows.map(\.0))
         #expect(store.openPriorities(in: .week).map(\.title) == ["other list"])
     }
 

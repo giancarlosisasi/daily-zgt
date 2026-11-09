@@ -30,6 +30,14 @@ struct PriorityDetailViewTests {
     }
 
     @Test
+    func rendersTheReadOnlyDetailOfADonePriority() throws {
+        let (store, state, brief) = try sample()
+        let done = try store.markDone(brief.id)
+        state.openDetail(done.id)
+        try render(PriorityDetailView(priority: done), store: store, state: state, named: "detail-done")
+    }
+
+    @Test
     func rendersTheDetailOfAPriorityWithADue() throws {
         let (store, state, brief) = try sample()
         try render(PriorityDetailView(priority: brief), store: store, state: state, named: "detail-with-due")

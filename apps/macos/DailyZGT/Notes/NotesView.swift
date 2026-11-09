@@ -15,6 +15,7 @@ private struct NotesEditor: View {
     let scope: NoteScope
 
     @State private var model: NotesModel
+    @Environment(\.panelLayout) private var layout
 
     init(store: AppStore, scope: NoteScope) {
         self.scope = scope
@@ -55,7 +56,8 @@ private struct NotesEditor: View {
     private var textArea: some View {
         NoteTextArea(
             text: Binding(get: { model.text }, set: { model.edit($0) }),
-            placeholder: "Escribe una nota"
+            placeholder: "Escribe una nota",
+            height: layout == .window ? nil : Theme.Notes.height
         )
     }
 }

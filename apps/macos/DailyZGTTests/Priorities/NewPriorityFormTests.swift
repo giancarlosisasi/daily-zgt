@@ -89,7 +89,7 @@ struct NewPriorityFormTests {
     }
 
     @Test
-    func theNewRowTakesItsSortedPlace() throws {
+    func theNewRowGoesToTheEndOfTheList() throws {
         let store = try makeStore(clock)
         try store.addPriority(title: "medium", level: .medium, list: .today)
         try store.addPriority(title: "low", level: .low, list: .today)
@@ -97,7 +97,7 @@ struct NewPriorityFormTests {
         form.draft.title = "high"
         form.draft.level = .high
         try form.submit(to: store, list: .today)
-        #expect(store.openPriorities(in: .today).map(\.title) == ["high", "medium", "low"])
+        #expect(store.openPriorities(in: .today).map(\.title) == ["medium", "low", "high"])
     }
 
     @Test

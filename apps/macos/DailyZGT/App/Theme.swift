@@ -14,6 +14,21 @@ enum Theme {
         static let sideHeight = TeclaTokens.Shadows.panel[0].y
     }
 
+    enum Window {
+        static let defaultWidth: CGFloat = 980
+        static let defaultHeight: CGFloat = 680
+        static let minWidth: CGFloat = 760
+        static let minHeight: CGFloat = 520
+        static let padding: CGFloat = 16
+        static let columnSpacing: CGFloat = 16
+        static let listWidth: CGFloat = 400
+        static let detailMaxWidth: CGFloat = 560
+        static let pageMaxWidth: CGFloat = 480
+        static let divider = Color(TeclaTokens.Panel.div)
+        static let dividerWidth: CGFloat = 1
+        static let autosaveName = "DailyZGTMainWindow"
+    }
+
     enum Text {
         static let primary = Color(TeclaTokens.Panel.text)
         static let strong = Color(TeclaTokens.Panel.strong)
@@ -180,6 +195,7 @@ enum Theme {
         static let radius = TeclaTokens.Radius.row
         static let hoverOverlay = Color(TeclaTokens.Panel.hover)
         static let highlight = Color(TeclaTokens.Panel.hl)
+        static let selected = Color(TeclaTokens.Panel.hover2)
         static let caretWidth: CGFloat = 18
         static let caretHeight: CGFloat = 22
         static let caretIconSize: CGFloat = 11

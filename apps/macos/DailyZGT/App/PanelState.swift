@@ -28,6 +28,8 @@ final class PanelState {
     private(set) var openPriorityID: Priority.ID?
     private(set) var isSettingsOpen = false
     private(set) var isHistoryOpen = false
+    private(set) var detailOpenedDone = false
+    private(set) var detailReturnsToHistory = false
 
     @ObservationIgnored let priorityFlow: PriorityFlow
     @ObservationIgnored let loginItem: LoginItemSettings
@@ -50,7 +52,8 @@ final class PanelState {
     }
 
     var detailPriority: Priority? {
-        guard let id = openPriorityID, let priority = store.priority(id: id), !priority.isDone else { return nil }
+        guard let id = openPriorityID, let priority = store.priority(id: id) else { return nil }
+        guard !priority.isDone || detailOpenedDone else { return nil }
         return priority
     }
 
@@ -61,13 +64,32 @@ final class PanelState {
     }
 
     func openDetail(_ id: Priority.ID) {
-        guard let priority = store.priority(id: id), !priority.isDone else { return }
+        guard let priority = store.priority(id: id) else { return }
+        let fromHistory = isHistoryOpen
         priorityFlow.cancelConfirmation()
         closeSettings()
         closeHistory()
         select(tab: .priorities)
         select(scope: priority.list)
         openPriorityID = id
+        detailOpenedDone = priority.isDone
+        detailReturnsToHistory = fromHistory
+    }
+
+    func backFromDetail() {
+        let toHistory = detailReturnsToHistory
+        closeDetail()
+        if toHistory {
+            openHistory()
+        }
+    }
+
+    func restoreFromDetail() {
+        guard let id = openPriorityID else { return }
+        priorityFlow.restore(id)
+        guard !priorityFlow.writeFailed else { return }
+        detailOpenedDone = false
+        detailReturnsToHistory = false
     }
 
     func openSettings() {
@@ -113,6 +135,8 @@ final class PanelState {
     func closeDetail() {
         guard openPriorityID != nil else { return }
         openPriorityID = nil
+        detailOpenedDone = false
+        detailReturnsToHistory = false
         priorityFlow.cancelConfirmation()
     }
 

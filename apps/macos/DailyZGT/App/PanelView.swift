@@ -21,9 +21,15 @@ struct PanelFooterBar: View {
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var state
     @Environment(AlertCoordinator.self) private var alerts: AlertCoordinator?
+    @Environment(\.panelLayout) private var layout
 
     var body: some View {
         PanelFooter(summary: PanelLabels.summary(for: state.scope, store: store, now: now), actions: {
+            if layout == .panel {
+                OpenWindowButton {
+                    MainWindowController.shared.show(store: store, alerts: alerts, panel: state)
+                }
+            }
             TestAlertButton(alertsOff: alerts?.alertsAreOff ?? false) {
                 alerts?.bellWasPressed()
             }
@@ -31,6 +37,28 @@ struct PanelFooterBar: View {
                 state.toggleSettings()
             }
         })
+    }
+}
+
+struct ScopeRow: View {
+    @Environment(AppStore.self) private var store
+    @Environment(PanelState.self) private var state
+
+    var body: some View {
+        HStack(spacing: 8) {
+            SegmentedTabs(
+                style: .scope,
+                options: [
+                    .init(value: PriorityList.today, title: "Hoy · \(store.openCount(in: .today))"),
+                    .init(value: PriorityList.week, title: "Semana · \(store.openCount(in: .week))"),
+                ],
+                selection: Binding(get: { state.scope }, set: { state.select(scope: $0) })
+            )
+            Spacer(minLength: 0)
+            Text(PanelLabels.date(for: state.scope, at: store.now()))
+                .font(Theme.Font.label)
+                .foregroundStyle(Theme.Text.muted)
+        }
     }
 }
 
@@ -73,26 +101,9 @@ struct PanelView: View {
                 selection: Binding(get: { state.tab }, set: { state.select(tab: $0) })
             )
             if state.detailPriority == nil {
-                scopeRow
+                ScopeRow()
             }
             content
-        }
-    }
-
-    private var scopeRow: some View {
-        HStack(spacing: 8) {
-            SegmentedTabs(
-                style: .scope,
-                options: [
-                    .init(value: PriorityList.today, title: "Hoy · \(store.openCount(in: .today))"),
-                    .init(value: PriorityList.week, title: "Semana · \(store.openCount(in: .week))"),
-                ],
-                selection: Binding(get: { state.scope }, set: { state.select(scope: $0) })
-            )
-            Spacer(minLength: 0)
-            Text(PanelLabels.date(for: state.scope, at: store.now()))
-                .font(Theme.Font.label)
-                .foregroundStyle(Theme.Text.muted)
         }
     }
 

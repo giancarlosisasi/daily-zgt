@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct EmptyListContent: View {
     let list: PriorityList
@@ -38,6 +39,7 @@ struct PriorityListView: View {
     @Environment(AlertCoordinator.self) private var alerts: AlertCoordinator?
     @State private var writeFailed = false
     @Environment(\.motionPolicy) private var motion
+    @Environment(\.panelLayout) private var layout
     @State private var form = NewPriorityForm()
 
     private var flow: PriorityFlow { panel.priorityFlow }
@@ -94,16 +96,36 @@ struct PriorityListView: View {
         }
     }
 
+    @ViewBuilder
     private func rowsScroll(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
-        ScrollView {
-            VStack(spacing: Theme.Row.listSpacing) {
-                ForEach(open) { priority in
-                    rowGroup(priority, chip: chips[priority.id], now: now)
+        switch layout {
+        case .panel:
+            ScrollView {
+                rowStack(open, chips: chips, now: now)
+            }
+            .frame(maxHeight: Theme.Row.listMaxHeight)
+        case .window:
+            ViewThatFits(in: .vertical) {
+                rowStack(open, chips: chips, now: now)
+                ScrollView {
+                    rowStack(open, chips: chips, now: now)
                 }
             }
-            .motion(.rowIn, value: open.map(\.id))
         }
-        .frame(maxHeight: Theme.Row.listMaxHeight)
+    }
+
+    private func rowStack(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
+        VStack(spacing: Theme.Row.listSpacing) {
+            ForEach(open) { priority in
+                rowGroup(priority, chip: chips[priority.id], now: now)
+            }
+        }
+        .motion(.rowIn, value: open.map(\.id))
+        .onDrop(of: [UTType.text], isTargeted: nil) { _ in
+            guard flow.draggingID != nil else { return false }
+            flow.endDrag()
+            return true
+        }
     }
 
     private func rowGroup(_ priority: Priority, chip: DueChipState?, now: Date) -> some View {
@@ -116,6 +138,7 @@ struct PriorityListView: View {
                 progress: progress,
                 now: now,
                 isHighlighted: flow.highlightedID == priority.id,
+                isSelected: panel.openPriorityID == priority.id,
                 isChecked: showsConfirmation,
                 isExpanded: flow.isExpanded(priority.id),
                 todayChip: chip,
@@ -124,6 +147,7 @@ struct PriorityListView: View {
                 onToggleSubtasks: { flow.toggleSubtasks(for: priority.id) },
                 onRemove: { remove(priority) }
             )
+            .reorderable(priority, in: list, flow: flow)
             if showsConfirmation {
                 DoneConfirmationBar(
                     openSubtasksLabel: progress.openSubtasksLabel,

@@ -27,6 +27,23 @@ struct TestAlertButton: View {
     }
 }
 
+struct OpenWindowButton: View {
+    static let label = "Abrir en ventana"
+
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            IconView(icon: .arrowsOut, size: Theme.Footer.iconSize)
+                .foregroundStyle(Theme.Footer.gearText)
+                .frame(width: Theme.Footer.iconButtonWidth, height: Theme.Ghost.height)
+        }
+        .buttonStyle(.ghost)
+        .accessibilityLabel(Self.label)
+        .help(Self.label)
+    }
+}
+
 struct SettingsButton: View {
     var isOpen = false
     let action: () -> Void
