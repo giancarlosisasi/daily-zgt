@@ -43,6 +43,7 @@ final class PriorityFlow {
     private(set) var writeFailed = false
     private(set) var expansion = SubtaskExpansion()
     private(set) var leavingIDs: Set<Priority.ID> = []
+    private(set) var drag: PriorityDrag?
 
     @ObservationIgnored private let store: AppStore
     @ObservationIgnored private let schedule: PrioritySchedule
@@ -50,7 +51,6 @@ final class PriorityFlow {
     @ObservationIgnored private let highlightLifetime: Duration
     @ObservationIgnored private var nextToken = 0
     @ObservationIgnored private var nextHighlightToken = 0
-    @ObservationIgnored private(set) var draggingID: Priority.ID?
 
     init(
         store: AppStore,
@@ -166,21 +166,36 @@ final class PriorityFlow {
         }
     }
 
+    func isDragging(_ id: Priority.ID) -> Bool {
+        drag?.id == id
+    }
+
     func startDrag(_ id: Priority.ID) {
-        draggingID = id
+        drag = PriorityDrag(id: id)
     }
 
     func endDrag() {
-        draggingID = nil
+        if drag != nil {
+            drag = nil
+        }
     }
 
-    func dragEntered(_ target: Priority.ID, in list: PriorityList) {
-        guard let draggingID, draggingID != target else { return }
+    func hover(gap: Int?, in list: PriorityList) {
+        guard var current = drag else { return }
         let ids = store.openPriorities(in: list).map(\.id)
-        let next = PriorityOrder.moving(draggingID, to: target, in: ids)
-        guard next != ids else { return }
+        let next = gap.flatMap { PriorityOrder.changesOrder(current.id, gap: $0, in: ids) ? $0 : nil }
+        guard next != current.gap else { return }
+        current.gap = next
+        drag = current
+    }
+
+    func drop(in list: PriorityList) {
+        guard let current = drag else { return }
+        drag = nil
+        guard let gap = current.gap else { return }
+        let ids = store.openPriorities(in: list).map(\.id)
         do {
-            try store.reorderPriorities(next)
+            try store.reorderPriorities(PriorityOrder.moving(current.id, toGap: gap, in: ids))
             writeFailed = false
         } catch {
             writeFailed = true

@@ -41,6 +41,9 @@ struct PriorityListView: View {
     @Environment(\.motionPolicy) private var motion
     @Environment(\.panelLayout) private var layout
     @State private var form = NewPriorityForm()
+    @State private var frames = RowFrames()
+
+    private static let stackSpace = "priorityStack"
 
     private var flow: PriorityFlow { panel.priorityFlow }
 
@@ -84,6 +87,16 @@ struct PriorityListView: View {
                 .onChange(of: flow.scrollTargetID, initial: true) {
                     scroll(to: flow.scrollTargetID, with: proxy)
                 }
+                .onChange(of: flow.drag?.gap) { _, gap in
+                    reveal(gap, in: open.map(\.id), with: proxy)
+                }
+        }
+    }
+
+    private func reveal(_ gap: Int?, in ids: [Priority.ID], with proxy: ScrollViewProxy) {
+        guard let gap else { return }
+        for index in [gap, gap - 1] where ids.indices.contains(index) {
+            proxy.scrollTo(ids[index])
         }
     }
 
@@ -105,27 +118,29 @@ struct PriorityListView: View {
             }
             .frame(maxHeight: Theme.Row.listMaxHeight)
         case .window:
-            ViewThatFits(in: .vertical) {
-                rowStack(open, chips: chips, now: now)
-                ScrollView {
-                    rowStack(open, chips: chips, now: now)
-                }
-            }
+            rowStack(open, chips: chips, now: now)
         }
     }
 
     private func rowStack(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
-        VStack(spacing: Theme.Row.listSpacing) {
-            ForEach(open) { priority in
+        let ids = open.map(\.id)
+        let gap = flow.drag?.gap
+        return VStack(spacing: Theme.Row.listSpacing) {
+            ForEach(Array(open.enumerated()), id: \.element.id) { index, priority in
                 rowGroup(priority, chip: chips[priority.id], now: now)
+                    .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(Self.stackSpace)) }) { frame in
+                        frames.set(frame, for: priority.id)
+                    }
+                    .dropLine(at: .top, isVisible: gap == index, isListEdge: index == 0)
+                    .dropLine(at: .bottom, isVisible: gap == ids.count && index == ids.count - 1, isListEdge: true)
             }
         }
-        .motion(.rowIn, value: open.map(\.id))
-        .onDrop(of: [UTType.text], isTargeted: nil) { _ in
-            guard flow.draggingID != nil else { return false }
-            flow.endDrag()
-            return true
-        }
+        .motion(.rowIn, value: ids)
+        .coordinateSpace(.named(Self.stackSpace))
+        .onDrop(
+            of: [UTType.utf8PlainText],
+            delegate: PriorityStackDropDelegate(ids: ids, frames: frames, list: list, flow: flow)
+        )
     }
 
     private func rowGroup(_ priority: Priority, chip: DueChipState?, now: Date) -> some View {
@@ -141,13 +156,15 @@ struct PriorityListView: View {
                 isSelected: panel.openPriorityID == priority.id,
                 isChecked: showsConfirmation,
                 isExpanded: flow.isExpanded(priority.id),
+                isDragging: flow.isDragging(priority.id),
                 todayChip: chip,
                 onToggleDone: { flow.toggleConfirmation(for: priority.id) },
                 onOpen: { panel.openDetail(priority.id) },
                 onToggleSubtasks: { flow.toggleSubtasks(for: priority.id) },
-                onRemove: { remove(priority) }
+                onRemove: { remove(priority) },
+                onDragStart: { flow.startDrag(priority.id) },
+                onDragEnd: { flow.endDrag() }
             )
-            .reorderable(priority, in: list, flow: flow)
             if showsConfirmation {
                 DoneConfirmationBar(
                     openSubtasksLabel: progress.openSubtasksLabel,
@@ -164,7 +181,7 @@ struct PriorityListView: View {
         .motion(.rowIn, value: showsConfirmation)
         .motion(.rowIn, value: flow.isExpanded(priority.id))
         .offset(x: isLeaving ? Theme.MotionShape.rowOutOffset : 0)
-        .opacity(isLeaving ? 0 : 1)
+        .opacity(isLeaving ? 0 : flow.isDragging(priority.id) ? Theme.Row.draggedOpacity : 1)
         .motion(.rowOut, value: isLeaving)
         .motionTransition(.rowIn)
         .id(priority.id)

@@ -80,9 +80,10 @@ struct MainWindowView: View {
     private var listColumn: some View {
         VStack(spacing: Theme.Panel.spacing) {
             ScopeRow()
-            PriorityListView(list: state.scope)
+            ScrollView {
+                PriorityListView(list: state.scope)
+            }
             undoBar
-            Spacer(minLength: 0)
         }
         .motion(.rowIn, value: state.priorityFlow.undo?.token)
     }

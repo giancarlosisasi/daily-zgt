@@ -9,6 +9,7 @@ enum Icon: String, CaseIterable {
     case caretLeft = "caret-left-bold"
     case caretRight = "caret-right-bold"
     case check = "check-bold"
+    case dragHandle = "dots-six-vertical-bold"
     case gear = "gear-bold"
     case note = "note-bold"
     case plus = "plus-bold"

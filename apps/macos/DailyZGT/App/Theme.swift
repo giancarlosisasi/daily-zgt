@@ -208,6 +208,28 @@ enum Theme {
         static let removeIconSize: CGFloat = 12
         static let removeRadius = TeclaTokens.Radius.remove
         static let titleUnderline = Color(TeclaTokens.Panel.titleUnderline)
+        static let handleWidth: CGFloat = 12
+        static let handleHeight: CGFloat = 22
+        static let handleIconSize: CGFloat = 12
+        static let handleSpacing: CGFloat = 0
+        static let draggedOpacity: Double = 0.35
+        static let dropLine = Accent.color
+        static let dropLineHeight: CGFloat = 2
+        static let dropDotSize: CGFloat = 6
+        static let dropLineOffset = (listSpacing + dropDotSize) / 2
+    }
+
+    enum DragPreview {
+        static let background = Color(TeclaTokens.Panel.bg)
+        static let border = Color(TeclaTokens.Panel.line)
+        static let borderWidth: CGFloat = 1
+        static let radius = TeclaTokens.Radius.row
+        static let horizontalPadding: CGFloat = 10
+        static let verticalPadding: CGFloat = 8
+        static let spacing: CGFloat = 8
+        static let maxWidth: CGFloat = 320
+        static let grabOffset: CGFloat = 16
+        static let startDistance: CGFloat = 3
     }
 
     enum Checkbox {

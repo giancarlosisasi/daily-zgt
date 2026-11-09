@@ -66,6 +66,21 @@ struct PriorityListViewTests {
     }
 
     @Test
+    func rendersTheListWhileARowIsDraggedWithTheDropLine() throws {
+        let store = try sampleStore()
+        let state = PanelState(store: store)
+        let first = try #require(store.openPriorities(in: .today).first)
+        state.priorityFlow.startDrag(first.id)
+        state.priorityFlow.hover(gap: 3, in: .today)
+        try render(PriorityListView(list: .today).environment(store).environment(state), named: "priorities-drag")
+    }
+
+    @Test
+    func rendersTheDragPreview() throws {
+        try render(DragPreview(title: "Terminar el brief de Tailwind v4", level: .high), named: "priorities-drag-preview")
+    }
+
+    @Test
     func rendersAHighlightedRow() throws {
         let store = try sampleStore()
         let priority = try #require(store.openPriorities(in: .today).first)

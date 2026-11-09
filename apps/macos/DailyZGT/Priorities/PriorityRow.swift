@@ -58,11 +58,14 @@ struct PriorityRow: View {
     var isSelected = false
     var isChecked = false
     var isExpanded = false
+    var isDragging = false
     var todayChip: DueChipState?
     let onToggleDone: () -> Void
     let onOpen: () -> Void
     let onToggleSubtasks: () -> Void
     let onRemove: () -> Void
+    let onDragStart: () -> Void
+    let onDragEnd: () -> Void
 
     @State private var isHovering: Bool
     @State private var isTitleHovering = false
@@ -76,11 +79,14 @@ struct PriorityRow: View {
         isChecked: Bool = false,
         isExpanded: Bool = false,
         isHoveringAtStart: Bool = false,
+        isDragging: Bool = false,
         todayChip: DueChipState? = nil,
         onToggleDone: @escaping () -> Void = {},
         onOpen: @escaping () -> Void = {},
         onToggleSubtasks: @escaping () -> Void = {},
-        onRemove: @escaping () -> Void = {}
+        onRemove: @escaping () -> Void = {},
+        onDragStart: @escaping () -> Void = {},
+        onDragEnd: @escaping () -> Void = {}
     ) {
         self.priority = priority
         self.progress = progress
@@ -89,17 +95,23 @@ struct PriorityRow: View {
         self.isSelected = isSelected
         self.isChecked = isChecked
         self.isExpanded = isExpanded
+        self.isDragging = isDragging
         self.todayChip = todayChip
         self.onToggleDone = onToggleDone
         self.onOpen = onOpen
         self.onToggleSubtasks = onToggleSubtasks
         self.onRemove = onRemove
+        self.onDragStart = onDragStart
+        self.onDragEnd = onDragEnd
         _isHovering = State(initialValue: isHoveringAtStart)
     }
 
     var body: some View {
         HStack(spacing: Theme.Row.spacing) {
-            caret
+            HStack(spacing: Theme.Row.handleSpacing) {
+                handle
+                caret
+            }
             PriorityCheckbox(isChecked: isChecked, action: onToggleDone)
             titleButton
             RowIconButton(
@@ -127,6 +139,25 @@ struct PriorityRow: View {
         .motion(.fade, value: isHovering)
         .motion(.fade, value: isHighlighted)
         .hoverArea { isHovering = $0 }
+    }
+
+    private var handle: some View {
+        let title = priority.title
+        let level = priority.level
+        return IconView(icon: .dragHandle, size: Theme.Row.handleIconSize)
+            .foregroundStyle(Theme.Text.dim)
+            .frame(width: Theme.Row.handleWidth, height: Theme.Row.handleHeight)
+            .overlay(
+                DragHandle(
+                    payload: priority.id,
+                    makeImage: { scale in DragPreview.image(title: title, level: level, scale: scale) },
+                    onStart: onDragStart,
+                    onEnd: onDragEnd
+                )
+            )
+            .opacity(isHovering || isDragging ? 1 : 0)
+            .accessibilityElement()
+            .accessibilityLabel("Arrastrar para mover")
     }
 
     private var caret: some View {
