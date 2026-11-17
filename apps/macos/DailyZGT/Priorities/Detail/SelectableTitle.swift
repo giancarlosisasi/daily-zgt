@@ -34,6 +34,7 @@ final class ClickableTitleView: NSTextView {
         view.textContainer?.widthTracksTextView = true
         view.isVerticallyResizable = false
         view.isHorizontallyResizable = false
+        view.clipsToBounds = true
         view.setAccessibilityRole(.button)
         return view
     }
@@ -109,8 +110,13 @@ final class ClickableTitleView: NSTextView {
     }
 
     func size(fittingWidth width: CGFloat) -> CGSize {
-        guard let container = textContainer, let layout = layoutManager else { return .zero }
-        container.containerSize = NSSize(width: width, height: .greatestFiniteMagnitude)
+        guard let text = textStorage else { return .zero }
+        let storage = NSTextStorage(attributedString: text)
+        let layout = NSLayoutManager()
+        let container = NSTextContainer(size: NSSize(width: width, height: .greatestFiniteMagnitude))
+        container.lineFragmentPadding = 0
+        storage.addLayoutManager(layout)
+        layout.addTextContainer(container)
         layout.ensureLayout(for: container)
         let used = layout.usedRect(for: container)
         return CGSize(width: ceil(used.width), height: ceil(used.height))

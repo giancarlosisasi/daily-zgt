@@ -407,10 +407,52 @@ struct DoneHistoryTests {
         for index in 1...12 {
             try addDone(store, clock, title: "Prioridad vieja número \(index)", at: "2026-10-0\(2 + index % 6)T09:\(String(format: "%02d", index)):00")
         }
+        try addDone(store, clock, title: Self.longTitle, at: "2026-10-07T10:00:00")
         clock.date = now
         let state = PanelState(store: store)
         state.openHistory()
-        let url = try Screenshot.writeHosted(PanelView().environment(store).environment(state), named: "history-view-long")
+        let view = PanelView().environment(store).environment(state)
+        let url = try Screenshot.writeHosted(view, named: "history-view-long")
         #expect(try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize) > 0)
+        try expectTitlesWrapInsideTheirFrames(view, longest: Self.longTitle)
+    }
+
+    @Test
+    func aLongOpenTitleWrapsInsideItsRow() throws {
+        let store = try makeStore(clock)
+        try store.addPriority(title: Self.longTitle, level: .high, list: .today)
+        try store.addPriority(title: "1:1 con el equipo", level: .medium, list: .today)
+        clock.date = now
+        let state = PanelState(store: store)
+        let view = PanelView().environment(store).environment(state)
+        let url = try Screenshot.writeHosted(view, named: "list-view-long-title")
+        #expect(try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize) > 0)
+        try expectTitlesWrapInsideTheirFrames(view, longest: Self.longTitle)
+    }
+
+    static let longTitle = "Revisar con calma el informe trimestral de ventas, comparar cada número con el del año pasado y escribir un resumen corto para el equipo"
+
+    private func expectTitlesWrapInsideTheirFrames(_ view: some View, longest: String) throws {
+        let hosting = NSHostingView(rootView: view)
+        hosting.frame = NSRect(origin: .zero, size: hosting.fittingSize)
+        hosting.layoutSubtreeIfNeeded()
+        let titles = Self.titleViews(in: hosting)
+        #expect(!titles.isEmpty)
+        for title in titles {
+            let container = try #require(title.textContainer)
+            let layout = try #require(title.layoutManager)
+            layout.ensureLayout(for: container)
+            #expect(title.clipsToBounds)
+            #expect(abs(container.containerSize.width - title.bounds.width) < 0.5, "\(title.string)")
+            #expect(layout.usedRect(for: container).width <= title.bounds.width + 0.5, "\(title.string)")
+        }
+        let long = try #require(titles.first { $0.string == longest })
+        #expect(long.bounds.height >= Theme.Font.rowTitleLineHeight * 2)
+    }
+
+    private static func titleViews(in view: NSView) -> [ClickableTitleView] {
+        view.subviews.flatMap { subview in
+            (subview as? ClickableTitleView).map { [$0] } ?? titleViews(in: subview)
+        }
     }
 }
