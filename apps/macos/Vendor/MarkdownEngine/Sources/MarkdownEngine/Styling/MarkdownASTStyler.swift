@@ -781,11 +781,7 @@ enum MarkdownASTStyler {
             if contentRange.length > 0 {
                 attrs.append((contentRange, [.foregroundColor: ctx.theme.mutedText]))
             }
-            if ctx.isActive(tokenRange) {
-                attrs.append((markerRange, [.foregroundColor: ctx.theme.mutedText]))
-            } else {
-                attrs.append((markerRange, [.foregroundColor: NSColor.clear, .font: ctx.inlineMarkerFont]))
-            }
+            attrs.append((markerRange, [.foregroundColor: NSColor.clear, .font: ctx.inlineMarkerFont]))
             // Whole line, not just the first char, so each soft-wrapped visual line
             attrs.append((tokenRange, [.blockquoteLevel: level]))
         }
@@ -958,7 +954,7 @@ enum MarkdownASTStyler {
         for block in blocks where ctx.inScope(block.range) {
             switch block {
             case .heading(_, let range, let markers, let inlines):
-                if !ctx.isActive(range) { shrink(markers, ctx: ctx, into: &attrs) }
+                shrink(markers, ctx: ctx, into: &attrs)
                 shrinkInlineMarkers(inlines, ctx: ctx, into: &attrs)
             case .paragraph(_, let inlines), .blockquote(_, let inlines):
                 shrinkInlineMarkers(inlines, ctx: ctx, into: &attrs)
@@ -1026,7 +1022,12 @@ enum MarkdownASTStyler {
 
     private static func adding(_ extra: NSFontDescriptor.SymbolicTraits, to font: NSFont) -> NSFont {
         let merged = font.fontDescriptor.symbolicTraits.union(extra)
-        return NSFont(descriptor: font.fontDescriptor.withSymbolicTraits(merged), size: font.pointSize) ?? font
+        let composed = NSFont(descriptor: font.fontDescriptor.withSymbolicTraits(merged), size: font.pointSize) ?? font
+        guard extra.contains(.italic), !composed.fontDescriptor.symbolicTraits.contains(.italic) else { return composed }
+        let skew = AffineTransform(m11: 1, m12: 0, m21: 0.2, m22: 1, tX: 0, tY: 0)
+        var matrix = AffineTransform(scale: composed.pointSize)
+        matrix.append(skew)
+        return NSFont(descriptor: composed.fontDescriptor.withMatrix(matrix), size: 0) ?? composed
     }
 
     private static func content(of markers: [NSRange]) -> NSRange {

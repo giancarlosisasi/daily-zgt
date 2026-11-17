@@ -48,6 +48,7 @@ struct MarkdownLists {
     )
     static let dashNoSpaceRegex = try! NSRegularExpression(pattern: #"^\s*-(?!\s)"#)
     static let leadingWhitespaceRegex = try! NSRegularExpression(pattern: #"^\s*"#)
+    static let orderedNumberRegex = try! NSRegularExpression(pattern: #"^([ \t]*)(\d+)[.)]"#)
 
     static func indentLevel(from leadingWhitespace: String) -> Int {
         let tabCount = leadingWhitespace.filter { $0 == "\t" }.count
@@ -190,6 +191,17 @@ struct MarkdownLists {
                     if level >= MarkdownEditorConfiguration.default.lists.maximumNestingLevel {
                         return false
                     }
+                }
+                let lineNS = currentLine as NSString
+                if let number = MarkdownLists.orderedNumberRegex.firstMatch(in: currentLine, range: NSRange(location: 0, length: lineNS.length)) {
+                    let ws = lineNS.substring(with: number.range(at: 1))
+                    let digits = number.range(at: 2)
+                    let replaced = NSRange(location: currentLineRange.location, length: NSMaxRange(digits))
+                    MarkdownLists.performEdit(textView, replace: replaced, with: "\t" + ws + "1")
+                    let shift = 2 - digits.length
+                    let floor = currentLineRange.location + 2 + digits.location
+                    textView.setSelectedRange(NSRange(location: max(floor, insertionLocation + shift), length: 0))
+                    return false
                 }
                 MarkdownLists.performEdit(textView, replace: NSRange(location: currentLineRange.location, length: 0), with: "\t")
                 textView.setSelectedRange(NSRange(location: insertionLocation + 1, length: 0))

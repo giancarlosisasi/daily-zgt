@@ -10,4 +10,11 @@ dependency, the tests and the demo app are not copied.
 Package.swift is rewritten for the one target.
 
 Patches by Daily ZGT:
-- none yet
+1. Styling/MarkdownASTStyler.swift, shrinkInactiveMarkers: heading markers
+   (#, ##, ###) stay hidden also when the caret is on the heading line.
+2. Styling/MarkdownASTStyler.swift, styleBlockquote: the quote marker (>)
+   stays hidden also when the caret is on the quote line.
+3. Styling/MarkdownASTStyler.swift, adding(_:to:): a font with no italic
+   face (Onest) gets an oblique skew matrix for italic text.
+4. Input/MarkdownListHandler.swift, TAB branch and orderedNumberRegex: Tab on
+   a numbered item nests it and restarts its number at 1.
