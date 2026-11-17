@@ -87,8 +87,9 @@ final class NoteImageStore: Sendable {
                     WHERE created_at < ?
                     AND NOT EXISTS (SELECT 1 FROM priority WHERE instr(priority.note, ? || image.id) > 0)
                     AND NOT EXISTS (SELECT 1 FROM note WHERE instr(note.body, ? || image.id) > 0)
+                    AND NOT EXISTS (SELECT 1 FROM note_item WHERE instr(note_item.body, ? || image.id) > 0)
                     """,
-                arguments: [LocalTime.text(from: cutoff), Self.scheme, Self.scheme]
+                arguments: [LocalTime.text(from: cutoff), Self.scheme, Self.scheme, Self.scheme]
             )
             return database.changesCount
         }

@@ -13,7 +13,7 @@ struct NoteImageStoreTests {
     func theMigrationAddsTheImageTableWithItsChecks() throws {
         let database = try AppDatabase.inMemory()
         let migrations: [String] = try values("SELECT identifier FROM grdb_migrations ORDER BY identifier", in: database)
-        #expect(migrations.last == "003_add_image")
+        #expect(migrations.contains("003_add_image"))
         #expect(throws: (any Error).self) {
             try execute(
                 "INSERT INTO image (id, mime, width, height, bytes, created_at) VALUES ('x', 'image/gif', 1, 1, x'00', '2026-10-12T09:00:00')",
@@ -83,6 +83,7 @@ struct NoteImageStoreTests {
         let store = try makeStore(clock)
         let inPriority = try store.images.insert(sample, now: clock.date)
         let inNote = try store.images.insert(sample, now: clock.date)
+        let inNoteItem = try store.images.insert(sample, now: clock.date)
         let orphan = try store.images.insert(sample, now: clock.date)
         clock.date = localDate("2026-10-12T08:00:00")
         let fresh = try store.images.insert(sample, now: clock.date)
@@ -91,10 +92,11 @@ struct NoteImageStoreTests {
             "INSERT INTO note (scope, period, body, updated_at) VALUES ('day', '2026-10-12', 'Ver ![](zgt-image:\(inNote))', '2026-10-12T08:00:00')",
             in: store.database
         )
+        try store.addNote(body: "# Reunión\n\n\(NoteImageStore.markdown(for: inNoteItem))")
         let removed = try store.images.deleteOrphans(olderThan: clock.date.addingTimeInterval(-NoteImageStore.orphanAge))
         #expect(removed == 1)
         let kept: [String] = try values("SELECT id FROM image ORDER BY id", in: store.database)
-        #expect(kept == [inPriority, inNote, fresh].sorted())
+        #expect(kept == [inPriority, inNote, inNoteItem, fresh].sorted())
         #expect(!kept.contains(orphan))
     }
 }

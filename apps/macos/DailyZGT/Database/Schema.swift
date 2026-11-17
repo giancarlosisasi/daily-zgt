@@ -1,3 +1,4 @@
+import Foundation
 import GRDB
 
 enum Schema {
@@ -80,6 +81,51 @@ enum Schema {
                 );
                 """)
         }
+        migrator.registerMigration("004_add_note_item") { database in
+            try database.execute(sql: """
+                CREATE TABLE note_item (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    body TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE INDEX note_item_on_created_at ON note_item (created_at);
+                """)
+            let rows = try Row.fetchAll(database, sql: """
+                SELECT scope, period, body, updated_at FROM note ORDER BY period, scope
+                """)
+            for row in rows {
+                let body: String = row["body"]
+                let updatedAt: String = row["updated_at"]
+                guard !body.allSatisfy(\.isWhitespace) else { continue }
+                let createdAt = LegacyNotePeriod.firstDay(scope: row["scope"], period: row["period"])
+                    .map { "\($0)T00:00:00" } ?? updatedAt
+                try database.execute(
+                    sql: "INSERT INTO note_item (id, body, created_at, updated_at) VALUES (?, ?, ?, ?)",
+                    arguments: [UUID().uuidString, body, createdAt, updatedAt]
+                )
+            }
+        }
         return migrator
+    }
+}
+
+enum LegacyNotePeriod {
+    static func firstDay(scope: String, period: String) -> String? {
+        switch scope {
+        case "day":
+            return LocalTime.day(from: period, in: .gmt) == nil ? nil : period
+        case "week":
+            let parts = period.split(separator: "-W")
+            guard parts.count == 2, let year = Int(parts[0]), let week = Int(parts[1]) else { return nil }
+            var calendar = Calendar(identifier: .iso8601)
+            calendar.timeZone = .gmt
+            let components = DateComponents(weekday: 2, weekOfYear: week, yearForWeekOfYear: year)
+            guard let monday = calendar.date(from: components),
+                  LocalTime.weekKey(for: monday, in: .gmt) == period else { return nil }
+            return LocalTime.dayKey(for: monday, in: .gmt)
+        default:
+            return nil
+        }
     }
 }

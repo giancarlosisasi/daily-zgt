@@ -15,6 +15,7 @@ struct AppStateKey<Value: Codable & Sendable>: Sendable {
 enum AppStoreError: Error, Equatable {
     case priorityNotFound(String)
     case subtaskNotFound(String)
+    case noteNotFound(String)
 }
 
 @Observable
@@ -124,6 +125,15 @@ final class AppStore {
 
     func noteBody(_ scope: NoteScope, period: String? = nil) -> String {
         snapshot.notes[scope]?[period ?? self.period(scope)] ?? ""
+    }
+
+    func note(id: NoteItem.ID) -> NoteItem? {
+        snapshot.noteItems.first { $0.id == id }
+    }
+
+    func notes(in filter: DueFilter, days: DueDays? = nil) -> [NoteItem] {
+        let days = days ?? dueDays
+        return snapshot.noteItems.filter { filter.includesNote($0, days) }
     }
 
     func value<Value>(for key: AppStateKey<Value>) -> Value {
@@ -411,6 +421,40 @@ final class AppStore {
         }
     }
 
+    @discardableResult
+    func addNote(body: String = "") throws -> NoteItem {
+        let at = timestamp()
+        let note = NoteItem(id: UUID().uuidString, body: body, createdAt: at, updatedAt: at)
+        try write { database in try note.insert(database) }
+        return note
+    }
+
+    @discardableResult
+    func editNote(_ id: NoteItem.ID, body: String) throws -> NoteItem {
+        let at = timestamp()
+        return try write { database in
+            var note = try Self.note(id, in: database)
+            guard note.body != body else { return note }
+            note.body = body
+            note.updatedAt = at
+            try note.update(database)
+            return note
+        }
+    }
+
+    @discardableResult
+    func deleteNote(_ id: NoteItem.ID) throws -> NoteItem {
+        try write { database in
+            let note = try Self.note(id, in: database)
+            try note.delete(database)
+            return note
+        }
+    }
+
+    func restoreNote(_ note: NoteItem) throws {
+        try write { database in try note.save(database) }
+    }
+
     func setValue<Value>(_ value: Value, for key: AppStateKey<Value>) throws {
         let text = String(decoding: try JSONEncoder().encode(value), as: UTF8.self)
         try write { database in
@@ -470,6 +514,13 @@ final class AppStore {
             throw AppStoreError.priorityNotFound(id)
         }
         return priority
+    }
+
+    private nonisolated static func note(_ id: NoteItem.ID, in database: Database) throws -> NoteItem {
+        guard let note = try NoteItem.fetchOne(database, key: id) else {
+            throw AppStoreError.noteNotFound(id)
+        }
+        return note
     }
 
     private nonisolated static func subtask(_ id: Subtask.ID, in database: Database) throws -> Subtask {

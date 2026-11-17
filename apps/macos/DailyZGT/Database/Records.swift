@@ -131,6 +131,22 @@ struct Note: LocalTimeRecord {
     }
 }
 
+struct NoteItem: LocalTimeRecord, Identifiable {
+    static let databaseTableName = "note_item"
+
+    var id: String
+    var body: String
+    var createdAt: Date
+    var updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case body
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
 struct PriorityAlert: LocalTimeRecord, Identifiable {
     static let databaseTableName = "alert"
 

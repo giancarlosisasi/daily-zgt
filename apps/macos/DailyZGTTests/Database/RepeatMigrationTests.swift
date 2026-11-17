@@ -101,6 +101,7 @@ struct RepeatMigrationTests {
             FirstSchema.name,
             "002_add_repeat_to_priority",
             "003_add_image",
+            "004_add_note_item",
         ])
     }
 
@@ -192,7 +193,7 @@ struct RepeatMigrationTests {
 
         let again = try AppDatabase.onDisk(at: url)
         #expect(try FirstSchema.contents(of: again) == before)
-        #expect(try values("SELECT COUNT(*) FROM grdb_migrations", in: again) == [3])
+        #expect(try values("SELECT COUNT(*) FROM grdb_migrations", in: again) == [4])
     }
 
     private func expectTheStoreReadsTheOldRows(in database: DatabaseQueue) throws {
