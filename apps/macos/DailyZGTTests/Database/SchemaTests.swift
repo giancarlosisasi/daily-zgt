@@ -150,8 +150,11 @@ struct SchemaTests {
     }
 
     @Test
-    func aDebugBuildKeepsItsDataOutOfTheReleaseDatabase() {
-        #expect(AppDatabase.url(isDebugBuild: true).path.hasSuffix("/Library/Application Support/DailyZGT/daily-zgt-dev.sqlite"))
+    func aDebugBuildKeepsItsDataOutOfTheReleaseFolder() {
+        let debug = AppDatabase.url(isDebugBuild: true)
+        let release = AppDatabase.url(isDebugBuild: false)
+        #expect(debug.path.hasSuffix("/Library/Application Support/DailyZGT-Dev/daily-zgt-dev.sqlite"))
+        #expect(debug.deletingLastPathComponent() != release.deletingLastPathComponent())
         #expect(AppDatabase.isDebugBuild)
         #expect(AppDatabase.defaultURL == AppDatabase.url(isDebugBuild: true))
     }

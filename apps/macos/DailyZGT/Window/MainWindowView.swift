@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct MainWindowView: View {
-    static let title = "Daily ZGT"
+    static let title = title(isDebugBuild: AppDatabase.isDebugBuild)
+
+    static func title(isDebugBuild: Bool) -> String {
+        isDebugBuild ? "Daily ZGT Dev" : "Daily ZGT"
+    }
     static let emptyDetail = "Elige una prioridad para ver su detalle."
 
     @Environment(AppStore.self) private var store

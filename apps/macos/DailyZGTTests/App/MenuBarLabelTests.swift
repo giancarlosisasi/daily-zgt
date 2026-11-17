@@ -1,3 +1,4 @@
+import AppKit
 import Observation
 import SwiftUI
 import Testing
@@ -119,8 +120,8 @@ struct MenuBarLabelTests {
         #expect(boot.menuBarCount == 1)
     }
 
-    private func renderLabel(count: Int?, dark: Bool, name: String) throws {
-        let label = MenuBarLabel(count: count)
+    private func renderLabel(count: Int?, badge: String? = nil, dark: Bool, name: String) throws {
+        let label = MenuBarLabel(count: count, badge: badge)
             .foregroundStyle(dark ? Color(TeclaTokens.Colors.keyT) : Color(TeclaTokens.Colors.mbBg))
             .padding(.horizontal, 7)
             .frame(height: 22)
@@ -129,6 +130,15 @@ struct MenuBarLabelTests {
         let url = try Screenshot.writeHosted(label, named: name)
         let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
         #expect(size > 0)
+    }
+
+    @Test
+    func rendersTheDevBadgeNextToTheIcon() throws {
+        try renderLabel(count: 4, badge: MenuBarBadge.text(isDebugBuild: true), dark: true, name: "menu-bar-label-dev-dark")
+        try renderLabel(count: 4, badge: MenuBarBadge.text(isDebugBuild: true), dark: false, name: "menu-bar-label-dev-light")
+        let plain = NSHostingView(rootView: MenuBarLabel(count: 4)).fittingSize.width
+        let dev = NSHostingView(rootView: MenuBarLabel(count: 4, badge: "DEV")).fittingSize.width
+        #expect(dev > plain)
     }
 
     @Test

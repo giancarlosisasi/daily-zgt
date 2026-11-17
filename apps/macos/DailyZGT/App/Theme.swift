@@ -473,6 +473,7 @@ extension Theme {
         static let spacing: CGFloat = 5
         static let font = Font.labelStrong
         static let titleFont = Font.label
+        static let badgeFont = Font.meta
     }
 
     enum AlertsOff {
