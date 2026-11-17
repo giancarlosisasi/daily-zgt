@@ -57,7 +57,8 @@ private struct NotesEditor: View {
         NoteTextArea(
             text: Binding(get: { model.text }, set: { model.edit($0) }),
             placeholder: "Escribe una nota",
-            height: layout == .window ? nil : Theme.Notes.height
+            minHeight: layout == .window ? Theme.Notes.windowMinHeight : Theme.Notes.panelMinHeight,
+            maxHeight: layout == .window ? nil : Theme.Notes.panelMaxHeight
         )
     }
 }

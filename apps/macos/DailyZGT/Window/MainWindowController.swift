@@ -27,7 +27,7 @@ final class MainWindowController: NSObject, NSWindowDelegate {
             .environment(alerts)
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: Theme.Window.defaultWidth, height: Theme.Window.defaultHeight),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )

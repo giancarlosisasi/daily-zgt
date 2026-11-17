@@ -45,7 +45,7 @@ struct ScopeRow: View {
     @Environment(PanelState.self) private var state
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Theme.Space.s2) {
             SegmentedTabs(
                 style: .scope,
                 options: [
@@ -112,7 +112,6 @@ struct PanelView: View {
                 }
             }
         }
-        .motion(.rowIn, value: state.priorityFlow.undo?.token)
     }
 
     @ViewBuilder
@@ -141,7 +140,6 @@ struct PanelView: View {
         let flow = state.priorityFlow
         if let undo = flow.undo {
             TimedUndoBar(undo: undo, onUndo: { flow.undoDone() })
-                .motionTransition(.rowIn)
         }
     }
 }
