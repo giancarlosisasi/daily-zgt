@@ -84,15 +84,30 @@ struct PriorityDetailActionsTests {
     }
 
     @Test
-    func movingToTheOtherListWritesAMovedEventOnly() throws {
+    func aDueThatEntersHoyIsBlockedWhenHoyIsFull() throws {
         let (store, priority, actions) = try setup()
+        try store.setValue(true, for: TodayLimit.key)
+        for index in 0..<TodayLimit.maxOpen {
+            try store.addPriority(title: "Due \(index)", dueAt: localDate("2026-10-12T18:00:00"))
+        }
 
-        try actions.setList(.week)
-        #expect(store.priority(id: priority.id)?.list == .week)
-        #expect(try values("SELECT list FROM priority", in: store.database, as: String.self) == ["week"])
-        #expect(try events(store, priority.id) == [.created, .moved])
-        #expect(store.openPriorities(in: .today).isEmpty)
-        #expect(store.openPriorities(in: .week).map(\.id) == [priority.id])
+        #expect(try actions.setDue(localDate("2026-10-12T16:00:00")) == .blocked(TodayLimit.message))
+        #expect(store.priority(id: priority.id)?.dueAt == nil)
+        #expect(try actions.setDue(localDate("2026-10-13T16:00:00")) == .saved)
+        #expect(store.priority(id: priority.id)?.dueAt == localDate("2026-10-13T16:00:00"))
+    }
+
+    @Test
+    func aDueThatStaysInHoyIsNeverBlocked() throws {
+        let (store, priority, actions) = try setup()
+        try actions.setDue(localDate("2026-10-12T16:00:00"))
+        try store.setValue(true, for: TodayLimit.key)
+        for index in 0..<TodayLimit.maxOpen {
+            try store.addPriority(title: "Due \(index)", dueAt: localDate("2026-10-12T18:00:00"))
+        }
+
+        #expect(try actions.setDue(localDate("2026-10-12T17:00:00")) == .saved)
+        #expect(try actions.setDue(nil) == .saved)
     }
 
     @Test
@@ -100,13 +115,12 @@ struct PriorityDetailActionsTests {
         let (store, priority, actions) = try setup()
         try actions.setDue(localDate("2026-10-12T16:00:00"))
         try actions.setLevel(.low)
-        try actions.setList(.week)
 
         let saved = try #require(store.priority(id: priority.id))
         #expect(saved.title == "Old title")
         #expect(saved.dueAt == localDate("2026-10-12T16:00:00"))
         #expect(saved.level == .low)
-        #expect(saved.list == .week)
+        #expect(saved.list == .today)
         #expect(saved.createdAt == priority.createdAt)
     }
 

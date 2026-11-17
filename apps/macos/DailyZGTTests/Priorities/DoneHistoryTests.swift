@@ -33,14 +33,14 @@ struct DoneHistoryTests {
         NSHostingView(rootView: view.panelChrome()).fittingSize.height
     }
 
-    private func olderIDs(_ store: AppStore, _ list: PriorityList = .today) throws -> [Priority.ID] {
-        try store.donePriorities(in: list, atOrBefore: DoneWindow.cutoff(now: store.now())).map(\.id)
+    private func olderIDs(_ store: AppStore, _ filter: DueFilter = .today) throws -> [Priority.ID] {
+        store.olderDonePriorities(outside: filter).map(\.id)
     }
 
     @Test
     func theGroupsFollowTheLocalDayNewestFirst() throws {
         let store = try sampleStore()
-        let groups = DoneHistory.groups(from: try store.donePriorities(in: .today, atOrBefore: DoneWindow.cutoff(now: now)))
+        let groups = DoneHistory.groups(from: store.olderDonePriorities(outside: .today, days: DueDays(now: now)))
         #expect(groups.map(\.day) == ["2026-10-12", "2026-10-08"])
         #expect(groups[0].priorities.map(\.title) == ["Revisar el MR", "Responder a Ana"])
         #expect(groups[1].priorities.map(\.title) == ["Pagar el hosting", "Enviar la factura"])
@@ -52,7 +52,7 @@ struct DoneHistoryTests {
         let store = try makeStore(clock)
         try addDone(store, clock, title: "Late", at: "2026-10-08T23:59:59")
         try addDone(store, clock, title: "Early", at: "2026-10-09T00:00:00")
-        let groups = DoneHistory.groups(from: try store.donePriorities(in: .today, atOrBefore: now))
+        let groups = DoneHistory.groups(from: store.olderDonePriorities(outside: .today, days: DueDays(now: now)))
         #expect(groups.map(\.day) == ["2026-10-09", "2026-10-08"])
         #expect(groups.map { $0.priorities.map(\.title) } == [["Early"], ["Late"]])
     }
@@ -62,7 +62,7 @@ struct DoneHistoryTests {
         let store = try makeStore(clock)
         try addDone(store, clock, title: "October", at: "2026-10-01T09:00:00")
         try addDone(store, clock, title: "September", at: "2026-09-30T09:00:00")
-        let groups = DoneHistory.groups(from: try store.donePriorities(in: .today, atOrBefore: now))
+        let groups = DoneHistory.groups(from: store.olderDonePriorities(outside: .today, days: DueDays(now: now)))
         #expect(groups.map(\.day) == ["2026-10-01", "2026-09-30"])
     }
 
@@ -79,7 +79,7 @@ struct DoneHistoryTests {
         clock.date = localDate("2026-10-08T09:00:00")
         try store.markDone(first.id)
         try store.markDone(second.id)
-        let rows = try store.donePriorities(in: .today, atOrBefore: now)
+        let rows = store.olderDonePriorities(outside: .today, days: DueDays(now: now))
         #expect(DoneHistory.groups(from: rows.reversed()).first?.priorities.map(\.title) == ["Second", "First"])
         #expect(DoneHistory.groups(from: rows).first?.priorities.map(\.title) == ["Second", "First"])
     }
@@ -102,33 +102,29 @@ struct DoneHistoryTests {
     }
 
     @Test
-    func hechasListsAndCountsOnlyTheLast24Hours() throws {
+    func hechasInHoyListsTheDoneOfToday() throws {
         let store = try sampleStore()
-        let cutoff = DoneWindow.cutoff(now: now)
-        let recent = try store.donePriorities(in: .today, after: cutoff)
+        let recent = store.donePriorities(in: .today, days: DueDays(now: now))
         #expect(recent.map(\.title) == ["Llamar al banco"])
-        #expect(recent.count == 1)
-        #expect(try store.doneCount(in: .today, atOrBefore: cutoff) == 4)
+        #expect(store.olderDonePriorities(outside: .today, days: DueDays(now: now)).count == 4)
+        #expect(store.donePriorities(in: .all, days: DueDays(now: now)).map(\.title) == ["Llamar al banco"])
     }
 
     @Test
-    func aDonePriorityLeavesHechasWhen24HoursPassWhileThePanelIsOpen() throws {
+    func aDonePriorityLeavesHechasOfHoyAtMidnightWhileThePanelIsOpen() throws {
         let store = try sampleStore()
         let state = PanelState(store: store)
         state.toggleDone()
         func section(at date: Date) -> some View {
-            DoneSectionContent(list: .today, now: date).environment(store).environment(state)
+            DoneSectionContent(filter: .today, now: date).environment(store).environment(state)
         }
-        let doneAt = localDate("2026-10-13T08:00:00")
-        let inside = height(section(at: doneAt.addingTimeInterval(DoneWindow.length - 60)))
-        let outside = height(section(at: doneAt.addingTimeInterval(DoneWindow.length)))
-        #expect(outside < inside)
+        let lastMinute = localDate("2026-10-13T23:59:00")
+        let midnight = localDate("2026-10-14T00:00:00")
+        #expect(height(section(at: midnight)) < height(section(at: lastMinute)))
 
-        let recentBefore = try store.donePriorities(in: .today, after: DoneWindow.cutoff(now: doneAt.addingTimeInterval(DoneWindow.length - 60)))
-        let recentAfter = try store.donePriorities(in: .today, after: DoneWindow.cutoff(now: doneAt.addingTimeInterval(DoneWindow.length)))
-        #expect(recentBefore.map(\.title) == ["Llamar al banco"])
-        #expect(recentAfter.isEmpty)
-        #expect(try store.doneCount(in: .today, atOrBefore: DoneWindow.cutoff(now: doneAt.addingTimeInterval(DoneWindow.length))) == 5)
+        #expect(store.donePriorities(in: .today, days: DueDays(now: lastMinute)).map(\.title) == ["Llamar al banco"])
+        #expect(store.donePriorities(in: .today, days: DueDays(now: midnight)).isEmpty)
+        #expect(store.olderDonePriorities(outside: .today, days: DueDays(now: midnight)).count == 5)
     }
 
     @Test
@@ -136,13 +132,13 @@ struct DoneHistoryTests {
         let storeWith = try sampleStore()
         let stateWith = PanelState(store: storeWith)
         stateWith.toggleDone()
-        let withHistory = height(DoneSectionContent(list: .today, now: now).environment(storeWith).environment(stateWith))
+        let withHistory = height(DoneSectionContent(filter: .today, now: now).environment(storeWith).environment(stateWith))
 
         let storeWithout = try makeStore(clock)
         try addDone(storeWithout, clock, title: "Llamar al banco", at: "2026-10-13T08:00:00")
         let stateWithout = PanelState(store: storeWithout)
         stateWithout.toggleDone()
-        let withoutHistory = height(DoneSectionContent(list: .today, now: now).environment(storeWithout).environment(stateWithout))
+        let withoutHistory = height(DoneSectionContent(filter: .today, now: now).environment(storeWithout).environment(stateWithout))
 
         #expect(withHistory > withoutHistory)
     }
@@ -151,9 +147,9 @@ struct DoneHistoryTests {
     func theHistorialRowIsHiddenWhileHechasIsClosed() throws {
         let store = try sampleStore()
         let state = PanelState(store: store)
-        let closed = height(DoneSectionContent(list: .today, now: now).environment(store).environment(state))
+        let closed = height(DoneSectionContent(filter: .today, now: now).environment(store).environment(state))
         state.toggleDone()
-        let open = height(DoneSectionContent(list: .today, now: now).environment(store).environment(state))
+        let open = height(DoneSectionContent(filter: .today, now: now).environment(store).environment(state))
         #expect(open > closed)
     }
 
@@ -163,9 +159,9 @@ struct DoneHistoryTests {
         try addDone(store, clock, title: "Old", at: "2026-10-08T09:00:00")
         clock.date = now
         let state = PanelState(store: store)
-        let visible = height(DoneSectionContent(list: .today, now: now).environment(store).environment(state))
+        let visible = height(DoneSectionContent(filter: .today, now: now).environment(store).environment(state))
         let empty = try makeStore(clock)
-        let hidden = height(DoneSectionContent(list: .today, now: now).environment(empty).environment(PanelState(store: empty)))
+        let hidden = height(DoneSectionContent(filter: .today, now: now).environment(empty).environment(PanelState(store: empty)))
         #expect(visible > hidden)
     }
 
@@ -173,7 +169,7 @@ struct DoneHistoryTests {
     func regresarFromTheHistoryRestoresThePriorityWithTheHighlight() throws {
         let store = try sampleStore()
         let flow = PriorityFlow(store: store, schedule: recorder.schedule)
-        let target = try #require(store.donePriorities(in: .today).first { $0.title == "Responder a Ana" })
+        let target = try #require(store.snapshot.done.first { $0.title == "Responder a Ana" })
         #expect(try olderIDs(store).contains(target.id))
 
         flow.restore(target.id)
@@ -278,7 +274,7 @@ struct DoneHistoryTests {
 
         state.openHistory()
         #expect(state.tab == .priorities)
-        state.select(scope: .week)
+        state.select(filter: .week)
         #expect(!state.isHistoryOpen)
     }
 
@@ -341,12 +337,12 @@ struct DoneHistoryTests {
     }
 
     @Test
-    func theHistoryOfTheScopeListShowsOnlyThatList() throws {
+    func theHistoryShowsTheDoneOutsideTheWindowOfTheFilter() throws {
         let store = try sampleStore()
         try addDone(store, clock, title: "Week old", list: .week, at: "2026-10-09T09:00:00")
         clock.date = now
-        #expect(try store.donePriorities(in: .week, atOrBefore: DoneWindow.cutoff(now: now)).map(\.title) == ["Week old"])
-        #expect(try store.donePriorities(in: .today, atOrBefore: DoneWindow.cutoff(now: now)).count == 4)
+        #expect(store.olderDonePriorities(outside: .week).map(\.title) == ["Week old", "Pagar el hosting", "Enviar la factura"])
+        #expect(store.olderDonePriorities(outside: .today).count == 5)
     }
 
     @Test
@@ -357,7 +353,7 @@ struct DoneHistoryTests {
         }
         clock.date = now
         let state = PanelState(store: store)
-        let content = DoneHistoryContent(list: .today, now: now).environment(store).environment(state)
+        let content = DoneHistoryContent(filter: .today, now: now).environment(store).environment(state)
         #expect(NSHostingView(rootView: content.frame(width: 340)).fittingSize.height <= Theme.Row.listMaxHeight)
     }
 
@@ -366,7 +362,7 @@ struct DoneHistoryTests {
         let store = try makeStore(clock)
         let state = PanelState(store: store)
         let empty = NSHostingView(
-            rootView: DoneHistoryContent(list: .today, now: now).environment(store).environment(state).frame(width: 340)
+            rootView: DoneHistoryContent(filter: .today, now: now).environment(store).environment(state).frame(width: 340)
         ).fittingSize.height
         #expect(empty > 0)
         #expect(HistoryCopy.empty == "Nada en el historial.")
@@ -378,7 +374,7 @@ struct DoneHistoryTests {
         let state = PanelState(store: store)
         state.toggleDone()
         try render(
-            PriorityListView(list: .today).environment(store).environment(state),
+            PriorityListView(filter: .today).environment(store).environment(state),
             named: "history-hechas-historial-row"
         )
     }

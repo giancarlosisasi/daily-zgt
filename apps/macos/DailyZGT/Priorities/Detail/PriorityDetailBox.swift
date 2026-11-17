@@ -64,10 +64,9 @@ struct PriorityDetailBox: View {
     let priority: Priority
     let now: Date
     var alertsOff = false
-    var listNotice: String?
+    var dueNotice: String?
     let onLevel: (PriorityLevel) -> Void
     let onDue: (Date?) -> Void
-    let onList: (PriorityList) -> Void
     var onRepeat: (RepeatRule) -> Void = { _ in }
 
     var body: some View {
@@ -89,18 +88,8 @@ struct PriorityDetailBox: View {
                     alertsOff: alertsOff
                 )
             }
-            row("Lista") {
-                PropertyMenuButton(
-                    title: "Lista",
-                    options: PriorityList.allCases,
-                    selection: priority.list,
-                    onSelect: onList,
-                    label: { Text(priority.list.title) },
-                    optionLabel: { Text($0.title) }
-                )
-            }
-            if let listNotice {
-                LimitNotice(text: listNotice)
+            if let dueNotice {
+                LimitNotice(text: dueNotice)
                     .padding(.leading, Theme.Detail.labelWidth)
             }
             row("Repetir") {

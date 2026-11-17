@@ -113,9 +113,9 @@ struct CalmLayoutTests {
         let hosting = NSHostingView(rootView: window(store, state, width: 980, height: 680))
         hosting.frame = NSRect(x: 0, y: 0, width: 980, height: 680)
         hosting.layoutSubtreeIfNeeded()
-        #expect(!PriorityDetailChips.showsAny(priority: brief, now: clock.date, todayChip: nil))
+        #expect(!PriorityDetailChips.showsAny(priority: brief, now: clock.date))
         let overdue = try #require(store.openPriorities(in: .today).first { $0.title == "Release notes v2" })
-        #expect(PriorityDetailChips.showsAny(priority: overdue, now: clock.date, todayChip: nil))
+        #expect(PriorityDetailChips.showsAny(priority: overdue, now: clock.date))
     }
 
     @Test

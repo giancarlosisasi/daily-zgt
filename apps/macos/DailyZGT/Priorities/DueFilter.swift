@@ -237,3 +237,19 @@ struct RangePick: Equatable {
         first = nil
     }
 }
+
+enum CalendarClick {
+    static func isMonthStep(from old: Date, to new: Date, calendar: Calendar) -> Bool {
+        let first = calendar.dateComponents([.year, .month, .day], from: old)
+        let second = calendar.dateComponents([.year, .month, .day], from: new)
+        guard let firstYear = first.year, let firstMonth = first.month, let firstDay = first.day,
+              let secondYear = second.year, let secondMonth = second.month, let secondDay = second.day
+        else {
+            return false
+        }
+        guard abs((secondYear - firstYear) * 12 + secondMonth - firstMonth) == 1 else { return false }
+        if firstDay == secondDay { return true }
+        let lastDay = calendar.range(of: .day, in: .month, for: new)?.count ?? 0
+        return secondDay == lastDay && firstDay > secondDay
+    }
+}

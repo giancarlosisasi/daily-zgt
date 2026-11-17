@@ -7,9 +7,9 @@ import Testing
 struct PanelLabelsTests {
     @Test
     func dayLabelNamesTheWeekdayTheDayAndTheMonth() {
-        #expect(PanelLabels.date(for: .today, at: localDate("2026-10-12T09:00:00")) == "Lunes 12 oct")
-        #expect(PanelLabels.date(for: .today, at: localDate("2026-10-18T23:30:00")) == "Domingo 18 oct")
-        #expect(PanelLabels.date(for: .today, at: localDate("2026-12-02T08:00:00")) == "Miércoles 2 dic")
+        #expect(PanelLabels.date(for: .day, at: localDate("2026-10-12T09:00:00")) == "Lunes 12 oct")
+        #expect(PanelLabels.date(for: .day, at: localDate("2026-10-18T23:30:00")) == "Domingo 18 oct")
+        #expect(PanelLabels.date(for: .day, at: localDate("2026-12-02T08:00:00")) == "Miércoles 2 dic")
     }
 
     @Test
@@ -28,8 +28,8 @@ struct PanelLabelsTests {
     func labelsFollowTheStoreClock() throws {
         let clock = TestClock()
         let store = try makeStore(clock)
-        #expect(PanelLabels.date(for: .today, at: store.now()) == "Lunes 12 oct")
+        #expect(PanelLabels.date(for: .day, at: store.now()) == "Lunes 12 oct")
         clock.date = localDate("2026-10-13T08:00:00")
-        #expect(PanelLabels.date(for: .today, at: store.now()) == "Martes 13 oct")
+        #expect(PanelLabels.date(for: .day, at: store.now()) == "Martes 13 oct")
     }
 }

@@ -33,11 +33,11 @@ struct PanelViewTests {
         return store
     }
 
-    private func render(_ name: String, tab: PanelTab, scope: PriorityList) throws {
+    private func render(_ name: String, tab: PanelTab, filter: DueFilter) throws {
         let store = try seededStore(TestClock("2026-10-12T10:24:00"))
         let state = PanelState(store: store)
         state.select(tab: tab)
-        state.select(scope: scope)
+        state.select(filter: filter)
         let view = PanelView().environment(store).environment(state)
         let url = try Screenshot.writeHosted(view, named: name)
         let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
@@ -46,17 +46,17 @@ struct PanelViewTests {
 
     @Test
     func rendersPrioritiesWithToday() throws {
-        try render("panel-priorities-today", tab: .priorities, scope: .today)
+        try render("panel-priorities-today", tab: .priorities, filter: .today)
     }
 
     @Test
     func rendersPrioritiesWithWeek() throws {
-        try render("panel-priorities-week", tab: .priorities, scope: .week)
+        try render("panel-priorities-week", tab: .priorities, filter: .week)
     }
 
     @Test
     func rendersNotes() throws {
-        try render("panel-notes", tab: .notes, scope: .today)
+        try render("panel-notes", tab: .notes, filter: .today)
     }
 
     @Test

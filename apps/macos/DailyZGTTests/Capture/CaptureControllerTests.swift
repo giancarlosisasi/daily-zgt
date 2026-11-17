@@ -126,7 +126,7 @@ struct CaptureControllerTests {
         let store = try makeStore(clock)
         PanelState(store: store).setTodayLimit(true)
         for index in 0..<TodayLimit.maxOpen {
-            try store.addPriority(title: "Open \(index)", list: .today)
+            try store.addPriority(title: "Open \(index)", dueAt: clock.date)
         }
         let (controller, _) = try makeController(store)
         controller.open()
@@ -158,8 +158,8 @@ struct CaptureControllerTests {
         controller.open()
         controller.model.draft.title = "Pagar la luz"
         controller.submit()
-        #expect(state.scope == .today)
-        #expect(store.openPriorities(in: state.scope).map(\.title) == ["Pagar la luz"])
+        #expect(state.filter == .today)
+        #expect(store.openPriorities(in: state.filter).map(\.title) == ["Pagar la luz"])
     }
 
     @Test

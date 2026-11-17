@@ -110,9 +110,9 @@ struct MenuBarTitleStoreTests {
     @Test
     func theTitleIsTheFirstOpenPriorityOfTodayInTheStoreOrder() throws {
         let store = try makeStore(clock)
-        let low = try store.addPriority(title: "Low", level: .low, list: .today)
+        let low = try store.addPriority(title: "Low", level: .low, list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.addPriority(title: "Medium soon", level: .medium, list: .today, dueAt: localDate("2026-10-12T12:00:00"))
-        let high = try store.addPriority(title: "High", level: .high, list: .today)
+        let high = try store.addPriority(title: "High", level: .high, list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.addPriority(title: "Week high", level: .high, list: .week)
         #expect(readyBoot(store).menuBarTitle == "Low")
         let order = store.openPriorities(in: .today).map(\.id)
@@ -124,15 +124,15 @@ struct MenuBarTitleStoreTests {
     @Test
     func theCreationOrderBreaksATieOfLevelAndDue() throws {
         let store = try makeStore(clock)
-        try store.addPriority(title: "First", list: .today)
-        try store.addPriority(title: "Second", list: .today)
+        try store.addPriority(title: "First", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "Second", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         #expect(readyBoot(store).menuBarTitle == "First")
     }
 
     @Test
     func aDonePriorityDoesNotShow() throws {
         let store = try makeStore(clock)
-        let only = try store.addPriority(title: "Only", list: .today)
+        let only = try store.addPriority(title: "Only", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.markDone(only.id)
         #expect(readyBoot(store).menuBarTitle == nil)
     }
@@ -144,12 +144,12 @@ struct MenuBarTitleStoreTests {
         #expect(boot.menuBarTitle == nil)
 
         var first: Priority?
-        try await nextChange(of: store) { first = try store.addPriority(title: "First", level: .medium, list: .today) }
+        try await nextChange(of: store) { first = try store.addPriority(title: "First", level: .medium, list: .today, dueAt: localDate("2026-10-12T18:00:00")) }
         let one = try #require(first)
         #expect(boot.menuBarTitle == "First")
 
         var second: Priority?
-        try await nextChange(of: store) { second = try store.addPriority(title: "Second", level: .high, list: .today) }
+        try await nextChange(of: store) { second = try store.addPriority(title: "Second", level: .high, list: .today, dueAt: localDate("2026-10-12T18:00:00")) }
         let two = try #require(second)
         #expect(boot.menuBarTitle == "First")
 
@@ -168,10 +168,10 @@ struct MenuBarTitleStoreTests {
         try await nextChange(of: store) { try store.editPriority(two.id) { $0.level = .low } }
         #expect(boot.menuBarTitle == "Second edited")
 
-        try await nextChange(of: store) { try store.movePriority(two.id, to: .week) }
+        try await nextChange(of: store) { try store.editPriority(two.id) { $0.dueAt = localDate("2026-10-14T18:00:00") } }
         #expect(boot.menuBarTitle == "First")
 
-        try await nextChange(of: store) { try store.movePriority(two.id, to: .today) }
+        try await nextChange(of: store) { try store.editPriority(two.id) { $0.dueAt = localDate("2026-10-12T18:00:00") } }
         #expect(boot.menuBarTitle == "Second edited")
 
         try await nextChange(of: store) { try store.deletePriority(two.id) }
@@ -184,7 +184,7 @@ struct MenuBarTitleStoreTests {
     @Test(.timeLimit(.minutes(1)))
     func aDailyCopyShowsItsTitle() async throws {
         let store = try makeStore(clock)
-        let source = try addDaily(store, title: "Meditar")
+        let source = try addDaily(store, title: "Meditar", due: "2026-10-12T08:00:00")
         try store.markDone(source.id)
         clock.date = localDate("2026-10-13T07:00:00")
         let boot = readyBoot(store)
@@ -225,7 +225,7 @@ struct MenuBarTitleStoreTests {
             continuation.yield()
         }
 
-        try store.addPriority(title: "Observed", list: .today)
+        try store.addPriority(title: "Observed", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
 
         for await _ in changes {
             break
@@ -255,7 +255,7 @@ struct MenuBarTitleSettingTests {
     @Test
     func turningItOffHidesTheTitleAndTurningItOnShowsItAgain() throws {
         let store = try makeStore(clock)
-        try store.addPriority(title: "Pagar la luz", list: .today)
+        try store.addPriority(title: "Pagar la luz", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         let (boot, state) = readyBoot(store)
         #expect(boot.menuBarTitle == "Pagar la luz")
 
@@ -294,7 +294,7 @@ struct MenuBarTitleSettingTests {
     @Test(.timeLimit(.minutes(1)))
     func turningTheSettingOffRedrawsTheLabel() async throws {
         let store = try makeStore(clock)
-        try store.addPriority(title: "Pagar la luz", list: .today)
+        try store.addPriority(title: "Pagar la luz", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         let (boot, state) = readyBoot(store)
         let (changes, continuation) = AsyncStream.makeStream(of: Void.self)
         withObservationTracking {
@@ -373,7 +373,7 @@ struct MenuBarTitleSettingsRenderTests {
     func rendersTheSettingsWithTheNewRow() throws {
         let clock = TestClock("2026-10-12T10:24:00")
         let store = try makeStore(clock)
-        try store.addPriority(title: "Terminar el brief de Tailwind v4", level: .high, list: .today)
+        try store.addPriority(title: "Terminar el brief de Tailwind v4", level: .high, list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         let state = PanelState(
             store: store,
             loginItem: LoginItemSettings(service: FakeLoginItemService(status: .notRegistered), events: NotificationCenter())

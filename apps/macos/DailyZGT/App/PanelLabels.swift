@@ -2,19 +2,18 @@ import Foundation
 
 @MainActor
 enum PanelLabels {
-    static func date(for list: PriorityList, at date: Date, in timeZone: TimeZone = .current) -> String {
-        switch list {
-        case .today: dayLabel(for: date, in: timeZone)
+    static func date(for scope: NoteScope, at date: Date, in timeZone: TimeZone = .current) -> String {
+        switch scope {
+        case .day: dayLabel(for: date, in: timeZone)
         case .week: weekLabel(for: date, in: timeZone)
         }
     }
 
-    static func summary(for list: PriorityList, store: AppStore, now: Date? = nil) -> String {
-        let start = DoneWindow.periodStart(for: list, at: now ?? store.now())
-        let done = (try? store.doneCount(in: list, from: start)) ?? 0
-        let total = done + store.openCount(in: list)
-        let suffix = list == .today ? "hoy" : "esta semana"
-        return "\(done) de \(total) hechas \(suffix)"
+    static func summary(for filter: DueFilter, store: AppStore, now: Date? = nil) -> String {
+        let days = DueDays(now: now ?? store.now())
+        let done = store.donePriorities(in: filter, days: days).count
+        let total = done + store.openCount(in: filter, days: days)
+        return DueFilterLabels.summary(filter, days, done: done, total: total)
     }
 
     static func historyDay(for date: Date, now: Date, in timeZone: TimeZone = .current) -> String {

@@ -39,7 +39,7 @@ struct CaptureRenderTests {
         let store = try makeStore(clock)
         PanelState(store: store).setTodayLimit(true)
         for index in 0..<TodayLimit.maxOpen {
-            try store.addPriority(title: "Open \(index)", list: .today)
+            try store.addPriority(title: "Open \(index)", dueAt: clock.date)
         }
         let model = CaptureModel(store: store)
         model.draft.title = "Una más"
@@ -64,7 +64,7 @@ struct CaptureRenderTests {
         let store = try makeStore(clock)
         PanelState(store: store).setTodayLimit(true)
         for index in 0..<TodayLimit.maxOpen {
-            try store.addPriority(title: "Open \(index)", list: .today)
+            try store.addPriority(title: "Open \(index)", dueAt: clock.date)
         }
         let plain = CaptureModel(store: store)
         let blocked = CaptureModel(store: store)

@@ -5,24 +5,18 @@ enum PanelTab: String, Codable, CaseIterable, Sendable {
     case notes
 }
 
-extension PriorityList {
-    var noteScope: NoteScope {
-        switch self {
-        case .today: .day
-        case .week: .week
-        }
-    }
-}
-
 @Observable
 @MainActor
 final class PanelState {
     static let tabKey = AppStateKey(name: "open_tab", defaultValue: PanelTab.priorities)
-    static let scopeKey = AppStateKey(name: "open_scope", defaultValue: PriorityList.today)
+    static let filterKey = AppStateKey<DueFilter?>(name: "due_filter", defaultValue: nil)
+    static let noteScopeKey = AppStateKey<NoteScope?>(name: "note_scope", defaultValue: nil)
+    static let legacyScopeKey = AppStateKey<PriorityList?>(name: "open_scope", defaultValue: nil)
     static let doneOpenKey = AppStateKey(name: "done_open", defaultValue: false)
 
     private(set) var tab: PanelTab
-    private(set) var scope: PriorityList
+    private(set) var filter: DueFilter
+    private(set) var noteScope: NoteScope
     private(set) var isDoneOpen: Bool
     private(set) var saveError: (any Error)?
     private(set) var openPriorityID: Priority.ID?
@@ -47,7 +41,9 @@ final class PanelState {
         self.loginItem = loginItem ?? LoginItemSettings(service: InertLoginItemService())
         self.shortcut = shortcut ?? ShortcutSettings(service: InertHotkeyService())
         tab = store.value(for: Self.tabKey)
-        scope = store.value(for: Self.scopeKey)
+        let legacy = store.value(for: Self.legacyScopeKey)
+        filter = store.value(for: Self.filterKey) ?? (legacy == .week ? .week : .today)
+        noteScope = store.value(for: Self.noteScopeKey) ?? (legacy == .week ? .week : .day)
         isDoneOpen = store.value(for: Self.doneOpenKey)
     }
 
@@ -70,7 +66,10 @@ final class PanelState {
         closeSettings()
         closeHistory()
         select(tab: .priorities)
-        select(scope: priority.list)
+        let days = store.dueDays
+        if !priority.isDone, !filter.includes(priority, days) {
+            select(filter: DueFilter.home(for: priority, days))
+        }
         openPriorityID = id
         detailOpenedDone = priority.isDone
         detailReturnsToHistory = fromHistory
@@ -126,7 +125,14 @@ final class PanelState {
     func showInList(_ id: Priority.ID?) {
         let priority = id.flatMap { store.priority(id: $0) }.flatMap { $0.isDone ? nil : $0 }
         select(tab: .priorities)
-        select(scope: priority?.list ?? .today)
+        let days = store.dueDays
+        if let priority {
+            if !filter.includes(priority, days) {
+                select(filter: DueFilter.home(for: priority, days))
+            }
+        } else {
+            select(filter: .today)
+        }
         if let priority {
             priorityFlow.flash(priority.id)
         }
@@ -155,11 +161,23 @@ final class PanelState {
         persist { try store.setValue(newTab, for: Self.tabKey) }
     }
 
-    func select(scope newScope: PriorityList) {
-        guard newScope != scope else { return }
+    func select(filter newFilter: DueFilter) {
+        let resolved = newFilter.resolved(store.dueDays)
+        guard resolved != filter else { return }
         closeHistory()
-        scope = newScope
-        persist { try store.setValue(newScope, for: Self.scopeKey) }
+        filter = resolved
+        persist { try store.setValue(resolved, for: Self.filterKey) }
+    }
+
+    func step(by days: Int) {
+        guard let next = filter.stepped(by: days, store.dueDays) else { return }
+        select(filter: next)
+    }
+
+    func select(noteScope newScope: NoteScope) {
+        guard newScope != noteScope else { return }
+        noteScope = newScope
+        persist { try store.setValue(newScope, for: Self.noteScopeKey) }
     }
 
     func setTodayLimit(_ isOn: Bool) {

@@ -250,7 +250,7 @@ struct SubtaskRenderTests {
         let (store, state, brief) = try sample()
         state.priorityFlow.toggleSubtasks(for: brief.id)
         try render(
-            PriorityListView(list: .today).environment(store).environment(state).panelChrome(),
+            PriorityListView(filter: .today).environment(store).environment(state).panelChrome(),
             named: "subtasks-row-open"
         )
     }
@@ -259,7 +259,7 @@ struct SubtaskRenderTests {
     func rendersTheRowWithItsSubtasksClosed() throws {
         let (store, state, _) = try sample()
         try render(
-            PriorityListView(list: .today).environment(store).environment(state).panelChrome(),
+            PriorityListView(filter: .today).environment(store).environment(state).panelChrome(),
             named: "subtasks-row-closed"
         )
     }
@@ -270,7 +270,7 @@ struct SubtaskRenderTests {
         state.priorityFlow.toggleSubtasks(for: brief.id)
         state.priorityFlow.toggleConfirmation(for: brief.id)
         try render(
-            PriorityListView(list: .today).environment(store).environment(state).panelChrome(),
+            PriorityListView(filter: .today).environment(store).environment(state).panelChrome(),
             named: "subtasks-row-confirm"
         )
     }

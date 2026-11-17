@@ -1,7 +1,7 @@
 import Foundation
 
-enum ListMoveResult: Equatable {
-    case moved
+enum DueChangeResult: Equatable {
+    case saved
     case blocked(String)
 }
 
@@ -21,17 +21,13 @@ struct PriorityDetailActions {
         try store.editPriority(id) { $0.level = level }
     }
 
-    func setDue(_ due: Date?) throws {
-        try store.editPriority(id) { $0.dueAt = due }
-    }
-
     @discardableResult
-    func setList(_ list: PriorityList) throws -> ListMoveResult {
-        if list == .today, store.priority(id: id)?.list == .week, let block = store.todayAddBlock() {
+    func setDue(_ due: Date?) throws -> DueChangeResult {
+        if let block = store.dueChangeBlock(for: id, to: due) {
             return .blocked(block)
         }
-        try store.movePriority(id, to: list)
-        return .moved
+        try store.editPriority(id) { $0.dueAt = due }
+        return .saved
     }
 
     func setRepeat(_ rule: RepeatRule) throws {

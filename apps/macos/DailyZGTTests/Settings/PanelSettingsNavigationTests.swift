@@ -89,7 +89,7 @@ struct PanelSettingsNavigationTests {
     @Test
     func anAlertThatShowsAPriorityClosesTheSettings() throws {
         let store = try makeStore(clock)
-        let priority = try store.addPriority(title: "Mandar el reporte", list: .week)
+        let priority = try store.addPriority(title: "Mandar el reporte")
         let state = makeState(store)
         state.openSettings()
 
@@ -97,7 +97,7 @@ struct PanelSettingsNavigationTests {
 
         #expect(!state.isSettingsOpen)
         #expect(state.tab == .priorities)
-        #expect(state.scope == .week)
+        #expect(state.filter == .today)
     }
 
     @Test

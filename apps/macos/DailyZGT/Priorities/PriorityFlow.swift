@@ -180,20 +180,18 @@ final class PriorityFlow {
         }
     }
 
-    func hover(gap: Int?, in list: PriorityList) {
+    func hover(gap: Int?, in ids: [Priority.ID]) {
         guard var current = drag else { return }
-        let ids = store.openPriorities(in: list).map(\.id)
         let next = gap.flatMap { PriorityOrder.changesOrder(current.id, gap: $0, in: ids) ? $0 : nil }
         guard next != current.gap else { return }
         current.gap = next
         drag = current
     }
 
-    func drop(in list: PriorityList) {
+    func drop(in ids: [Priority.ID]) {
         guard let current = drag else { return }
         drag = nil
         guard let gap = current.gap else { return }
-        let ids = store.openPriorities(in: list).map(\.id)
         do {
             try store.reorderPriorities(PriorityOrder.moving(current.id, toGap: gap, in: ids))
             writeFailed = false

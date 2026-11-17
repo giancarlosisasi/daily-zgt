@@ -37,7 +37,7 @@ struct HistoryHeader: View {
 }
 
 struct DoneHistoryView: View {
-    let list: PriorityList
+    let filter: DueFilter
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var panel
@@ -64,13 +64,13 @@ struct DoneHistoryView: View {
 
     private var content: some View {
         TimelineView(.everyMinute) { _ in
-            DoneHistoryContent(list: list, now: store.now())
+            DoneHistoryContent(filter: filter, now: store.now())
         }
     }
 }
 
 struct DoneHistoryContent: View {
-    let list: PriorityList
+    let filter: DueFilter
     let now: Date
 
     @Environment(AppStore.self) private var store
@@ -78,8 +78,7 @@ struct DoneHistoryContent: View {
     @Environment(\.panelLayout) private var layout
 
     var body: some View {
-        let cutoff = DoneWindow.cutoff(now: now)
-        let groups = DoneHistory.groups(from: (try? store.donePriorities(in: list, atOrBefore: cutoff)) ?? [])
+        let groups = DoneHistory.groups(from: store.olderDonePriorities(outside: filter, days: DueDays(now: now)))
         if groups.isEmpty {
             Text(HistoryCopy.empty)
                 .font(Theme.Font.body)

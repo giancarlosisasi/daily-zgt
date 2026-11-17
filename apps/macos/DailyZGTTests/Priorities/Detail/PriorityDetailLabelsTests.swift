@@ -61,8 +61,9 @@ struct PriorityDetailLabelsTests {
     }
 
     @Test
-    func theBackLabelIsTheListName() {
-        #expect(PriorityList.today.title == "Hoy")
-        #expect(PriorityList.week.title == "Semana")
+    func theBackLabelIsTheFilterTitle() {
+        let days = DueDays(now: localDate("2026-10-12T10:24:00"))
+        #expect(DueFilterLabels.title(.today, days) == "Hoy")
+        #expect(DueFilterLabels.title(.week, days) == "Esta semana")
     }
 }

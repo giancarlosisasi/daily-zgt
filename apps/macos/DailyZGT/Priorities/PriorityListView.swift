@@ -2,24 +2,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct EmptyListContent: View {
-    let list: PriorityList
+    let filter: DueFilter
     let now: Date
 
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        let cutoff = DoneWindow.cutoff(now: now)
-        if ((try? store.donePriorities(in: list, after: cutoff)) ?? []).isEmpty {
-            Text("Nada pendiente en esta lista.")
-                .font(Theme.Font.body)
-                .foregroundStyle(Theme.EmptyList.text)
-                .padding(.vertical, Theme.EmptyList.verticalPadding)
-                .padding(.horizontal, Theme.EmptyList.horizontalPadding)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        } else {
+        let days = DueDays(now: now)
+        if filter.resolved(days) == .today, !store.donePriorities(in: .today, days: days).isEmpty {
             VStack(spacing: Theme.AllDone.spacing) {
                 AllDoneCheck()
-                Text("Todo listo en esta lista")
+                Text(DueFilterLabels.allDone)
                     .font(Theme.Font.bodyStrong)
                     .foregroundStyle(Theme.Text.primary)
             }
@@ -27,12 +20,20 @@ struct EmptyListContent: View {
             .padding(.bottom, Theme.AllDone.bottomPadding)
             .padding(.horizontal, Theme.AllDone.horizontalPadding)
             .frame(maxWidth: .infinity)
+        } else {
+            Text(DueFilterLabels.empty(filter, days))
+                .font(Theme.Filter.emptyFont)
+                .foregroundStyle(Theme.Filter.emptyText)
+                .padding(.top, Theme.Filter.emptyTopPadding)
+                .padding(.bottom, Theme.Filter.emptyBottomPadding)
+                .padding(.horizontal, Theme.Filter.emptyHorizontalPadding)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
 
 struct PriorityListView: View {
-    let list: PriorityList
+    let filter: DueFilter
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var panel
@@ -50,7 +51,7 @@ struct PriorityListView: View {
         VStack(spacing: 0) {
             openArea
             newPriority
-            DoneSection(list: list)
+            DoneSection(filter: filter)
                 .padding(.top, Theme.Space.group(layout))
             if writeFailed || flow.writeFailed {
                 Text("No se pudo guardar el cambio.")
@@ -59,43 +60,48 @@ struct PriorityListView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .transaction(value: list) { transaction in
+        .transaction(value: filter) { transaction in
             transaction.animation = nil
             transaction.disablesAnimations = true
         }
     }
 
     private var openArea: some View {
-        let open = store.openPriorities(in: list)
-        let entryEvents = TodayEntry.events(for: list, in: store)
-        return Group {
-            if open.isEmpty {
-                TimelineView(.everyMinute) { _ in
-                    EmptyListContent(list: list, now: store.now())
+        TimelineView(.everyMinute) { _ in
+            let days = store.dueDays
+            let groups = store.openGroups(in: filter, days: days)
+            let hidden = store.hiddenOverdueCount(in: filter, days: days)
+            VStack(spacing: 0) {
+                if hidden > 0 {
+                    OverdueLink(count: hidden) { panel.select(filter: .overdue) }
                 }
-            } else {
-                TimelineView(.everyMinute) { _ in
-                    let now = store.now()
-                    rows(open, chips: TodayEntry.chips(events: entryEvents, now: now), now: now)
+                if groups.isEmpty {
+                    EmptyListContent(filter: filter, now: days.now)
+                } else {
+                    rows(groups, now: days.now)
                 }
             }
         }
     }
 
-    private func rows(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
+    private func rows(_ groups: [DueGroup], now: Date) -> some View {
         ScrollViewReader { proxy in
-            rowsScroll(open, chips: chips, now: now)
+            rowsScroll(groups, now: now)
                 .onChange(of: flow.scrollTargetID, initial: true) {
                     scroll(to: flow.scrollTargetID, with: proxy)
                 }
                 .onChange(of: flow.drag?.gap) { _, gap in
-                    reveal(gap, in: open.map(\.id), with: proxy)
+                    reveal(gap, in: groups, with: proxy)
                 }
         }
     }
 
-    private func reveal(_ gap: Int?, in ids: [Priority.ID], with proxy: ScrollViewProxy) {
-        guard let gap else { return }
+    private func reveal(_ gap: Int?, in groups: [DueGroup], with proxy: ScrollViewProxy) {
+        guard let gap, let id = flow.drag?.id,
+              let ids = groups.first(where: { $0.priorities.contains { $0.id == id } })?.priorities.map(\.id)
+        else {
+            return
+        }
         for index in [gap, gap - 1] where ids.indices.contains(index) {
             proxy.scrollTo(ids[index])
         }
@@ -111,39 +117,62 @@ struct PriorityListView: View {
     }
 
     @ViewBuilder
-    private func rowsScroll(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
+    private func rowsScroll(_ groups: [DueGroup], now: Date) -> some View {
         switch layout {
         case .panel:
             ScrollView {
-                rowStack(open, chips: chips, now: now)
+                groupStack(groups, now: now)
             }
             .frame(maxHeight: Theme.Row.listMaxHeight)
         case .window:
-            rowStack(open, chips: chips, now: now)
+            groupStack(groups, now: now)
         }
     }
 
-    private func rowStack(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
-        let ids = open.map(\.id)
-        let gap = flow.drag?.gap
+    private func groupStack(_ groups: [DueGroup], now: Date) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
+                if let title = group.title {
+                    groupHeader(title, isFirst: index == 0)
+                }
+                rowStack(group, now: now)
+            }
+        }
+    }
+
+    private func groupHeader(_ title: String, isFirst: Bool) -> some View {
+        Text(title)
+            .font(Theme.Filter.groupFont)
+            .foregroundStyle(Theme.Filter.groupText)
+            .padding(.horizontal, Theme.Filter.groupHorizontalPadding)
+            .padding(.top, isFirst ? 0 : Theme.Filter.groupTopPadding(layout))
+            .padding(.bottom, Theme.Filter.groupBottomPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    private func rowStack(_ group: DueGroup, now: Date) -> some View {
+        let ids = group.priorities.map(\.id)
+        let gap = ids.contains { flow.isDragging($0) } ? flow.drag?.gap : nil
+        let space = "\(Self.stackSpace)-\(group.id)"
         return VStack(spacing: Theme.Row.listSpacing) {
-            ForEach(Array(open.enumerated()), id: \.element.id) { index, priority in
-                rowGroup(priority, chip: chips[priority.id], now: now)
-                    .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(Self.stackSpace)) }) { frame in
+            ForEach(Array(group.priorities.enumerated()), id: \.element.id) { index, priority in
+                rowGroup(priority, now: now)
+                    .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(space)) }) { frame in
                         frames.set(frame, for: priority.id)
                     }
                     .dropLine(at: .top, isVisible: gap == index, isListEdge: index == 0)
                     .dropLine(at: .bottom, isVisible: gap == ids.count && index == ids.count - 1, isListEdge: true)
             }
         }
-        .coordinateSpace(.named(Self.stackSpace))
+        .coordinateSpace(.named(space))
         .onDrop(
             of: [UTType.utf8PlainText],
-            delegate: PriorityStackDropDelegate(ids: ids, frames: frames, list: list, flow: flow)
+            delegate: PriorityStackDropDelegate(ids: ids, frames: frames, flow: flow)
         )
     }
 
-    private func rowGroup(_ priority: Priority, chip: DueChipState?, now: Date) -> some View {
+    private func rowGroup(_ priority: Priority, now: Date) -> some View {
         let progress = store.subtaskProgress(of: priority.id)
         let isLeaving = flow.isLeaving(priority.id)
         let showsConfirmation = flow.isConfirming(priority.id) || isLeaving
@@ -157,7 +186,6 @@ struct PriorityListView: View {
                 isChecked: showsConfirmation,
                 isExpanded: flow.isExpanded(priority.id),
                 isDragging: flow.isDragging(priority.id),
-                todayChip: chip,
                 onToggleDone: { flow.toggleConfirmation(for: priority.id) },
                 onOpen: { panel.openDetail(priority.id) },
                 onToggleSubtasks: { flow.toggleSubtasks(for: priority.id) },
@@ -192,18 +220,18 @@ struct PriorityListView: View {
                 )
                 .padding(.top, Theme.Space.s2)
             } else {
-                NewPriorityButton { form.open() }
+                NewPriorityButton { form.open(defaultDue: filter.newDue(store.dueDays)) }
             }
         }
     }
 
     private var limitNotice: String? {
-        list == .today && form.isBlockedByLimit ? store.todayAddBlock() : nil
+        form.isBlockedByLimit ? store.addBlock(forDue: form.draft.dueAt) : nil
     }
 
     private func add() {
         do {
-            guard let added = try form.submit(to: store, list: list) else { return }
+            guard let added = try form.submit(to: store) else { return }
             writeFailed = false
             flow.flash(added.id)
             if added.dueAt != nil {

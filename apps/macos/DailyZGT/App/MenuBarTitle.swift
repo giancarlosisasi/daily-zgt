@@ -27,6 +27,6 @@ extension AppStore {
     }
 
     var menuBarTitle: String? {
-        menuBarTitleIsOn ? openPriorities(in: .today).first?.title : nil
+        menuBarTitleIsOn ? DueFilter.today.counted(snapshot.open, dueDays).first?.title : nil
     }
 }

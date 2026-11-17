@@ -294,7 +294,7 @@ struct PriorityNoteRenderTests {
         try store.addPriority(title: "Sin nota", level: .medium, list: .today)
         try store.addPriority(title: "Nota en blanco", level: .low, list: .today, note: "   ")
         try render(
-            PriorityListView(list: .today).environment(store).environment(PanelState(store: store)).panelChrome(),
+            PriorityListView(filter: .today).environment(store).environment(PanelState(store: store)).panelChrome(),
             named: "note-icon-rows"
         )
     }

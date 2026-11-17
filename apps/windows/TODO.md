@@ -35,5 +35,10 @@ The macOS branch `feat/macos-reorder-and-window` changes five behaviors. Windows
 - Done detail. A click on a done row opens its detail. The controls are off, and "Regresar" restores the priority. Back returns to "Historial" when the detail opened from there.
 - Desktop window. The footer button "Abrir en ventana" opens a resizable window: the list on the left and the detail on the right. The Notes tab fills the window.
 - Development database. A Debug build uses `daily-zgt-dev.sqlite`, so a test run does not change the real data.
+- Due-date filter. A filter on the due date replaces the tabs "Hoy · N" and "Semana · N". The options are Hoy, Mañana, Esta semana, Vencidas, Sin fecha, Todas, a picked day and a range. Hoy shows the groups "Vencidas", "Hoy" and "Sin fecha". On a single day, "‹" and "›" step one day. A filter that hides overdue priorities shows the link "N vencidas · Ver". The rules are in `DueFilter.swift` and `DueFilterLabels.swift`, with unit tests.
+- Filter state. The `due_filter` key in `app_state` keeps the filter. The first start reads the old `open_scope` key: "week" gives Esta semana. The Notes tab keeps its own Hoy and Semana tabs in the `note_scope` key.
+- List column. The UI does not read or write `priority.list` any more. The column stays in the database, and a new priority still gets `today`. The "Lista" row of the detail and the chip "De ayer" are gone.
+- Counts, limit and done list. The menu bar count and title, and the limit of 5, use the open priorities that are overdue or due today. A priority with no due shows in Hoy but does not count. The limit blocks a new priority with no due or a due of today, and a due change into today. "Hechas", the footer and the history follow the date window of the filter: by `done_at`, in the day, the week or the range; Todas, Vencidas and Sin fecha use the last 24 h.
+- Drag order. A drag reorders the rows inside one date group only.
 
 After the Windows change, update the sort text in `apps/website/i18n.json` (key with "A priority sorts by level first"). That text is now wrong for macOS.

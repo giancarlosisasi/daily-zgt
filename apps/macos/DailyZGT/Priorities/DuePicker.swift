@@ -263,3 +263,52 @@ struct DueDateField: View {
         return dueAt < now ? Theme.Detail.valueLate : Theme.Detail.valueText
     }
 }
+
+struct CalendarRangePicker: NSViewRepresentable {
+    let start: Date
+    var interval: TimeInterval = 0
+    let onChange: (Date, TimeInterval) -> Void
+
+    @MainActor
+    final class Coordinator: NSObject {
+        var onChange: (Date, TimeInterval) -> Void
+
+        init(onChange: @escaping (Date, TimeInterval) -> Void) {
+            self.onChange = onChange
+        }
+
+        @objc func dateChanged(_ sender: NSDatePicker) {
+            onChange(sender.dateValue, sender.timeInterval)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onChange: onChange)
+    }
+
+    func makeNSView(context: Context) -> NSDatePicker {
+        let picker = NSDatePicker()
+        picker.locale = Locale(identifier: "es")
+        picker.font = Theme.DatePopover.fieldFont
+        picker.textColor = NSColor(Theme.DatePopover.fieldText)
+        picker.datePickerStyle = .clockAndCalendar
+        picker.datePickerElements = .yearMonthDay
+        picker.datePickerMode = .range
+        picker.drawsBackground = false
+        picker.isBezeled = false
+        picker.setAccessibilityLabel(DueFilterLabels.pickRange)
+        picker.dateValue = start
+        picker.timeInterval = interval
+        picker.target = context.coordinator
+        picker.action = #selector(Coordinator.dateChanged(_:))
+        return picker
+    }
+
+    func updateNSView(_ picker: NSDatePicker, context: Context) {
+        context.coordinator.onChange = onChange
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSDatePicker, context: Context) -> CGSize? {
+        nsView.fittingSize
+    }
+}

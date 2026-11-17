@@ -15,7 +15,7 @@ struct DoneSectionTests {
     }
 
     private func list(_ store: AppStore, _ state: PanelState) -> some View {
-        PriorityListView(list: .today).environment(store).environment(state)
+        PriorityListView(filter: .today).environment(store).environment(state)
     }
 
     private func storeWithDone() throws -> AppStore {
@@ -68,13 +68,13 @@ struct DoneSectionTests {
     }
 
     @Test
-    func theHeaderShowsTheCountOfTheList() throws {
+    func theHeaderShowsTheCountOfTheDateWindow() throws {
         let store = try storeWithDone()
         let other = try store.addPriority(title: "Week item", list: .week)
         try store.markDone(other.id)
         #expect(DoneSection.headerTitle == "Hechas")
-        #expect(store.donePriorities(in: .today).count == 3)
-        #expect(store.donePriorities(in: .week).count == 1)
+        #expect(store.donePriorities(in: .today).count == 4)
+        #expect(store.donePriorities(in: .tomorrow).isEmpty)
         #expect(HistoryLink.title(count: 15) == "Ver historial (15)")
     }
 

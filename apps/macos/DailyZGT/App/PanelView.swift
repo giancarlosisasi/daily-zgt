@@ -24,7 +24,7 @@ struct PanelFooterBar: View {
     @Environment(\.panelLayout) private var layout
 
     var body: some View {
-        PanelFooter(summary: PanelLabels.summary(for: state.scope, store: store, now: now), actions: {
+        PanelFooter(summary: PanelLabels.summary(for: state.filter, store: store, now: now), actions: {
             if layout == .panel {
                 OpenWindowButton {
                     MainWindowController.shared.show(store: store, alerts: alerts, panel: state)
@@ -40,24 +40,15 @@ struct PanelFooterBar: View {
     }
 }
 
-struct ScopeRow: View {
-    @Environment(AppStore.self) private var store
+struct BrowseHeader: View {
     @Environment(PanelState.self) private var state
 
     var body: some View {
-        HStack(spacing: Theme.Space.s2) {
-            SegmentedTabs(
-                style: .scope,
-                options: [
-                    .init(value: PriorityList.today, title: "Hoy · \(store.openCount(in: .today))"),
-                    .init(value: PriorityList.week, title: "Semana · \(store.openCount(in: .week))"),
-                ],
-                selection: Binding(get: { state.scope }, set: { state.select(scope: $0) })
-            )
-            Spacer(minLength: 0)
-            Text(PanelLabels.date(for: state.scope, at: store.now()))
-                .font(Theme.Font.label)
-                .foregroundStyle(Theme.Text.muted)
+        switch state.tab {
+        case .priorities:
+            DueFilterHeader()
+        case .notes:
+            NoteScopeRow()
         }
     }
 }
@@ -72,7 +63,7 @@ struct PanelView: View {
             case .settings:
                 SettingsView()
             case .history:
-                DoneHistoryView(list: state.scope)
+                DoneHistoryView(filter: state.filter)
             case .browse:
                 browse
             }
@@ -95,7 +86,7 @@ struct PanelView: View {
                 selection: Binding(get: { state.tab }, set: { state.select(tab: $0) })
             )
             if state.detailPriority == nil {
-                ScopeRow()
+                BrowseHeader()
             }
             content
         }
@@ -120,7 +111,7 @@ struct PanelView: View {
         case .priorities:
             prioritiesContent
         case .notes:
-            NotesView(scope: state.scope.noteScope)
+            NotesView(scope: state.noteScope)
         }
     }
 
@@ -130,7 +121,7 @@ struct PanelView: View {
                 PriorityDetailView(priority: priority)
                     .id(priority.id)
             } else {
-                PriorityListView(list: state.scope)
+                PriorityListView(filter: state.filter)
             }
         }
     }

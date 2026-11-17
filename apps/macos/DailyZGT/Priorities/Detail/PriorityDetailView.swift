@@ -46,15 +46,7 @@ struct PriorityDetailView: View {
     @Environment(AlertCoordinator.self) private var alerts: AlertCoordinator?
     @Environment(\.panelLayout) private var layout
     @State private var writeFailed = false
-    @State private var moveWasBlocked = false
-
-    private var listNotice: String? {
-        moveWasBlocked && priority.list == .week ? store.todayAddBlock() : nil
-    }
-
-    private var entryEvents: [PriorityEvent] {
-        priority.list == .today ? ((try? store.events(of: priority.id)) ?? []) : []
-    }
+    @State private var dueNotice: String?
 
     private var flow: PriorityFlow { panel.priorityFlow }
     private var actions: PriorityDetailActions { PriorityDetailActions(store: store, id: priority.id) }
@@ -64,7 +56,7 @@ struct PriorityDetailView: View {
         VStack(alignment: .leading, spacing: Theme.Space.group(layout)) {
             VStack(alignment: .leading, spacing: Theme.Detail.headSpacing) {
                 PriorityDetailHeader(
-                    backLabel: priority.list.title,
+                    backLabel: DueFilterLabels.title(panel.filter, store.dueDays),
                     onBack: { panel.backFromDetail() },
                     onDelete: { flow.delete(priority.id) }
                 ) {
@@ -73,18 +65,9 @@ struct PriorityDetailView: View {
                     }
                     .disabled(priority.isDone)
                 }
-                if PriorityDetailChips.showsAny(
-                    priority: priority,
-                    now: store.now(),
-                    todayChip: TodayEntry.chip(events: entryEvents, now: store.now())
-                ) {
+                if PriorityDetailChips.showsAny(priority: priority, now: store.now()) {
                     TimelineView(.everyMinute) { _ in
-                        PriorityDetailChips(
-                            priority: priority,
-                            progress: progress,
-                            now: store.now(),
-                            todayChip: TodayEntry.chip(events: entryEvents, now: store.now())
-                        )
+                        PriorityDetailChips(priority: priority, progress: progress, now: store.now())
                     }
                 }
             }
@@ -93,20 +76,17 @@ struct PriorityDetailView: View {
                     priority: priority,
                     now: store.now(),
                     alertsOff: alerts?.alertsAreOff ?? false,
-                    listNotice: listNotice,
+                    dueNotice: dueNotice,
                     onLevel: { level in attempt { try actions.setLevel(level) } },
                     onDue: { due in
-                        if attempt({ try actions.setDue(due) }) != nil, due != nil {
-                            alerts?.dueWasSet()
-                        }
-                    },
-                    onList: { list in
-                        switch attempt({ try actions.setList(list) }) {
-                        case .moved:
-                            moveWasBlocked = false
-                            panel.select(scope: list)
-                        case .blocked:
-                            moveWasBlocked = true
+                        switch attempt({ try actions.setDue(due) }) {
+                        case .saved:
+                            dueNotice = nil
+                            if due != nil {
+                                alerts?.dueWasSet()
+                            }
+                        case let .blocked(message):
+                            dueNotice = message
                         case nil:
                             break
                         }

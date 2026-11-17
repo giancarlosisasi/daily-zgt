@@ -35,21 +35,22 @@ struct PriorityListViewTests {
     }
 
     @Test
-    func openRowsFollowTheManualOrderNotTheLevelOrTheDue() throws {
+    func openRowsFollowTheManualOrderInsideEachDateGroup() throws {
         let store = try makeStore(clock)
         try store.addPriority(title: "low no due", level: .low, list: .today)
+        try store.addPriority(title: "low late", level: .low, list: .today, dueAt: localDate("2026-10-12T17:00:00"))
         try store.addPriority(title: "high early", level: .high, list: .today, dueAt: localDate("2026-10-12T12:00:00"))
-        try store.addPriority(title: "medium late", level: .medium, list: .today, dueAt: localDate("2026-10-12T17:00:00"))
         try store.addPriority(title: "week item", level: .high, list: .week, dueAt: localDate("2026-10-12T08:00:00"))
 
-        #expect(store.openPriorities(in: .today).map(\.title) == ["low no due", "high early", "medium late"])
-        #expect(store.openPriorities(in: .week).map(\.title) == ["week item"])
+        #expect(store.openGroups(in: .today).map(\.id) == ["overdue", "today", "noDate"])
+        #expect(store.openPriorities(in: .today).map(\.title) == ["week item", "low late", "high early", "low no due"])
+        #expect(store.openPriorities(in: .week).map(\.title) == ["low late", "high early", "week item"])
     }
 
     @Test
     func rendersTheListWithTheThreeLevelsAndEveryDueState() throws {
         let store = try sampleStore()
-        try render(PriorityListView(list: .today).environment(store).environment(PanelState(store: store)), named: "priorities-list")
+        try render(PriorityListView(filter: .today).environment(store).environment(PanelState(store: store)), named: "priorities-list")
     }
 
     @Test
@@ -69,10 +70,12 @@ struct PriorityListViewTests {
     func rendersTheListWhileARowIsDraggedWithTheDropLine() throws {
         let store = try sampleStore()
         let state = PanelState(store: store)
-        let first = try #require(store.openPriorities(in: .today).first)
-        state.priorityFlow.startDrag(first.id)
-        state.priorityFlow.hover(gap: 3, in: .today)
-        try render(PriorityListView(list: .today).environment(store).environment(state), named: "priorities-drag")
+        let group = try #require(store.openGroups(in: .today).first { $0.id == "today" })
+        let ids = group.priorities.map(\.id)
+        state.priorityFlow.startDrag(ids[0])
+        state.priorityFlow.hover(gap: ids.count, in: ids)
+        #expect(state.priorityFlow.drag?.gap == ids.count)
+        try render(PriorityListView(filter: .today).environment(store).environment(state), named: "priorities-drag")
     }
 
     @Test
@@ -91,7 +94,7 @@ struct PriorityListViewTests {
     @Test
     func rendersTheEmptyListWithNoPriorities() throws {
         let store = try makeStore(clock)
-        try render(PriorityListView(list: .today).environment(store).environment(PanelState(store: store)), named: "priorities-empty")
+        try render(PriorityListView(filter: .today).environment(store).environment(PanelState(store: store)), named: "priorities-empty")
     }
 
     @Test
@@ -99,7 +102,7 @@ struct PriorityListViewTests {
         let store = try makeStore(clock)
         let done = try store.addPriority(title: "Hecha", list: .today)
         try store.markDone(done.id)
-        try render(PriorityListView(list: .today).environment(store).environment(PanelState(store: store)), named: "priorities-all-done")
+        try render(PriorityListView(filter: .today).environment(store).environment(PanelState(store: store)), named: "priorities-all-done")
     }
 
     @Test
@@ -108,7 +111,7 @@ struct PriorityListViewTests {
         for index in 1...14 {
             try store.addPriority(title: "Prioridad número \(index)", level: .medium, list: .today)
         }
-        try render(PriorityListView(list: .today).environment(store).environment(PanelState(store: store)), named: "priorities-long")
+        try render(PriorityListView(filter: .today).environment(store).environment(PanelState(store: store)), named: "priorities-long")
     }
 
     @Test

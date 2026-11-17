@@ -4,10 +4,9 @@ struct PriorityDetailChips: View {
     let priority: Priority
     let progress: SubtaskProgress
     let now: Date
-    var todayChip: DueChipState?
 
-    static func showsAny(priority: Priority, now: Date, todayChip: DueChipState?) -> Bool {
-        priority.isDone || overdue(priority: priority, now: now) != nil || todayChip != nil
+    static func showsAny(priority: Priority, now: Date) -> Bool {
+        priority.isDone || overdue(priority: priority, now: now) != nil
     }
 
     static func overdue(priority: Priority, now: Date) -> DueChipState? {
@@ -32,9 +31,6 @@ struct PriorityDetailChips: View {
             }
             if let due = Self.overdue(priority: priority, now: now) {
                 DueChip(state: due, horizontalPadding: Theme.Detail.chipHorizontalPadding)
-            }
-            if !priority.isDone, let todayChip {
-                DueChip(state: todayChip, horizontalPadding: Theme.Detail.chipHorizontalPadding)
             }
             Spacer(minLength: 0)
         }

@@ -197,7 +197,7 @@ struct RepeatMigrationTests {
     private func expectTheStoreReadsTheOldRows(in database: DatabaseQueue) throws {
         let store = AppStore(database: database, now: { localDate("2026-10-12T10:00:00") })
         #expect(store.openPriorities(in: .today).map(\.title) == ["Meditar", "Sin nada"])
-        #expect(store.donePriorities(in: .week).map(\.repeatRule) == [.none])
+        #expect(store.snapshot.done.map(\.repeatRule) == [.none])
         #expect(store.subtasks(of: "p1").map(\.title) == ["Respirar", "Estirar"])
         #expect(try store.alerts().map(\.id) == ["a3", "a1", "a2"])
     }

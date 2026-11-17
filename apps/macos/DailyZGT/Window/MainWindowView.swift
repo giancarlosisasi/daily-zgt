@@ -48,11 +48,11 @@ struct MainWindowView: View {
                 ],
                 selection: Binding(get: { state.tab }, set: { state.select(tab: $0) })
             )
-            ScopeRow()
+            BrowseHeader()
             switch state.tab {
             case .priorities:
                 ScrollView {
-                    PriorityListView(list: state.scope)
+                    PriorityListView(filter: state.filter)
                 }
                 .scrollIndicators(.automatic)
             case .notes:
@@ -107,7 +107,7 @@ struct MainWindowView: View {
                     .readableColumn()
             }
         case .history:
-            DoneHistoryView(list: state.scope)
+            DoneHistoryView(filter: state.filter)
         case .browse:
             switch state.tab {
             case .priorities:
@@ -125,7 +125,7 @@ struct MainWindowView: View {
                 }
             case .notes:
                 ScrollView {
-                    NotesView(scope: state.scope.noteScope)
+                    NotesView(scope: state.noteScope)
                         .readableColumn()
                 }
             }

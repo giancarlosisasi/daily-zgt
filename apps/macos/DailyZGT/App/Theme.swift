@@ -620,3 +620,57 @@ extension Theme {
         static let backTitleSpacing = Space.s1
     }
 }
+
+extension Theme {
+    enum Filter {
+        static let titleSpacing = Space.s1
+        static let panelTitleFont = Font.title
+        static let windowTitleFont = Font.subhead
+        static let titleText = Text.strong
+        static let subtitleFont = Font.label
+        static let subtitleText = Text.muted
+        static let subtitleSpacing = Space.s1
+        static let stepSize = Ghost.height
+        static let stepIconSize: CGFloat = 12
+        static let stepText = Text.muted
+        static let keyHeight = Key.height
+        static let keyRadius = Key.radius
+        static let keyPadding = Space.s2
+        static let keySpacing = Space.s1
+        static let keyIconSize: CGFloat = 13
+        static let keyCaretSize = Detail.valueCaretSize
+        static let linkFont = Font.label
+        static let linkText = Due.overdueText
+        static let linkHeight = Ghost.height
+        static let linkPadding = Space.s2
+        static let linkBottomPadding = Space.s1
+        static let groupFont = Font.labelStrong
+        static let groupText = Text.muted
+        static let groupBottomPadding = Space.s1
+        static let groupHorizontalPadding = Space.s2
+        static let emptyFont = Font.body
+        static let emptyText = Text.muted
+        static let emptyTopPadding = Space.s4
+        static let emptyBottomPadding = Space.s2
+        static let emptyHorizontalPadding = Space.s2
+        static let popoverPadding = DatePopover.padding
+        static let popoverColumnSpacing = DatePopover.columnSpacing
+        static let popoverRowSpacing = DatePopover.rowSpacing
+        static let optionWidth = DatePopover.optionWidth
+        static let optionHeight = DatePopover.optionHeight
+        static let optionPadding = DatePopover.optionPadding
+        static let optionFont = DatePopover.optionFont
+        static let optionText = DatePopover.optionText
+        static let optionCountFont = Font.meta
+        static let optionCountText = Text.dim
+        static let optionSelected = Detail.menuSelected
+        static let optionRadius = Ghost.radius
+        static let hintFont = Font.meta
+        static let hintText = Text.muted
+        static let background = DatePopover.background
+
+        static func groupTopPadding(_ layout: PanelLayout) -> CGFloat {
+            layout == .window ? Space.s4 : Space.s3
+        }
+    }
+}

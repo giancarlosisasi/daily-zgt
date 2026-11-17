@@ -1,14 +1,5 @@
 import Foundation
 
-extension PriorityList {
-    var title: String {
-        switch self {
-        case .today: "Hoy"
-        case .week: "Semana"
-        }
-    }
-}
-
 extension RepeatRule {
     var title: String {
         switch self {

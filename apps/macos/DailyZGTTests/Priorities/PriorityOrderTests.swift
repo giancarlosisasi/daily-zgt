@@ -52,11 +52,11 @@ struct PriorityOrderTests {
         let store = try makeStore(clock)
         try store.addPriority(title: "low", level: .low, list: .today)
         try store.addPriority(title: "high", level: .high, list: .today, dueAt: localDate("2026-10-12T11:00:00"))
-        #expect(store.openPriorities(in: .today).map(\.title) == ["low", "high"])
+        #expect(store.snapshot.open.map(\.title) == ["low", "high"])
     }
 
     @Test
-    func reorderingOneListKeepsTheOtherList() throws {
+    func reorderingSomeRowsKeepsTheOtherRows() throws {
         let store = try makeStore(clock)
         let first = try store.addPriority(title: "first", list: .today)
         let week = try store.addPriority(title: "week", list: .week)
@@ -64,8 +64,7 @@ struct PriorityOrderTests {
         let third = try store.addPriority(title: "third", list: .today)
 
         try store.reorderPriorities([third.id, first.id, second.id])
-        #expect(store.openPriorities(in: .today).map(\.title) == ["third", "first", "second"])
-        #expect(store.openPriorities(in: .week).map(\.id) == [week.id])
+        #expect(store.snapshot.open.map(\.title) == ["third", "week", "first", "second"])
         #expect(store.priority(id: week.id)?.position == week.position)
         #expect(try store.events(of: first.id).map(\.type) == [.created])
     }
@@ -80,12 +79,12 @@ struct PriorityOrderTests {
         try store.addPriority(title: "high early", level: .high, list: .today, dueAt: localDate("2026-10-12T12:00:00"))
 
         try store.adoptManualOrder()
-        let adopted = store.openPriorities(in: .today)
+        let adopted = store.snapshot.open
         #expect(adopted.map(\.title) == ["high early", "high late", "high no due", "medium no due", "low no due"])
 
         try store.reorderPriorities(adopted.reversed().map(\.id))
         try store.adoptManualOrder()
-        #expect(store.openPriorities(in: .today).map(\.title) == adopted.reversed().map(\.title))
+        #expect(store.snapshot.open.map(\.title) == adopted.reversed().map(\.title))
     }
 
     @Test
@@ -98,12 +97,12 @@ struct PriorityOrderTests {
 
         flow.startDrag(first.id)
         #expect(flow.isDragging(first.id))
-        flow.hover(gap: 2, in: .today)
-        flow.hover(gap: 3, in: .today)
+        flow.hover(gap: 2, in: store.openPriorities(in: .today).map(\.id))
+        flow.hover(gap: 3, in: store.openPriorities(in: .today).map(\.id))
         #expect(flow.drag?.gap == 3)
         #expect(store.openPriorities(in: .today).map(\.title) == ["first", "second", "third"])
 
-        flow.drop(in: .today)
+        flow.drop(in: store.openPriorities(in: .today).map(\.id))
         #expect(store.openPriorities(in: .today).map(\.title) == ["second", "third", "first"])
         #expect(flow.drag == nil)
         flow.endDrag()
@@ -118,12 +117,12 @@ struct PriorityOrderTests {
         let second = try store.addPriority(title: "second", list: .today)
 
         flow.startDrag(second.id)
-        flow.hover(gap: 0, in: .today)
+        flow.hover(gap: 0, in: store.openPriorities(in: .today).map(\.id))
         #expect(flow.drag?.gap == 0)
-        flow.hover(gap: 2, in: .today)
+        flow.hover(gap: 2, in: store.openPriorities(in: .today).map(\.id))
         #expect(flow.drag?.gap == nil)
-        flow.hover(gap: 0, in: .today)
-        flow.hover(gap: nil, in: .today)
+        flow.hover(gap: 0, in: store.openPriorities(in: .today).map(\.id))
+        flow.hover(gap: nil, in: store.openPriorities(in: .today).map(\.id))
         #expect(flow.drag?.gap == nil)
     }
 
@@ -135,14 +134,29 @@ struct PriorityOrderTests {
         try store.addPriority(title: "second", list: .today)
 
         flow.startDrag(first.id)
-        flow.hover(gap: 2, in: .today)
+        flow.hover(gap: 2, in: store.openPriorities(in: .today).map(\.id))
         flow.endDrag()
         #expect(flow.drag == nil)
-        flow.drop(in: .today)
+        flow.drop(in: store.openPriorities(in: .today).map(\.id))
 
         flow.startDrag(first.id)
-        flow.drop(in: .today)
+        flow.drop(in: store.openPriorities(in: .today).map(\.id))
         #expect(store.openPriorities(in: .today).map(\.title) == ["first", "second"])
+    }
+
+    @Test
+    func aDropInAnotherDateGroupKeepsTheOrder() throws {
+        let store = try makeStore(clock)
+        let flow = PriorityFlow(store: store, schedule: recorder.schedule)
+        let dated = try store.addPriority(title: "dated", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "no due", list: .today)
+        let noDate = try #require(store.openGroups(in: .today).first { $0.id == "noDate" }).priorities.map(\.id)
+
+        flow.startDrag(dated.id)
+        flow.hover(gap: 0, in: noDate)
+        #expect(flow.drag?.gap == nil)
+        flow.drop(in: noDate)
+        #expect(store.openPriorities(in: .today).map(\.title) == ["dated", "no due"])
     }
 
     @Test
@@ -151,7 +165,7 @@ struct PriorityOrderTests {
         let flow = PriorityFlow(store: store, schedule: recorder.schedule)
         try store.addPriority(title: "first", list: .today)
 
-        flow.hover(gap: 0, in: .today)
+        flow.hover(gap: 0, in: store.openPriorities(in: .today).map(\.id))
         #expect(flow.drag == nil)
     }
 }

@@ -14,7 +14,7 @@ struct DoneBarsRenderTests {
     }
 
     private func panel(_ store: AppStore, _ flow: PriorityFlow) -> some View {
-        PriorityListView(list: .today)
+        PriorityListView(filter: .today)
             .environment(store)
             .environment(PanelState(store: store, priorityFlow: flow))
     }

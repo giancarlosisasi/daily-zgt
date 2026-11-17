@@ -127,7 +127,7 @@ struct HistoryLink: View {
 }
 
 struct DoneSection: View {
-    let list: PriorityList
+    let filter: DueFilter
 
     @Environment(AppStore.self) private var store
 
@@ -136,22 +136,22 @@ struct DoneSection: View {
 
     var body: some View {
         TimelineView(.everyMinute) { _ in
-            DoneSectionContent(list: list, now: store.now())
+            DoneSectionContent(filter: filter, now: store.now())
         }
     }
 }
 
 struct DoneSectionContent: View {
-    let list: PriorityList
+    let filter: DueFilter
     let now: Date
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var panel
 
     var body: some View {
-        let cutoff = DoneWindow.cutoff(now: now)
-        let recent = (try? store.donePriorities(in: list, after: cutoff)) ?? []
-        let olderCount = (try? store.doneCount(in: list, atOrBefore: cutoff)) ?? 0
+        let days = DueDays(now: now)
+        let recent = store.donePriorities(in: filter, days: days)
+        let olderCount = store.olderDonePriorities(outside: filter, days: days).count
         if !recent.isEmpty || olderCount > 0 {
             VStack(alignment: .leading, spacing: Theme.DoneSection.spacing) {
                 header(count: recent.count)
