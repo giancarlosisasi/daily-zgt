@@ -187,6 +187,22 @@ struct PanelStateTests {
     }
 
     @Test
+    func deletingTheOpenNoteFromItsRowKeepsTheTextTypedJustBefore() throws {
+        let store = try makeStore()
+        let recorder = ScheduleRecorder()
+        let state = PanelState(store: store, noteFlow: NoteFlow(store: store, schedule: recorder.schedule))
+        let note = try store.addNote(body: "Plan")
+        state.openNote(note.id)
+        let model = NoteBodyModel(store: store, noteID: note.id, schedule: recorder.schedule)
+        state.registerNoteFlush(note.id) { model.flush() }
+        model.edit("Plan con detalle")
+        state.deleteNote(note.id)
+        #expect(state.noteFlow.undo?.note.body == "Plan con detalle")
+        state.noteFlow.undoDelete()
+        #expect(store.note(id: note.id)?.body == "Plan con detalle")
+    }
+
+    @Test
     func theUndoOfADeletedNoteEndsAfterItsTime() throws {
         let store = try makeStore()
         let recorder = ScheduleRecorder()

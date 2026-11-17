@@ -61,7 +61,11 @@ private struct NoteEditor: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .onChange(of: model.externalBody) { model.sync() }
-        .onDisappear { model.leave() }
+        .onAppear { panel.registerNoteFlush(note.id) { [model] in model.flush() } }
+        .onDisappear {
+            panel.unregisterNoteFlush(note.id)
+            model.leave()
+        }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in
             model.sync()
         }

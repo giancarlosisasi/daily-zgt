@@ -30,6 +30,7 @@ final class PanelState {
 
     @ObservationIgnored let priorityFlow: PriorityFlow
     @ObservationIgnored let noteFlow: NoteFlow
+    @ObservationIgnored private var noteFlushes: [NoteItem.ID: @MainActor () -> Void] = [:]
     @ObservationIgnored let loginItem: LoginItemSettings
     @ObservationIgnored let shortcut: ShortcutSettings
     @ObservationIgnored private let store: AppStore
@@ -227,7 +228,18 @@ final class PanelState {
         }
     }
 
+    func registerNoteFlush(_ id: NoteItem.ID, _ flush: @escaping @MainActor () -> Void) {
+        noteFlushes[id] = flush
+    }
+
+    func unregisterNoteFlush(_ id: NoteItem.ID) {
+        noteFlushes[id] = nil
+    }
+
     func deleteNote(_ id: NoteItem.ID) {
+        if openNoteID == id {
+            noteFlushes[id]?()
+        }
         noteFlow.delete(id)
         if openNoteID == id {
             openNoteID = nil
