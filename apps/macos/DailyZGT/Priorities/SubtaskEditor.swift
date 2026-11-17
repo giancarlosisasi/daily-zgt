@@ -3,20 +3,6 @@ import SwiftUI
 enum SubtaskEditorStyle {
     case row
     case detail
-
-    var spacing: CGFloat {
-        switch self {
-        case .row: Theme.SubtaskList.rowListSpacing
-        case .detail: Theme.SubtaskList.detailSpacing
-        }
-    }
-
-    var inputTop: CGFloat {
-        switch self {
-        case .row: Theme.SubtaskList.rowListInputTop
-        case .detail: 0
-        }
-    }
 }
 
 struct SubtaskRowView: View {
@@ -37,30 +23,36 @@ struct SubtaskRowView: View {
                 .strikethrough(subtask.isDone)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .motion(.fade, value: subtask.isDone)
         }
         .frame(minHeight: Theme.SubtaskList.rowMinHeight)
     }
 }
 
 struct SubtaskEditor: View {
+    static let addTitle = "Añadir subtarea"
+
     let priorityID: Priority.ID
     let style: SubtaskEditorStyle
+    var startsAdding = false
 
     @Environment(AppStore.self) private var store
     @State private var draft = ""
     @State private var writeFailed = false
+    @State private var isAdding = false
     @FocusState private var isFocused: Bool
 
     private var actions: SubtaskActions { SubtaskActions(store: store, priorityID: priorityID) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: style.spacing) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(store.subtasks(of: priorityID)) { subtask in
                 SubtaskRowView(subtask: subtask) { toggle(subtask) }
             }
-            input
-                .padding(.top, style.inputTop)
+            if isAdding || startsAdding {
+                input
+            } else {
+                addButton
+            }
             if writeFailed {
                 Text("No se pudo guardar el cambio.")
                     .font(Theme.Font.meta)
@@ -73,6 +65,26 @@ struct SubtaskEditor: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var addButton: some View {
+        Button {
+            isAdding = true
+            isFocused = true
+        } label: {
+            HStack(spacing: Theme.SubtaskList.rowSpacing) {
+                IconView(icon: .plus, size: Theme.SubtaskList.addIconSize)
+                    .frame(width: Theme.SubtaskList.checkboxSize)
+                Text(Self.addTitle)
+                    .font(Theme.SubtaskList.font)
+                Spacer(minLength: 0)
+            }
+            .foregroundStyle(Theme.SubtaskList.addText)
+            .frame(minHeight: Theme.SubtaskList.rowMinHeight)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Self.addTitle)
+    }
+
     private var input: some View {
         let shape = RoundedRectangle(cornerRadius: Theme.SubtaskList.inputRadius, style: .continuous)
         return TextField("", text: $draft)
@@ -82,9 +94,10 @@ struct SubtaskEditor: View {
             .tint(Theme.Accent.caret)
             .focused($isFocused)
             .onSubmit(submit)
+            .onExitCommand(perform: close)
             .overlay(alignment: .leading) {
                 if draft.isEmpty {
-                    Text("Añadir subtarea y Enter")
+                    Text("\(Self.addTitle) y Enter")
                         .font(Theme.SubtaskList.font)
                         .foregroundStyle(Theme.Text.dim)
                         .allowsHitTesting(false)
@@ -93,13 +106,24 @@ struct SubtaskEditor: View {
             .padding(.horizontal, Theme.SubtaskList.inputPadding)
             .frame(height: Theme.SubtaskList.inputHeight)
             .background(Theme.SubtaskList.inputBackground, in: shape)
-            .overlay(shape.strokeBorder(Theme.SubtaskList.inputBorder, lineWidth: 1))
             .overlay {
                 if isFocused {
                     shape.strokeBorder(Theme.Accent.focusRing, lineWidth: Theme.Accent.focusRingWidth)
                 }
             }
+            .onAppear { isFocused = true }
+            .onChange(of: isFocused) { _, focused in
+                if !focused, draft.isEmpty {
+                    isAdding = false
+                }
+            }
             .accessibilityLabel("Nueva subtarea")
+    }
+
+    private func close() {
+        draft = ""
+        isAdding = false
+        isFocused = false
     }
 
     private func submit() {

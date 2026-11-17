@@ -38,7 +38,6 @@ struct PriorityListView: View {
     @Environment(PanelState.self) private var panel
     @Environment(AlertCoordinator.self) private var alerts: AlertCoordinator?
     @State private var writeFailed = false
-    @Environment(\.motionPolicy) private var motion
     @Environment(\.panelLayout) private var layout
     @State private var form = NewPriorityForm()
     @State private var frames = RowFrames()
@@ -48,10 +47,11 @@ struct PriorityListView: View {
     private var flow: PriorityFlow { panel.priorityFlow }
 
     var body: some View {
-        VStack(spacing: Theme.Row.sectionSpacing) {
+        VStack(spacing: 0) {
             openArea
             newPriority
             DoneSection(list: list)
+                .padding(.top, Theme.Space.group(layout))
             if writeFailed || flow.writeFailed {
                 Text("No se pudo guardar el cambio.")
                     .font(Theme.Font.meta)
@@ -73,7 +73,6 @@ struct PriorityListView: View {
                 TimelineView(.everyMinute) { _ in
                     EmptyListContent(list: list, now: store.now())
                 }
-                .motionTransition(.fadeIn)
             } else {
                 TimelineView(.everyMinute) { _ in
                     let now = store.now()
@@ -81,7 +80,6 @@ struct PriorityListView: View {
                 }
             }
         }
-        .motion(.fade, value: open.isEmpty)
     }
 
     private func rows(_ open: [Priority], chips: [Priority.ID: DueChipState], now: Date) -> some View {
@@ -138,7 +136,6 @@ struct PriorityListView: View {
                     .dropLine(at: .bottom, isVisible: gap == ids.count && index == ids.count - 1, isListEdge: true)
             }
         }
-        .motion(.rowIn, value: ids)
         .coordinateSpace(.named(Self.stackSpace))
         .onDrop(
             of: [UTType.utf8PlainText],
@@ -172,21 +169,14 @@ struct PriorityListView: View {
                 DoneConfirmationBar(
                     openSubtasksLabel: progress.openSubtasksLabel,
                     onCancel: { flow.cancelConfirmation() },
-                    onConfirm: { flow.confirmDone(priority.id, leaving: motion.leaveDelay) }
+                    onConfirm: { flow.confirmDone(priority.id) }
                 )
-                .motionTransition(.rowIn)
             }
             if flow.isExpanded(priority.id) {
                 SubtaskEditor(priorityID: priority.id, style: .row)
-                    .motionTransition(.rowIn)
             }
         }
-        .motion(.rowIn, value: showsConfirmation)
-        .motion(.rowIn, value: flow.isExpanded(priority.id))
-        .offset(x: isLeaving ? Theme.MotionShape.rowOutOffset : 0)
         .opacity(isLeaving ? 0 : flow.isDragging(priority.id) ? Theme.Row.draggedOpacity : 1)
-        .motion(.rowOut, value: isLeaving)
-        .motionTransition(.rowIn)
         .id(priority.id)
     }
 
@@ -200,13 +190,11 @@ struct PriorityListView: View {
                     limitNotice: limitNotice,
                     onSubmit: add
                 )
-                .motionTransition(.rowIn)
+                .padding(.top, Theme.Space.s2)
             } else {
                 NewPriorityButton { form.open() }
-                    .motionTransition(.rowIn)
             }
         }
-        .motion(.rowIn, value: form.isOpen)
     }
 
     private var limitNotice: String? {

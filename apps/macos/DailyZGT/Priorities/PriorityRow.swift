@@ -3,14 +3,21 @@ import SwiftUI
 struct DueChip: View {
     let state: DueChipState
     var horizontalPadding = Theme.Due.horizontalPadding
+    var laterIsPlain = false
 
     var body: some View {
-        Text(state.label)
-            .font(Theme.Due.font)
-            .foregroundStyle(text)
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, Theme.Due.verticalPadding)
-            .background(background, in: RoundedRectangle(cornerRadius: Theme.Due.radius, style: .continuous))
+        if laterIsPlain && state.tone == .later {
+            Text(state.label)
+                .font(Theme.Due.plainFont)
+                .foregroundStyle(Theme.Due.plainText)
+        } else {
+            Text(state.label)
+                .font(Theme.Due.font)
+                .foregroundStyle(text)
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, Theme.Due.verticalPadding)
+                .background(background, in: RoundedRectangle(cornerRadius: Theme.Due.radius, style: .continuous))
+        }
     }
 
     private var text: Color {
@@ -69,6 +76,7 @@ struct PriorityRow: View {
 
     @State private var isHovering: Bool
     @State private var isTitleHovering = false
+    @Environment(\.panelLayout) private var layout
 
     init(
         priority: Priority,
@@ -114,6 +122,9 @@ struct PriorityRow: View {
             }
             PriorityCheckbox(isChecked: isChecked, action: onToggleDone)
             titleButton
+        }
+        .padding(.horizontal, Theme.Row.horizontalPadding)
+        .overlay(alignment: .topTrailing) {
             RowIconButton(
                 icon: .trash,
                 size: Theme.Row.removeIconSize,
@@ -124,9 +135,10 @@ struct PriorityRow: View {
                 action: onRemove
             )
             .opacity(isHovering ? 1 : 0)
+            .padding(.top, Theme.Row.verticalPadding + (Theme.Font.rowTitleLineHeight - Theme.Row.removeSize) / 2)
+            .padding(.trailing, Theme.Row.horizontalPadding)
         }
-        .padding(.horizontal, Theme.Row.horizontalPadding)
-        .frame(minHeight: Theme.Row.minHeight)
+        .frame(minHeight: layout == .window ? Theme.Row.windowMinHeight : Theme.Row.minHeight)
         .background(
             isHighlighted ? Theme.Row.highlight : isSelected ? Theme.Row.selected : Color.clear,
             in: RoundedRectangle(cornerRadius: Theme.Row.radius, style: .continuous)
@@ -136,8 +148,6 @@ struct PriorityRow: View {
                 .fill(isHovering ? Theme.Row.hoverOverlay : Color.clear)
                 .allowsHitTesting(false)
         )
-        .motion(.fade, value: isHovering)
-        .motion(.fade, value: isHighlighted)
         .hoverArea { isHovering = $0 }
     }
 
@@ -161,25 +171,34 @@ struct PriorityRow: View {
     }
 
     private var caret: some View {
-        Button(action: onToggleSubtasks) {
+        let hasSubtasks = progress.total > 0 || isExpanded
+        return Button(action: onToggleSubtasks) {
             IconView(icon: .caretRight, size: Theme.Row.caretIconSize)
                 .foregroundStyle(Theme.Text.dim)
                 .rotationEffect(.degrees(isExpanded ? Theme.MotionShape.caretOpenDegrees : 0))
-                .motion(.caret, value: isExpanded)
                 .frame(width: Theme.Row.caretWidth, height: Theme.Row.caretHeight)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .opacity(hasSubtasks ? 1 : 0)
+        .disabled(!hasSubtasks)
+        .accessibilityHidden(!hasSubtasks)
         .accessibilityLabel("Subtareas")
         .accessibilityValue(isExpanded ? "expandido" : "colapsado")
     }
 
     private var titleButton: some View {
         VStack(alignment: .leading, spacing: Theme.Row.titleSpacing) {
-            SelectableTitle(text: priority.title, isUnderlined: isTitleHovering, onOpen: onOpen)
+            SelectableTitle(
+                text: priority.title,
+                isUnderlined: isTitleHovering,
+                maxLines: Theme.Row.titleMaxLines,
+                onOpen: onOpen
+            )
+            .padding(.trailing, Theme.Row.removeSize + Theme.Row.spacing)
             meta
         }
-        .padding(.vertical, Theme.Row.titleVerticalPadding)
+        .padding(.vertical, Theme.Row.verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .onTapGesture(perform: onOpen)
@@ -191,7 +210,7 @@ struct PriorityRow: View {
         HStack(spacing: Theme.Row.metaSpacing) {
             LevelBars(level: priority.level)
             if let chip = DueChipState.make(due: priority.dueAt, now: now) {
-                DueChip(state: chip)
+                DueChip(state: chip, laterIsPlain: true)
             }
             if let todayChip {
                 DueChip(state: todayChip)
@@ -207,5 +226,6 @@ struct PriorityRow: View {
         }
         .font(Theme.Font.meta)
         .foregroundStyle(Theme.Text.muted)
+        .frame(minHeight: Theme.Row.metaHeight)
     }
 }

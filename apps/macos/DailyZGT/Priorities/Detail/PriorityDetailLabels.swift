@@ -33,6 +33,28 @@ enum PriorityDetailLabels {
         return "Creada \(weekday) \(parts.day ?? 0) \(month) · \(time)"
     }
 
+    static func due(_ due: Date?, now: Date, calendar: Calendar = .current) -> String {
+        guard let due else { return "Sin fecha" }
+        let parts = calendar.dateComponents([.weekday, .day, .month, .hour, .minute], from: due)
+        let time = String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)
+        if calendar.isDate(due, inSameDayAs: now) {
+            return "Hoy · \(time)"
+        }
+        if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now), calendar.isDate(due, inSameDayAs: tomorrow) {
+            return "Mañana · \(time)"
+        }
+        let weekday = weekdays[(parts.weekday ?? 1) - 1]
+        let month = months[(parts.month ?? 1) - 1]
+        return "\(weekday) \(parts.day ?? 0) \(month) · \(time)"
+    }
+
+    static func repeatValue(_ rule: RepeatRule) -> String {
+        switch rule {
+        case .none: "No se repite"
+        case .daily: "Cada día"
+        }
+    }
+
     static func alert(due: Date?) -> String {
         due == nil ? "Sin fecha, sin alerta" : "30 min antes y al vencer"
     }

@@ -373,7 +373,7 @@ struct TodayEntryTests {
             todayChip: TodayEntry.chip(events: try store.events(of: priority.id), now: clock.date)
         )
         try render(chips, named: "today-entry-detail-chips")
-        let plain = PriorityDetailChips(priority: priority, progress: SubtaskProgress(done: 1, total: 3), now: clock.date)
-        #expect(height(chips) == height(plain))
+        #expect(PriorityDetailChips.showsAny(priority: priority, now: clock.date, todayChip: chips.todayChip))
+        #expect(!PriorityDetailChips.showsAny(priority: priority, now: clock.date, todayChip: nil))
     }
 }

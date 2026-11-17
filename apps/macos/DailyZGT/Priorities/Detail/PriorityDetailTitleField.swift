@@ -8,6 +8,7 @@ struct PriorityDetailTitleField: View {
     @State private var draft: String
     @State private var isHovering = false
     @FocusState private var isFocused: Bool
+    @Environment(\.panelLayout) private var layout
 
     init(title: String, showsEditState: Bool = false, onCommit: @escaping (String) -> String) {
         self.title = title
@@ -18,15 +19,16 @@ struct PriorityDetailTitleField: View {
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: Theme.Detail.titleRadius, style: .continuous)
-        TextField("", text: $draft)
+        TextField("", text: $draft, axis: .vertical)
             .textFieldStyle(.plain)
-            .font(Theme.Detail.titleFont)
+            .font(layout == .window ? Theme.Detail.windowTitleFont : Theme.Detail.titleFont)
             .foregroundStyle(Theme.Text.strong)
             .tint(Theme.Accent.caret)
+            .lineLimit(1...6)
             .focused($isFocused)
             .padding(.horizontal, Theme.Detail.titleInset)
-            .frame(height: Theme.Detail.titleHeight)
-            .overlay(shape.strokeBorder(isHovering ? Theme.Detail.titleHoverBorder : Color.clear, lineWidth: 1))
+            .padding(.vertical, Theme.Detail.titleVerticalInset)
+            .background(isHovering || isFocused ? Theme.Detail.titleHoverBackground : Color.clear, in: shape)
             .overlay {
                 if isFocused || showsEditState {
                     shape.strokeBorder(Theme.Accent.focusRing, lineWidth: Theme.Accent.focusRingWidth)

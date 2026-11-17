@@ -14,6 +14,7 @@ struct PriorityDetailNoteSection: View {
 
 private struct PriorityNoteEditor: View {
     @State private var model: PriorityNoteModel
+    @Environment(\.panelLayout) private var layout
 
     init(store: AppStore, priorityID: Priority.ID) {
         _model = State(initialValue: PriorityNoteModel(store: store, priorityID: priorityID))
@@ -21,13 +22,12 @@ private struct PriorityNoteEditor: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Detail.sectionSpacing) {
-            DetailSectionTitle(text: "NOTAS")
+            DetailSectionTitle(text: "Notas")
             NoteTextArea(
                 text: Binding(get: { model.text }, set: { model.edit($0) }),
                 placeholder: "Contexto, links, lo que falta",
-                height: Theme.PriorityNoteArea.height,
-                horizontalPadding: Theme.PriorityNoteArea.horizontalPadding,
-                verticalPadding: Theme.PriorityNoteArea.verticalPadding
+                minHeight: layout == .window ? Theme.Notes.windowMinHeight : Theme.Notes.panelMinHeight,
+                maxHeight: layout == .window ? nil : Theme.Notes.panelMaxHeight
             )
             if model.writeFailed {
                 Text("No se pudo guardar la nota.")

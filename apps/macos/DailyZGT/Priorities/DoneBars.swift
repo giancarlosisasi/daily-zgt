@@ -12,8 +12,7 @@ struct DoneConfirmationBar: View {
                 Text("¿Marcar como hecha?")
                     .font(Theme.Confirm.titleFont)
                     .foregroundStyle(Theme.Confirm.title)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
+                    .fixedSize(horizontal: false, vertical: true)
                 if let openSubtasksLabel {
                     Text(openSubtasksLabel)
                         .font(Theme.Confirm.hintFont)
