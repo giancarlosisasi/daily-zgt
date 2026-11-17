@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 enum MenuBarBadge {
@@ -63,7 +64,13 @@ struct MenuBarLabel: View {
 struct MenuBarLabelHost: View {
     let boot: AppBoot
 
+    @State private var dayChanges = 0
+
     var body: some View {
         MenuBarLabel(count: boot.menuBarCount, title: boot.menuBarTitle, badge: MenuBarBadge.text)
+            .id(dayChanges)
+            .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: DispatchQueue.main)) { _ in
+                dayChanges += 1
+            }
     }
 }
