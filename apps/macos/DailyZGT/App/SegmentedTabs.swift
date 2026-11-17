@@ -46,7 +46,6 @@ struct SegmentedTabs<Value: Hashable>: View {
         }
         .padding(Theme.Segmented.trackPadding)
         .background(track, in: RoundedRectangle(cornerRadius: trackRadius, style: .continuous))
-        .motion(.fade, value: selection)
     }
 
     private var track: Color {
@@ -81,7 +80,6 @@ private struct SegmentButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .motion(.fade, value: isHovering)
         .onHover { isHovering = $0 }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
