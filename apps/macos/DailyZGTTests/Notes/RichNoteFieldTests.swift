@@ -303,6 +303,26 @@ struct RichNoteFieldTests {
     }
 
     @Test
+    func aBlockImageKeepsSpaceAboveAndBelow() async throws {
+        let store = try makeStore(TestClock("2026-10-12T10:00:00"))
+        let image = try store.images.insert(
+            try #require(NoteImageEncoder.encode(TestImages.png(width: 1200, height: 420, alpha: true))),
+            now: store.now()
+        )
+        let box = NoteBox("Nota de prueba\n\(NoteImageStore.markdown(for: image))\nTexto debajo")
+        let harness = RichNoteHarness(RichNoteHost(box: box, documentID: "image-gap", images: store.images))
+        defer { harness.close() }
+        await harness.fitAndSettle(width: 520)
+        let textView = try harness.textView()
+        let storage = try #require(textView.textStorage)
+        let location = (textView.string as NSString).range(of: "![](").location
+        let style = try #require(storage.attribute(.paragraphStyle, at: location, effectiveRange: nil) as? NSParagraphStyle)
+        #expect(style.paragraphSpacingBefore >= Theme.Notes.imageSpacing)
+        #expect(style.paragraphSpacing >= Theme.Notes.imageSpacing)
+        try harness.screenshot(named: "rich-note-image-spacing")
+    }
+
+    @Test
     func rendersAnEmptyNoteWithItsPlaceholderAndMinimumHeight() async throws {
         let images = NoteImageStore(database: try AppDatabase.inMemory())
         let harness = RichNoteHarness(VStack(alignment: .leading, spacing: Theme.Space.s3) {

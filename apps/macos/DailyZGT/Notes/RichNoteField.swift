@@ -398,6 +398,7 @@ enum RichNoteConfiguration {
         )
         configuration.overscroll = OverscrollPolicy(percent: 0, maxPoints: 0, minPoints: 0)
         configuration.taskCheckbox = taskCheckbox
+        configuration.imageEmbed.paragraphSpacing = Theme.Notes.imageSpacing
         configuration.extensions = [StrikethroughExtension()]
         configuration.services.bus.applyBoldRequest = bus.bold
         configuration.services.bus.applyItalicRequest = bus.italic
