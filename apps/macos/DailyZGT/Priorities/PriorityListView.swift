@@ -59,7 +59,10 @@ struct PriorityListView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .fadeIn(on: list)
+        .transaction(value: list) { transaction in
+            transaction.animation = nil
+            transaction.disablesAnimations = true
+        }
     }
 
     private var openArea: some View {

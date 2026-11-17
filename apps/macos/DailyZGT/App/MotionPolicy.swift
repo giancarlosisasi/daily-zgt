@@ -28,15 +28,11 @@ enum MotionStyle: CaseIterable, Sendable {
 enum MotionTransition: CaseIterable, Sendable {
     case rowIn
     case fadeIn
-    case slideIn
-    case slideBack
 
     var insertion: AnyTransition {
         switch self {
         case .rowIn: .opacity.combined(with: .offset(y: -Theme.MotionShape.rowInOffset))
         case .fadeIn: .opacity
-        case .slideIn: .opacity.combined(with: .offset(x: Theme.MotionShape.slideOffset))
-        case .slideBack: .opacity.combined(with: .offset(x: -Theme.MotionShape.slideOffset))
         }
     }
 }
@@ -110,24 +106,6 @@ private struct MotionTransitionModifier: ViewModifier {
     }
 }
 
-private struct FadeInOnChange<Value: Equatable>: ViewModifier {
-    let value: Value
-
-    @Environment(\.motionPolicy) private var policy
-
-    func body(content: Content) -> some View {
-        if policy.animates {
-            content.phaseAnimator(RevealPhase.allCases, trigger: value) { view, phase in
-                view.opacity(phase.isRevealed ? 1 : 0)
-            } animation: { phase in
-                phase == .end ? policy.animation(.fade) : nil
-            }
-        } else {
-            content
-        }
-    }
-}
-
 private struct PanelPop: ViewModifier {
     @Environment(\.motionPolicy) private var policy
     @State private var playCount = 0
@@ -188,10 +166,6 @@ extension View {
 
     func motionTransition(_ kind: MotionTransition) -> some View {
         modifier(MotionTransitionModifier(kind: kind))
-    }
-
-    func fadeIn(on value: some Equatable) -> some View {
-        modifier(FadeInOnChange(value: value))
     }
 
     func panelPop() -> some View {

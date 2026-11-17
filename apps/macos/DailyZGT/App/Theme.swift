@@ -79,7 +79,6 @@ enum Theme {
         static let popScale: CGFloat = 0.96
         static let rowInOffset: CGFloat = 4
         static let rowOutOffset: CGFloat = 28
-        static let slideOffset: CGFloat = 18
         static let caretOpenDegrees: Double = 90
         static let ringAngles: [Double] = [0, 14, -12, 8, -4, 0]
         static let ringAnchor = UnitPoint(x: 0.5, y: 0.1)

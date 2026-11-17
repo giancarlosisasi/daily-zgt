@@ -16,18 +16,14 @@ struct MainWindowView: View {
                         SettingsView()
                             .frame(maxWidth: Theme.Window.pageMaxWidth)
                     }
-                    .motionTransition(.slideIn)
                 case .history:
                     DoneHistoryView(list: state.scope)
                         .frame(maxWidth: Theme.Window.pageMaxWidth)
-                        .motionTransition(.slideIn)
                 case .browse:
                     browse
-                        .motionTransition(.slideBack)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .motion(.slide, value: state.page)
             TimelineView(.everyMinute) { _ in
                 PanelFooterBar(now: store.now())
             }
@@ -62,7 +58,6 @@ struct MainWindowView: View {
                         .frame(width: Theme.Window.dividerWidth)
                     detailColumn
                 }
-                .motionTransition(.fadeIn)
             case .notes:
                 VStack(spacing: Theme.Panel.spacing) {
                     ScopeRow()
@@ -71,10 +66,8 @@ struct MainWindowView: View {
                     undoBar
                     NotesView(scope: state.scope.noteScope)
                 }
-                .motionTransition(.fadeIn)
             }
         }
-        .motion(.fade, value: state.tab)
     }
 
     private var listColumn: some View {
@@ -97,17 +90,14 @@ struct MainWindowView: View {
                         .frame(maxWidth: Theme.Window.detailMaxWidth, alignment: .leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .motionTransition(.fadeIn)
             } else {
                 Text(Self.emptyDetail)
                     .font(Theme.Font.body)
                     .foregroundStyle(Theme.EmptyList.text)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .motionTransition(.fadeIn)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .motion(.fade, value: state.detailPriority?.id)
     }
 
     @ViewBuilder

@@ -68,20 +68,14 @@ struct PanelView: View {
 
     var body: some View {
         VStack(spacing: Theme.Panel.spacing) {
-            Group {
-                switch state.page {
-                case .settings:
-                    SettingsView()
-                        .motionTransition(.slideIn)
-                case .history:
-                    DoneHistoryView(list: state.scope)
-                        .motionTransition(.slideIn)
-                case .browse:
-                    browse
-                        .motionTransition(.slideBack)
-                }
+            switch state.page {
+            case .settings:
+                SettingsView()
+            case .history:
+                DoneHistoryView(list: state.scope)
+            case .browse:
+                browse
             }
-            .motion(.slide, value: state.page)
             TimelineView(.everyMinute) { _ in
                 PanelFooterBar(now: store.now())
             }
@@ -118,7 +112,6 @@ struct PanelView: View {
                 }
             }
         }
-        .motion(.fade, value: state.tab)
         .motion(.rowIn, value: state.priorityFlow.undo?.token)
     }
 
@@ -127,10 +120,8 @@ struct PanelView: View {
         switch state.tab {
         case .priorities:
             prioritiesContent
-                .motionTransition(.fadeIn)
         case .notes:
             NotesView(scope: state.scope.noteScope)
-                .motionTransition(.fadeIn)
         }
     }
 
@@ -139,13 +130,10 @@ struct PanelView: View {
             if let priority = state.detailPriority {
                 PriorityDetailView(priority: priority)
                     .id(priority.id)
-                    .motionTransition(.slideIn)
             } else {
                 PriorityListView(list: state.scope)
-                    .motionTransition(.slideBack)
             }
         }
-        .motion(.slide, value: state.detailPriority?.id)
     }
 
     @ViewBuilder

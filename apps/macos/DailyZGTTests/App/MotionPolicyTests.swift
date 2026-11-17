@@ -46,6 +46,11 @@ struct MotionPolicyTests {
     }
 
     @Test
+    func noPageChangeHasATransition() {
+        #expect(MotionTransition.allCases == [.rowIn, .fadeIn])
+    }
+
+    @Test
     func theLeaveDelayIsTheSlowDurationOrZero() {
         #expect(MotionPolicy(reduceMotion: false).leaveDelay == Duration.tecla(TeclaTokens.Durations.slow))
         #expect(MotionPolicy(reduceMotion: false).leaveDelay > .zero)
