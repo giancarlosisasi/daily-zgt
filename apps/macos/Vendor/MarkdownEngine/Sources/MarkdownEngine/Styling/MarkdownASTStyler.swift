@@ -1023,7 +1023,7 @@ enum MarkdownASTStyler {
     private static func adding(_ extra: NSFontDescriptor.SymbolicTraits, to font: NSFont) -> NSFont {
         let merged = font.fontDescriptor.symbolicTraits.union(extra)
         let composed = NSFont(descriptor: font.fontDescriptor.withSymbolicTraits(merged), size: font.pointSize) ?? font
-        guard extra.contains(.italic), !composed.fontDescriptor.symbolicTraits.contains(.italic) else { return composed }
+        guard extra.contains(.italic), !CTFontGetSymbolicTraits(composed as CTFont).contains(.traitItalic) else { return composed }
         let skew = AffineTransform(m11: 1, m12: 0, m21: 0.2, m22: 1, tX: 0, tY: 0)
         var matrix = AffineTransform(scale: composed.pointSize)
         matrix.append(skew)
