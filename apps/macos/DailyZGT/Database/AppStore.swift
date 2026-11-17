@@ -24,6 +24,7 @@ final class AppStore {
     private(set) var observationError: (any Error)?
 
     let database: DatabaseQueue
+    let images: NoteImageStore
     let now: @MainActor () -> Date
 
     @ObservationIgnored private var observation: AnyDatabaseCancellable?
@@ -31,6 +32,7 @@ final class AppStore {
 
     init(database: DatabaseQueue, now: @escaping @MainActor () -> Date = { Date() }) {
         self.database = database
+        images = NoteImageStore(database: database)
         self.now = now
         watcher = ExternalChangeWatcher(database: database)
         observation = ValueObservation

@@ -23,6 +23,7 @@ enum AppBoot {
         do {
             let store = AppStore(database: try AppDatabase.forApp())
             try store.adoptManualOrder()
+            try? store.images.deleteOrphans(olderThan: store.now().addingTimeInterval(-NoteImageStore.orphanAge))
             let center: any NotificationCenterClient = AppDatabase.isTestHost
                 ? InertNotificationCenter()
                 : SystemNotificationCenter()

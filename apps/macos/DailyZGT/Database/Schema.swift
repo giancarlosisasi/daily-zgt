@@ -68,6 +68,18 @@ enum Schema {
                 ALTER TABLE priority ADD COLUMN repeat_series_id TEXT;
                 """)
         }
+        migrator.registerMigration("003_add_image") { database in
+            try database.execute(sql: """
+                CREATE TABLE image (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    mime TEXT NOT NULL CHECK (mime IN ('image/png', 'image/jpeg')),
+                    width INTEGER NOT NULL,
+                    height INTEGER NOT NULL,
+                    bytes BLOB NOT NULL,
+                    created_at TEXT NOT NULL
+                );
+                """)
+        }
         return migrator
     }
 }

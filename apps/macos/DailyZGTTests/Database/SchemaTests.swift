@@ -11,7 +11,7 @@ struct SchemaTests {
         """
 
     @Test
-    func createsTheSixTables() throws {
+    func createsTheSevenTables() throws {
         let database = try AppDatabase.inMemory()
         let tables: [String] = try values(
             """
@@ -21,7 +21,7 @@ struct SchemaTests {
             """,
             in: database
         )
-        #expect(tables == ["alert", "app_state", "note", "priority", "priority_event", "subtask"])
+        #expect(tables == ["alert", "app_state", "image", "note", "priority", "priority_event", "subtask"])
     }
 
     @Test(arguments: [
@@ -37,6 +37,7 @@ struct SchemaTests {
         ("alert", ["id", "priority_id", "kind", "fire_at", "status"]),
         ("priority_event", ["id", "priority_id", "at", "type"]),
         ("app_state", ["key", "value"]),
+        ("image", ["id", "mime", "width", "height", "bytes", "created_at"]),
     ])
     func tableHasThePlannedColumns(table: String, columns: [String]) throws {
         let database = try AppDatabase.inMemory()
