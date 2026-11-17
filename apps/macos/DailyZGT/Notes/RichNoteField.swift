@@ -44,10 +44,33 @@ struct RichNoteField: View {
     var focusOnAppear = false
 
     @Environment(\.isEnabled) private var isEnabled
+    @State private var editorID: UUID
     @State private var isFocused = false
     @State private var widthEpoch = 0
     @State private var contentHeight: CGFloat = 0
     @State private var keys = RichNoteKeys()
+
+    init(
+        text: Binding<String>,
+        documentID: String,
+        placeholder: String,
+        images: NoteImageStore,
+        style: RichNoteFieldStyle = .panel,
+        focusOnAppear: Bool = false,
+        editorID: UUID = UUID()
+    ) {
+        _text = text
+        self.documentID = documentID
+        self.placeholder = placeholder
+        self.images = images
+        self.style = style
+        self.focusOnAppear = focusOnAppear
+        _editorID = State(initialValue: editorID)
+    }
+
+    private var bus: RichNoteBus {
+        RichNoteBus(documentID: documentID, editorID: editorID)
+    }
 
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: Theme.Notes.radius, style: .continuous)
@@ -60,14 +83,19 @@ struct RichNoteField: View {
                 }
             }
             .onAppear {
-                keys.names = RichNoteBus(documentID: documentID)
+                keys.names = bus
                 keys.start()
                 if focusOnAppear {
                     Task { @MainActor in isFocused = true }
                 }
             }
             .onDisappear { keys.stop() }
-            .onChange(of: isFocused) { _, focused in keys.isFocused = focused }
+            .onChange(of: isFocused) { _, focused in
+                keys.isFocused = focused
+                if focused {
+                    Task { @MainActor in keys.adopt(NSApp.keyWindow?.firstResponder as? NSTextView) }
+                }
+            }
     }
 
     @ViewBuilder
@@ -108,7 +136,7 @@ struct RichNoteField: View {
             configuration: RichNoteConfiguration.make(
                 style: style,
                 images: RichNoteImageProvider(store: images, epoch: widthEpoch),
-                bus: RichNoteBus(documentID: documentID)
+                bus: bus
             ),
             fontName: RichNoteConfiguration.fontName(style),
             fontSize: style.text.size,
@@ -156,10 +184,11 @@ struct RichNoteBus: Equatable, Sendable {
     let italic: Notification.Name
     let link: Notification.Name
 
-    init(documentID: String) {
-        bold = Notification.Name("zgt.note.bold.\(documentID)")
-        italic = Notification.Name("zgt.note.italic.\(documentID)")
-        link = Notification.Name("zgt.note.link.\(documentID)")
+    init(documentID: String, editorID: UUID) {
+        let key = "\(documentID).\(editorID.uuidString)"
+        bold = Notification.Name("zgt.note.bold.\(key)")
+        italic = Notification.Name("zgt.note.italic.\(key)")
+        link = Notification.Name("zgt.note.link.\(key)")
     }
 }
 
@@ -193,8 +222,20 @@ struct RichNoteKeyPress: Sendable {
 final class RichNoteKeys {
     var names: RichNoteBus?
     var isFocused = false
+    weak var textView: NSTextView?
     private var monitor: Any?
     private var undoObservers: [any NSObjectProtocol] = []
+
+    func adopt(_ view: NSTextView?) {
+        if let view {
+            textView = view
+        }
+    }
+
+    func windowDidChangeKey(_ window: NSWindow, isKey: Bool) {
+        guard let textView, window === textView.window else { return }
+        isFocused = isKey && window.firstResponder === textView
+    }
 
     func start() {
         guard monitor == nil else { return }
@@ -208,6 +249,13 @@ final class RichNoteKeys {
                 guard let manager = notification.object as? UndoManager else { return }
                 let id = ObjectIdentifier(manager)
                 MainActor.assumeIsolated { self?.undoDidChange(id) }
+            }
+            undoObservers.append(observer)
+        }
+        for (name, isKey) in [(NSWindow.didResignKeyNotification, false), (NSWindow.didBecomeKeyNotification, true)] {
+            let observer = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { [weak self] notification in
+                guard let window = notification.object as? NSWindow else { return }
+                MainActor.assumeIsolated { self?.windowDidChangeKey(window, isKey: isKey) }
             }
             undoObservers.append(observer)
         }
@@ -235,7 +283,10 @@ final class RichNoteKeys {
 
     func handle(_ press: RichNoteKeyPress) -> Bool {
         guard isFocused,
-              let textView = NSApp.window(withWindowNumber: press.windowNumber)?.firstResponder as? NSTextView,
+              let textView,
+              let window = textView.window,
+              window.windowNumber == press.windowNumber,
+              window.firstResponder === textView,
               textView.isEditable,
               !textView.hasMarkedText() else { return false }
         let flags = press.flags.intersection([.command, .option, .control, .shift])

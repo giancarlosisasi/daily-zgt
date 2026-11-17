@@ -19,6 +19,7 @@ struct RichNoteHost: View {
     let images: NoteImageStore
     var style: RichNoteFieldStyle = .window
     var width: CGFloat = 480
+    var editorID = UUID()
 
     var body: some View {
         RichNoteField(
@@ -26,7 +27,8 @@ struct RichNoteHost: View {
             documentID: documentID,
             placeholder: "Contexto, links, lo que falta",
             images: images,
-            style: style
+            style: style,
+            editorID: editorID
         )
         .frame(width: width)
         .padding(Theme.Space.s3)

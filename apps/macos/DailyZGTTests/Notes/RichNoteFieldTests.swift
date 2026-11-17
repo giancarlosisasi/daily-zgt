@@ -116,6 +116,7 @@ struct RichNoteFieldTests {
         defer { harness.close() }
         await harness.focus(textView, at: (prefix as NSString).length)
         let keys = RichNoteKeys()
+        keys.textView = textView
         keys.isFocused = true
         #expect(keys.handle(harness.press(keyCode: 51, characters: "\u{7F}")))
         await RichNoteHarness.settle()
@@ -133,6 +134,7 @@ struct RichNoteFieldTests {
         let (harness, _, textView) = try await open("## Dos", images: NoteImageStore(database: try AppDatabase.inMemory()))
         defer { harness.close() }
         let keys = RichNoteKeys()
+        keys.textView = textView
         keys.isFocused = true
         #expect(!keys.handle(harness.press(keyCode: 51, characters: "\u{7F}")))
         keys.isFocused = false
@@ -146,6 +148,7 @@ struct RichNoteFieldTests {
         defer { harness.close() }
         await harness.type("[ ]", into: textView)
         let keys = RichNoteKeys()
+        keys.textView = textView
         keys.isFocused = true
         #expect(keys.handle(harness.press(keyCode: 49, characters: " ")))
         await harness.type("tarea", into: textView)
@@ -157,9 +160,10 @@ struct RichNoteFieldTests {
         let images = NoteImageStore(database: try AppDatabase.inMemory())
         let first = NoteBox("uno palabra")
         let second = NoteBox("otro palabra")
+        let firstEditor = UUID()
         let harness = RichNoteHarness(VStack {
-            RichNoteHost(box: first, documentID: "note-a", images: images)
-            RichNoteHost(box: second, documentID: "note-b", images: images)
+            RichNoteHost(box: first, documentID: "note-a", images: images, editorID: firstEditor)
+            RichNoteHost(box: second, documentID: "note-a", images: images)
         }, size: NSSize(width: 520, height: 640))
         defer { harness.close() }
         await RichNoteHarness.settle(300)
@@ -168,12 +172,42 @@ struct RichNoteFieldTests {
         await harness.focus(textView)
         textView.setSelectedRange((textView.string as NSString).range(of: "palabra"))
         let keys = RichNoteKeys()
-        keys.names = RichNoteBus(documentID: "note-a")
+        keys.textView = textView
+        keys.names = RichNoteBus(documentID: "note-a", editorID: firstEditor)
         keys.isFocused = true
         #expect(keys.handle(harness.press(keyCode: 11, characters: "b", flags: .command)))
         await RichNoteHarness.settle()
         #expect(first.text == "uno **palabra**")
         #expect(second.text == "otro palabra")
+    }
+
+    @Test
+    func theKeysActOnlyOnTheirOwnFocusedTextView() async throws {
+        let images = NoteImageStore(database: try AppDatabase.inMemory())
+        let first = NoteBox("## Uno")
+        let second = NoteBox("## Dos")
+        let harness = RichNoteHarness(VStack {
+            RichNoteHost(box: first, documentID: "note-a", images: images)
+            RichNoteHost(box: second, documentID: "note-b", images: images)
+        }, size: NSSize(width: 520, height: 640))
+        defer { harness.close() }
+        await RichNoteHarness.settle(300)
+        let own = try harness.textView(at: 0)
+        let other = try harness.textView(at: 1)
+        let keys = RichNoteKeys()
+        keys.textView = own
+        keys.isFocused = true
+        await harness.focus(other, at: 3)
+        #expect(!keys.handle(harness.press(keyCode: 51, characters: "\u{7F}")))
+        #expect(second.text == "## Dos")
+        await harness.focus(own, at: 3)
+        keys.windowDidChangeKey(harness.window, isKey: false)
+        #expect(!keys.isFocused)
+        #expect(!keys.handle(harness.press(keyCode: 51, characters: "\u{7F}")))
+        keys.windowDidChangeKey(harness.window, isKey: true)
+        #expect(keys.handle(harness.press(keyCode: 51, characters: "\u{7F}")))
+        await RichNoteHarness.settle()
+        #expect(first.text == "Uno")
     }
 
     @Test
