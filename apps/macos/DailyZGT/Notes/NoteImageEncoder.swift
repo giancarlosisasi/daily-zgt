@@ -10,7 +10,7 @@ enum NoteImageEncoder {
     static func encode(_ data: Data) -> EncodedImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let full = CGImageSourceCreateImageAtIndex(source, 0, nil) else { return nil }
-        let image = max(full.width, full.height) > maxLongEdge ? downscaled(source) ?? full : full
+        let image = oriented(source, longEdge: min(maxLongEdge, max(full.width, full.height))) ?? full
         let alpha = hasAlpha(image)
         let type = alpha ? UTType.png : UTType.jpeg
         let output = NSMutableData()
@@ -37,11 +37,11 @@ enum NoteImageEncoder {
         }
     }
 
-    private static func downscaled(_ source: CGImageSource) -> CGImage? {
+    private static func oriented(_ source: CGImageSource, longEdge: Int) -> CGImage? {
         let options: [CFString: Any] = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: maxLongEdge,
+            kCGImageSourceThumbnailMaxPixelSize: longEdge,
         ]
         return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
     }

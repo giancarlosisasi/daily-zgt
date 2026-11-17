@@ -32,6 +32,15 @@ enum TestImages {
         encode(cgImage(width: width, height: height, alpha: false), as: .jpeg)
     }
 
+    static func jpeg(width: Int, height: Int, orientation: Int) -> Data {
+        let data = NSMutableData()
+        let destination = CGImageDestinationCreateWithData(data, UTType.jpeg.identifier as CFString, 1, nil)!
+        let properties: [CFString: Any] = [kCGImagePropertyOrientation: orientation]
+        CGImageDestinationAddImage(destination, cgImage(width: width, height: height, alpha: false), properties as CFDictionary)
+        CGImageDestinationFinalize(destination)
+        return data as Data
+    }
+
     private static func encode(_ image: CGImage, as type: UTType) -> Data {
         let data = NSMutableData()
         let destination = CGImageDestinationCreateWithData(data, type.identifier as CFString, 1, nil)!
@@ -81,6 +90,16 @@ struct NoteImageEncoderTests {
         #expect(encoded.height == 2400)
         #expect(encoded.width == 600)
         #expect(encoded.mime == "image/png")
+    }
+
+    @Test
+    func aSmallRotatedPhotoIsStoredUpright() throws {
+        let encoded = try #require(NoteImageEncoder.encode(TestImages.jpeg(width: 400, height: 200, orientation: 6)))
+        #expect(encoded.width == 200)
+        #expect(encoded.height == 400)
+        let image = try decoded(encoded)
+        #expect(image.width == 200)
+        #expect(image.height == 400)
     }
 
     @Test
