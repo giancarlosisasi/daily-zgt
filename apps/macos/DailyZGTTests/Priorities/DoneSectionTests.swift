@@ -72,9 +72,10 @@ struct DoneSectionTests {
         let store = try storeWithDone()
         let other = try store.addPriority(title: "Week item", list: .week)
         try store.markDone(other.id)
-        #expect(DoneSection.headerTitle(count: store.donePriorities(in: .today).count) == "Hechas (3)")
-        #expect(DoneSection.headerTitle(count: store.donePriorities(in: .week).count) == "Hechas (1)")
-        #expect(DoneSection.headerTitle(count: 0) == "Hechas (0)")
+        #expect(DoneSection.headerTitle == "Hechas")
+        #expect(store.donePriorities(in: .today).count == 3)
+        #expect(store.donePriorities(in: .week).count == 1)
+        #expect(HistoryLink.title(count: 15) == "Ver historial (15)")
     }
 
     @Test

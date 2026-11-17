@@ -107,7 +107,7 @@ struct DoneHistoryTests {
         let cutoff = DoneWindow.cutoff(now: now)
         let recent = try store.donePriorities(in: .today, after: cutoff)
         #expect(recent.map(\.title) == ["Llamar al banco"])
-        #expect(DoneSection.headerTitle(count: recent.count) == "Hechas (1)")
+        #expect(recent.count == 1)
         #expect(try store.doneCount(in: .today, atOrBefore: cutoff) == 4)
     }
 

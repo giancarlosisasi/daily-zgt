@@ -4,11 +4,13 @@ import SwiftUI
 enum TitleLook: Equatable {
     case open
     case done
+    case history
 
     var color: Color {
         switch self {
         case .open: Theme.Text.primary
         case .done: Theme.DoneSection.title
+        case .history: Theme.History.titleText
         }
     }
 }
@@ -18,6 +20,7 @@ final class ClickableTitleView: NSTextView {
     private var appliedText: String?
     private var appliedLook = TitleLook.open
     private var appliedUnderline = false
+    private var appliedMaxLines = 0
 
     static func make() -> ClickableTitleView {
         let storage = NSTextStorage()
@@ -74,8 +77,13 @@ final class ClickableTitleView: NSTextView {
         return true
     }
 
-    func apply(text: String, isUnderlined: Bool, look: TitleLook = .open) {
+    func apply(text: String, isUnderlined: Bool, look: TitleLook = .open, maxLines: Int = 0) {
         guard let storage = textStorage else { return }
+        if appliedMaxLines != maxLines {
+            textContainer?.maximumNumberOfLines = maxLines
+            textContainer?.lineBreakMode = maxLines > 0 ? .byTruncatingTail : .byWordWrapping
+            appliedMaxLines = maxLines
+        }
         if appliedText != text || appliedLook != look {
             let style = NSMutableParagraphStyle()
             style.minimumLineHeight = Theme.Font.rowTitleLineHeight
@@ -115,6 +123,8 @@ final class ClickableTitleView: NSTextView {
         let layout = NSLayoutManager()
         let container = NSTextContainer(size: NSSize(width: width, height: .greatestFiniteMagnitude))
         container.lineFragmentPadding = 0
+        container.maximumNumberOfLines = appliedMaxLines
+        container.lineBreakMode = appliedMaxLines > 0 ? .byTruncatingTail : .byWordWrapping
         storage.addLayoutManager(layout)
         layout.addTextContainer(container)
         layout.ensureLayout(for: container)
@@ -127,6 +137,7 @@ struct SelectableTitle: NSViewRepresentable {
     let text: String
     let isUnderlined: Bool
     var look = TitleLook.open
+    var maxLines = 0
     let onOpen: () -> Void
 
     func makeNSView(context: Context) -> ClickableTitleView {
@@ -135,11 +146,11 @@ struct SelectableTitle: NSViewRepresentable {
 
     func updateNSView(_ view: ClickableTitleView, context: Context) {
         view.onOpen = onOpen
-        view.apply(text: text, isUnderlined: isUnderlined, look: look)
+        view.apply(text: text, isUnderlined: isUnderlined, look: look, maxLines: maxLines)
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, nsView: ClickableTitleView, context: Context) -> CGSize? {
-        nsView.apply(text: text, isUnderlined: isUnderlined, look: look)
+        nsView.apply(text: text, isUnderlined: isUnderlined, look: look, maxLines: maxLines)
         let size = nsView.size(fittingWidth: proposal.width ?? 10_000)
         return CGSize(width: min(size.width, proposal.width ?? size.width), height: size.height)
     }
