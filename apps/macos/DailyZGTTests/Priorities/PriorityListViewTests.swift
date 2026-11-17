@@ -145,7 +145,7 @@ struct PriorityListViewTests {
     func rendersTheDesktopWindowOnTheNotesTab() throws {
         let store = try sampleStore()
         let state = PanelState(store: store)
-        try store.saveNote("Revisar el brief antes de las 11.\nLlamar a Ana.", scope: .day)
+        try store.addNote(body: "Revisar el brief antes de las 11.\nLlamar a Ana.")
         state.select(tab: .notes)
         let view = MainWindowView()
             .environment(store)

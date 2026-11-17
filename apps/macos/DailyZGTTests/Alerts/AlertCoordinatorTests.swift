@@ -74,7 +74,7 @@ struct AlertCoordinatorTests {
         let alerts = await started(store)
         let reads = center.pendingReads
 
-        try store.saveNote("Hablar con Ana.", scope: .day)
+        try store.addNote(body: "Hablar con Ana.")
         try store.addPriority(title: "No due", list: .week)
         await alerts.settle()
 

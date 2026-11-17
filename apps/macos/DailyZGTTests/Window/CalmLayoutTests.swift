@@ -196,7 +196,7 @@ struct CalmLayoutTests {
     func rendersTheWindowOnTheNotesTab() throws {
         let (store, _) = try sampleStore()
         let state = PanelState(store: store)
-        try store.saveNote("Revisar el brief antes de las 11.\nLlamar a Ana.", scope: .day)
+        try store.addNote(body: "Revisar el brief antes de las 11.\nLlamar a Ana.")
         state.select(tab: .notes)
         try expectPNG(window(store, state, width: 980, height: 680), named: "calm-window-980-notes")
     }

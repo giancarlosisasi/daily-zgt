@@ -22,7 +22,7 @@ struct DiskDatabaseTests {
         #expect(priority.level == .high)
         #expect(priority.dueAt == localDate("2026-10-12T16:00:00"))
         #expect(store.subtasks(of: priority.id).map(\.title) == ["Check the numbers"])
-        #expect(store.noteBody(.day) == "Call Ana")
+        #expect(store.snapshot.noteItems.map(\.body) == ["Call Ana"])
         #expect(store.value(for: AppStateKey(name: "open_tab", defaultValue: "priorities")) == "notes")
         #expect(try store.events(of: priority.id).map(\.type) == [.created, .edited])
     }
@@ -47,7 +47,7 @@ struct DiskDatabaseTests {
             dueAt: localDate("2026-10-12T16:00:00")
         )
         try store.addSubtask(to: priority.id, title: "Check the numbers")
-        try store.saveNote("Call Ana", scope: .day)
+        try store.addNote(body: "Call Ana")
         try store.setValue("notes", for: AppStateKey(name: "open_tab", defaultValue: "priorities"))
     }
 }

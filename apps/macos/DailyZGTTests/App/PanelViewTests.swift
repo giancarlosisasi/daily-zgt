@@ -26,10 +26,7 @@ struct PanelViewTests {
         try store.addPriority(title: "Cerrar el brief de la semana", level: .high, list: .week, dueAt: localDate("2026-10-15T12:00:00"))
         try store.addPriority(title: "Planear el sprint", level: .medium, list: .week)
         try store.addPriority(title: "Limpiar el backlog", level: .low, list: .week, dueAt: localDate("2026-10-12T10:30:00"))
-        try store.saveNote(
-            "Hablar con Ana sobre el brief.\nRevisar el MR de compass.ui antes de la demo.",
-            scope: .day
-        )
+        try store.addNote(body: "Hablar con Ana sobre el brief.\nRevisar el MR de compass.ui antes de la demo.")
         return store
     }
 

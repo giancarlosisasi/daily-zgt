@@ -162,7 +162,7 @@ struct RepeatCoordinatorTests {
         let open = try addDaily(store)
         let (repeats, alerts) = await started(store)
 
-        try store.saveNote("Hablar con Ana.", scope: .day)
+        try store.addNote(body: "Hablar con Ana.")
         try store.addSubtask(to: open.id, title: "Respirar")
         try store.markDone(open.id)
         await settle(repeats, alerts)

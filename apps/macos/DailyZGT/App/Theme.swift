@@ -430,16 +430,13 @@ extension Theme {
         static let panelMaxHeight = Row.listMaxHeight
         static let windowMinHeight = Space.s8 * 2
         static let panelMinHeight = Space.s8 + Space.s6
+        static let pageMinHeight = Space.s8 * 4
         static let padding = Space.s3
-        static let editorInset: CGFloat = 5
         static let radius = TeclaTokens.Radius.input
         static let lineSpacing: CGFloat = 3
         static let background = Color(TeclaTokens.Panel.card)
-        static let windowFont = TeclaFonts.font(TeclaTokens.TextStyles.small)
-        static let placeholder = Text.dim
         static let hint = Text.dim
         static let debounce = Duration.milliseconds(400)
-        static let syncInterval = Duration.seconds(30)
     }
 }
 

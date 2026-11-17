@@ -37,6 +37,19 @@ struct DueChip: View {
     }
 }
 
+extension View {
+    func listRowSurface(layout: PanelLayout, isHighlighted: Bool = false, isSelected: Bool, isHovering: Bool) -> some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.Row.radius, style: .continuous)
+        return frame(minHeight: layout == .window ? Theme.Row.windowMinHeight : Theme.Row.minHeight)
+            .background(isHighlighted ? Theme.Row.highlight : isSelected ? Theme.Row.selected : Color.clear, in: shape)
+            .overlay(
+                shape
+                    .fill(isHovering ? Theme.Row.hoverOverlay : Color.clear)
+                    .allowsHitTesting(false)
+            )
+    }
+}
+
 struct RowIconButton: View {
     let icon: Icon
     let size: CGFloat
@@ -135,16 +148,7 @@ struct PriorityRow: View {
             .padding(.top, Theme.Row.verticalPadding + (Theme.Font.rowTitleLineHeight - Theme.Row.removeSize) / 2)
             .padding(.trailing, Theme.Row.horizontalPadding)
         }
-        .frame(minHeight: layout == .window ? Theme.Row.windowMinHeight : Theme.Row.minHeight)
-        .background(
-            isHighlighted ? Theme.Row.highlight : isSelected ? Theme.Row.selected : Color.clear,
-            in: RoundedRectangle(cornerRadius: Theme.Row.radius, style: .continuous)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.Row.radius, style: .continuous)
-                .fill(isHovering ? Theme.Row.hoverOverlay : Color.clear)
-                .allowsHitTesting(false)
-        )
+        .listRowSurface(layout: layout, isHighlighted: isHighlighted, isSelected: isSelected, isHovering: isHovering)
         .hoverArea { isHovering = $0 }
     }
 

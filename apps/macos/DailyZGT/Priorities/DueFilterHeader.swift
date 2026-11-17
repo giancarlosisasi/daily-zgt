@@ -3,8 +3,6 @@ import SwiftUI
 struct DueFilterHeader: View {
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var state
-    @Environment(\.panelLayout) private var layout
-    @State private var isOpen = false
 
     var body: some View {
         TimelineView(.everyMinute) { _ in
@@ -14,18 +12,46 @@ struct DueFilterHeader: View {
 
     private func content(_ days: DueDays) -> some View {
         let filter = state.filter
-        let subtitle = DueFilterLabels.subtitle(filter, days, openCount: store.openCount(in: filter, days: days))
-        return VStack(alignment: .leading, spacing: Theme.Filter.titleSpacing) {
+        return FilterHeader(
+            title: DueFilterLabels.title(filter, days),
+            subtitle: DueFilterLabels.subtitle(filter, days, openCount: store.openCount(in: filter, days: days)),
+            showsSteps: filter.isSingleDay,
+            onStep: { state.step(by: $0) }
+        ) { close in
+            DueFilterPopover(
+                selection: filter,
+                days: days,
+                counts: Dictionary(uniqueKeysWithValues: DueFilter.quickOptions.map { ($0, store.openCount(in: $0, days: days)) }),
+                onSelect: { state.select(filter: $0) },
+                onClose: close
+            )
+        }
+    }
+}
+
+struct FilterHeader<Popover: View>: View {
+    let title: String
+    let subtitle: String?
+    let showsSteps: Bool
+    var canStepForward = true
+    let onStep: (Int) -> Void
+    @ViewBuilder let popover: (_ close: @escaping () -> Void) -> Popover
+
+    @Environment(\.panelLayout) private var layout
+    @State private var isOpen = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Theme.Filter.titleSpacing) {
             HStack(alignment: .center, spacing: Theme.Space.s2) {
-                Text(DueFilterLabels.title(filter, days))
+                Text(title)
                     .font(layout == .window ? Theme.Filter.windowTitleFont : Theme.Filter.panelTitleFont)
                     .foregroundStyle(Theme.Filter.titleText)
                     .lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: 0)
-                filterKey(days)
+                filterKey
             }
-            if subtitle != nil || filter.isSingleDay {
+            if subtitle != nil || showsSteps {
                 HStack(spacing: Theme.Filter.subtitleSpacing) {
                     if let subtitle {
                         Text(subtitle)
@@ -33,9 +59,11 @@ struct DueFilterHeader: View {
                             .foregroundStyle(Theme.Filter.subtitleText)
                             .lineLimit(1)
                     }
-                    if filter.isSingleDay {
-                        stepButton(.caretLeft, label: DueFilterLabels.previousDay) { state.step(by: -1) }
-                        stepButton(.caretRight, label: DueFilterLabels.nextDay) { state.step(by: 1) }
+                    if showsSteps {
+                        stepButton(.caretLeft, label: DueFilterLabels.previousDay) { onStep(-1) }
+                        stepButton(.caretRight, label: DueFilterLabels.nextDay) { onStep(1) }
+                            .disabled(!canStepForward)
+                            .opacity(canStepForward ? 1 : 0)
                     }
                 }
             }
@@ -54,7 +82,7 @@ struct DueFilterHeader: View {
         .help(label)
     }
 
-    private func filterKey(_ days: DueDays) -> some View {
+    private var filterKey: some View {
         Button {
             isOpen.toggle()
         } label: {
@@ -72,13 +100,7 @@ struct DueFilterHeader: View {
         .accessibilityLabel(DueFilterLabels.filterKey)
         .help(DueFilterLabels.filterKey)
         .popover(isPresented: $isOpen, arrowEdge: .bottom) {
-            DueFilterPopover(
-                selection: state.filter,
-                days: days,
-                counts: Dictionary(uniqueKeysWithValues: DueFilter.quickOptions.map { ($0, store.openCount(in: $0, days: days)) }),
-                onSelect: { state.select(filter: $0) },
-                onClose: { isOpen = false }
-            )
+            popover { isOpen = false }
         }
     }
 }
@@ -92,6 +114,8 @@ struct DueFilterPopover: View {
     let selection: DueFilter
     let days: DueDays
     let counts: [DueFilter: Int]
+    var options = DueFilter.quickOptions
+    var optionTitle: (DueFilter) -> String = DueFilterLabels.option
     let onSelect: (DueFilter) -> Void
     var onClose: () -> Void = {}
 
@@ -103,6 +127,8 @@ struct DueFilterPopover: View {
         selection: DueFilter,
         days: DueDays,
         counts: [DueFilter: Int],
+        options: [DueFilter] = DueFilter.quickOptions,
+        optionTitle: @escaping (DueFilter) -> String = DueFilterLabels.option,
         mode: DuePickMode? = nil,
         onSelect: @escaping (DueFilter) -> Void,
         onClose: @escaping () -> Void = {}
@@ -110,6 +136,8 @@ struct DueFilterPopover: View {
         self.selection = selection
         self.days = days
         self.counts = counts
+        self.options = options
+        self.optionTitle = optionTitle
         self.onSelect = onSelect
         self.onClose = onClose
         let isRange = if case .range = selection.resolved(days) { true } else { false }
@@ -119,7 +147,7 @@ struct DueFilterPopover: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.Filter.popoverColumnSpacing) {
-            options
+            optionList
             VStack(alignment: .leading, spacing: Theme.Filter.popoverRowSpacing) {
                 SegmentedTabs(
                     style: .scope,
@@ -151,16 +179,16 @@ struct DueFilterPopover: View {
         return max(end.timeIntervalSince(shownDay), 0)
     }
 
-    private var options: some View {
+    private var optionList: some View {
         let current = selection.resolved(days)
         return VStack(alignment: .leading, spacing: 0) {
-            ForEach(DueFilter.quickOptions, id: \.self) { option in
+            ForEach(options, id: \.self) { option in
                 Button {
                     onSelect(option)
                     onClose()
                 } label: {
                     HStack(spacing: Theme.Space.s2) {
-                        Text(DueFilterLabels.option(option))
+                        Text(optionTitle(option))
                         Spacer(minLength: 0)
                         if option != .all, let count = counts[option] {
                             Text("\(count)")

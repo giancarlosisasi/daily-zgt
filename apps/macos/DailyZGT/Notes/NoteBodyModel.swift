@@ -2,11 +2,16 @@ import Observation
 
 typealias NotesSchedule = PrioritySchedule
 
+enum NoteBody {
+    static func isEmpty(_ body: String) -> Bool {
+        body.allSatisfy(\.isWhitespace)
+    }
+}
+
 @Observable
 @MainActor
-final class NotesModel {
-    private(set) var scope: NoteScope
-    private(set) var period: String
+final class NoteBodyModel {
+    let noteID: NoteItem.ID
     private(set) var text: String
     private(set) var hasUnsavedEdit = false
     private(set) var writeFailed = false
@@ -18,21 +23,19 @@ final class NotesModel {
 
     init(
         store: AppStore,
-        scope: NoteScope,
+        noteID: NoteItem.ID,
         debounce: Duration = Theme.Notes.debounce,
         schedule: @escaping NotesSchedule = PriorityFlow.sleepSchedule
     ) {
         self.store = store
-        self.scope = scope
+        self.noteID = noteID
         self.debounce = debounce
         self.schedule = schedule
-        let period = store.period(scope)
-        self.period = period
-        text = store.noteBody(scope, period: period)
+        text = store.note(id: noteID)?.body ?? ""
     }
 
     var externalBody: String {
-        store.noteBody(scope, period: period)
+        store.note(id: noteID)?.body ?? ""
     }
 
     func edit(_ newText: String) {
@@ -50,12 +53,16 @@ final class NotesModel {
     func flush() {
         nextToken += 1
         guard hasUnsavedEdit else { return }
-        guard text != store.noteBody(scope, period: period) else {
+        guard let current = store.note(id: noteID) else {
+            hasUnsavedEdit = false
+            return
+        }
+        guard text != current.body else {
             hasUnsavedEdit = false
             return
         }
         do {
-            try store.saveNote(text, scope: scope, period: period)
+            try store.editNote(noteID, body: text)
             hasUnsavedEdit = false
             writeFailed = false
         } catch {
@@ -63,30 +70,17 @@ final class NotesModel {
         }
     }
 
-    func select(scope newScope: NoteScope) {
-        guard newScope != scope else { return }
-        flush()
-        scope = newScope
-        reload()
-    }
-
     func sync() {
-        if store.period(scope) != period {
-            flush()
-            reload()
-            return
-        }
         guard !hasUnsavedEdit else { return }
-        let stored = store.noteBody(scope, period: period)
+        let stored = externalBody
         if stored != text {
             text = stored
         }
     }
 
-    private func reload() {
-        nextToken += 1
-        period = store.period(scope)
-        text = store.noteBody(scope, period: period)
-        hasUnsavedEdit = false
+    func leave() {
+        flush()
+        guard !hasUnsavedEdit, let current = store.note(id: noteID), NoteBody.isEmpty(current.body) else { return }
+        try? store.deleteNote(noteID)
     }
 }

@@ -3,18 +3,26 @@ import Observation
 
 typealias PrioritySchedule = @MainActor (Duration, @escaping @MainActor () -> Void) -> Void
 
-struct PendingUndo: Equatable {
-    let priorityID: Priority.ID
-    let title: String
-    let token: Int
-    let startedAt: Date
-    let lifetime: Duration
+protocol TimedUndo: Equatable {
+    var title: String { get }
+    var startedAt: Date { get }
+    var lifetime: Duration { get }
+}
 
+extension TimedUndo {
     func remainingFraction(at now: Date) -> Double {
         let total = Double(lifetime.components.seconds) + Double(lifetime.components.attoseconds) / 1e18
         guard total > 0 else { return 0 }
         return min(max(1 - now.timeIntervalSince(startedAt) / total, 0), 1)
     }
+}
+
+struct PendingUndo: TimedUndo {
+    let priorityID: Priority.ID
+    let title: String
+    let token: Int
+    let startedAt: Date
+    let lifetime: Duration
 }
 
 extension SubtaskProgress {

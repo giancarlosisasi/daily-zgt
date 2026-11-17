@@ -24,7 +24,7 @@ struct PanelUndoBarTests {
     func theUndoBarShowsOnTheNotesTab() throws {
         let store = try makeStore(clock)
         let first = try store.addPriority(title: "Mandar el reporte", list: .today)
-        try store.saveNote("Hablar con Ana sobre el brief.", scope: .day)
+        try store.addNote(body: "Hablar con Ana sobre el brief.")
         let state = makeState(store)
 
         let without = try panelHeight(.notes, store: store, state: state, named: "notes-panel")

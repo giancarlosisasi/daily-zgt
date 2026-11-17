@@ -116,17 +116,6 @@ final class AppStore {
         try database.read { try PriorityAlert.fetchOne($0, key: id) }
     }
 
-    func period(_ scope: NoteScope) -> String {
-        switch scope {
-        case .day: LocalTime.dayKey(for: now())
-        case .week: LocalTime.weekKey(for: now())
-        }
-    }
-
-    func noteBody(_ scope: NoteScope, period: String? = nil) -> String {
-        snapshot.notes[scope]?[period ?? self.period(scope)] ?? ""
-    }
-
     func note(id: NoteItem.ID) -> NoteItem? {
         snapshot.noteItems.first { $0.id == id }
     }
@@ -403,21 +392,6 @@ final class AppStore {
             try subtask.delete(database)
             try Self.log(.edited, on: subtask.priorityID, at: at, in: database)
             return subtask
-        }
-    }
-
-    func saveNote(_ body: String, scope: NoteScope, period: String? = nil) throws {
-        let at = timestamp()
-        let period = period ?? self.period(scope)
-        try write { database in
-            try database.execute(
-                sql: """
-                    INSERT INTO note (scope, period, body, updated_at) VALUES (?, ?, ?, ?)
-                    ON CONFLICT (scope, period)
-                    DO UPDATE SET body = excluded.body, updated_at = excluded.updated_at
-                    """,
-                arguments: [scope, period, body, LocalTime.text(from: at)]
-            )
         }
     }
 

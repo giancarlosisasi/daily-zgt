@@ -48,7 +48,7 @@ struct BrowseHeader: View {
         case .priorities:
             DueFilterHeader()
         case .notes:
-            NoteScopeRow()
+            NoteFilterHeader()
         }
     }
 }
@@ -73,6 +73,7 @@ struct PanelView: View {
         }
         .panelChrome()
         .onChange(of: state.detailPriority == nil) { state.closeDetailIfGone() }
+        .onChange(of: state.detailNote == nil) { state.closeNoteIfGone() }
     }
 
     private var browse: some View {
@@ -85,7 +86,7 @@ struct PanelView: View {
                 ],
                 selection: Binding(get: { state.tab }, set: { state.select(tab: $0) })
             )
-            if state.detailPriority == nil {
+            if state.detailPriority == nil && state.detailNote == nil {
                 BrowseHeader()
             }
             content
@@ -111,7 +112,11 @@ struct PanelView: View {
         case .priorities:
             prioritiesContent
         case .notes:
-            NotesView(scope: state.noteScope)
+            if let note = state.detailNote {
+                NoteDetailView(note: note)
+            } else {
+                NoteListView(filter: state.noteFilter)
+            }
         }
     }
 
@@ -126,9 +131,20 @@ struct PanelView: View {
         }
     }
 
-    @ViewBuilder
     private var undoBar: some View {
+        PanelUndoBars()
+    }
+}
+
+struct PanelUndoBars: View {
+    @Environment(PanelState.self) private var state
+
+    var body: some View {
         let flow = state.priorityFlow
+        let notes = state.noteFlow
+        if let undo = notes.undo {
+            TimedUndoBar(undo: undo, prefix: NoteFilterLabels.deleted, icon: .trash, onUndo: { notes.undoDelete() })
+        }
         if let undo = flow.undo {
             TimedUndoBar(undo: undo, onUndo: { flow.undoDone() })
         }

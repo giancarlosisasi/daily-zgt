@@ -8,6 +8,7 @@ struct MainWindowView: View {
         isDebugBuild ? "Daily ZGT Dev" : "Daily ZGT"
     }
     static let emptyDetail = "Elige una prioridad para ver su detalle."
+    static let emptyNoteDetail = NoteFilterLabels.emptyDetail
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var state
@@ -36,6 +37,7 @@ struct MainWindowView: View {
         .background(Theme.Panel.background)
         .environment(\.panelLayout, .window)
         .onChange(of: state.detailPriority == nil) { state.closeDetailIfGone() }
+        .onChange(of: state.detailNote == nil) { state.closeNoteIfGone() }
     }
 
     private var sidebar: some View {
@@ -56,7 +58,10 @@ struct MainWindowView: View {
                 }
                 .scrollIndicators(.automatic)
             case .notes:
-                Spacer(minLength: 0)
+                ScrollView {
+                    NoteListView(filter: state.noteFilter)
+                }
+                .scrollIndicators(.automatic)
             }
             undoBar
             TimelineView(.everyMinute) { _ in
@@ -118,25 +123,29 @@ struct MainWindowView: View {
                             .readableColumn()
                     }
                 } else {
-                    Text(Self.emptyDetail)
-                        .font(Theme.Font.body)
-                        .foregroundStyle(Theme.EmptyList.text)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    emptyPane(Self.emptyDetail)
                 }
             case .notes:
-                ScrollView {
-                    NotesView(scope: state.noteScope)
-                        .readableColumn()
+                if let note = state.detailNote {
+                    ScrollView {
+                        NoteDetailView(note: note)
+                            .readableColumn()
+                    }
+                } else {
+                    emptyPane(Self.emptyNoteDetail)
                 }
             }
         }
     }
 
-    @ViewBuilder
+    private func emptyPane(_ text: String) -> some View {
+        Text(text)
+            .font(Theme.Font.body)
+            .foregroundStyle(Theme.EmptyList.text)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     private var undoBar: some View {
-        let flow = state.priorityFlow
-        if let undo = flow.undo {
-            TimedUndoBar(undo: undo, onUndo: { flow.undoDone() })
-        }
+        PanelUndoBars()
     }
 }

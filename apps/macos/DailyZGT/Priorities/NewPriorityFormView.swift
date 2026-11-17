@@ -2,13 +2,14 @@ import AppKit
 import SwiftUI
 
 struct NewPriorityButton: View {
+    var title = "Nueva prioridad"
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: Theme.NewPriority.buttonSpacing) {
                 IconView(icon: .plus, size: Theme.NewPriority.buttonIconSize)
-                Text("Nueva prioridad")
+                Text(title)
                 Spacer(minLength: 0)
             }
             .font(Theme.Font.body)

@@ -25,6 +25,7 @@ struct DetailBackButton: View {
 
 struct PriorityDetailHeader<Title: View>: View {
     let backLabel: String
+    var deleteLabel = "Eliminar prioridad"
     let onBack: () -> Void
     let onDelete: () -> Void
     @ViewBuilder let title: Title
@@ -45,7 +46,7 @@ struct PriorityDetailHeader<Title: View>: View {
                     width: Theme.Detail.deleteSize,
                     height: Theme.Detail.deleteSize,
                     radius: Theme.Detail.deleteRadius,
-                    label: "Eliminar prioridad",
+                    label: deleteLabel,
                     action: onDelete
                 )
             }

@@ -4,7 +4,6 @@ struct StoreSnapshot: Equatable, Sendable {
     var open: [Priority] = []
     var done: [Priority] = []
     var subtasks: [String: [Subtask]] = [:]
-    var notes: [NoteScope: [String: String]] = [:]
     var noteItems: [NoteItem] = []
     var appState: [String: String] = [:]
 
@@ -24,9 +23,6 @@ struct StoreSnapshot: Equatable, Sendable {
             grouping: try Subtask.fetchAll(database, sql: "SELECT * FROM subtask ORDER BY position, id"),
             by: \.priorityID
         )
-        for note in try Note.fetchAll(database) {
-            snapshot.notes[note.scope, default: [:]][note.period] = note.body
-        }
         snapshot.noteItems = try NoteItem.fetchAll(database, sql: """
             SELECT id, body, created_at, updated_at FROM note_item
             ORDER BY created_at DESC, id

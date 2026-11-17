@@ -23,6 +23,13 @@ struct RichNoteFieldStyle: Equatable, Sendable {
         padding: Theme.Notes.padding
     )
 
+    static let page = RichNoteFieldStyle(
+        text: TeclaTokens.TextStyles.small,
+        minHeight: Theme.Notes.pageMinHeight,
+        maxHeight: nil,
+        padding: Theme.Notes.padding
+    )
+
     static func of(_ layout: PanelLayout) -> RichNoteFieldStyle {
         layout == .window ? .window : .panel
     }
@@ -34,6 +41,7 @@ struct RichNoteField: View {
     let placeholder: String
     let images: NoteImageStore
     var style: RichNoteFieldStyle = .panel
+    var focusOnAppear = false
 
     @Environment(\.isEnabled) private var isEnabled
     @State private var isFocused = false
@@ -54,6 +62,9 @@ struct RichNoteField: View {
             .onAppear {
                 keys.names = RichNoteBus(documentID: documentID)
                 keys.start()
+                if focusOnAppear {
+                    Task { @MainActor in isFocused = true }
+                }
             }
             .onDisappear { keys.stop() }
             .onChange(of: isFocused) { _, focused in keys.isFocused = focused }
