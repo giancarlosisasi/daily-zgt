@@ -1,0 +1,13 @@
+MarkdownEngine, vendored copy
+
+Origin: https://github.com/nodes-app/swift-markdown-engine
+Version: 0.16.0, commit 8cb63c1
+License: Apache-2.0, see LICENSE in this folder.
+
+This folder holds only the MarkdownEngine target of that repository.
+The MarkdownEngineCodeBlocks and MarkdownEngineLatex targets, the SwiftMath
+dependency, the tests and the demo app are not copied.
+Package.swift is rewritten for the one target.
+
+Patches by Daily ZGT:
+- none yet

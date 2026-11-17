@@ -11,6 +11,8 @@ packages:
   KeyboardShortcuts:
     url: https://github.com/sindresorhus/KeyboardShortcuts
     exactVersion: 3.1.0
+  MarkdownEngine:
+    path: Vendor/MarkdownEngine
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -30,6 +32,7 @@ targets:
     dependencies:
       - package: GRDB
       - package: KeyboardShortcuts
+      - package: MarkdownEngine
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt
@@ -73,7 +76,11 @@ schemes:
         DailyZGTTests: [test]
     run:
       config: Debug
+      environmentVariables:
+        MD_PERF: "0"
     test:
       config: Debug
+      environmentVariables:
+        MD_PERF: "0"
       targets:
         - DailyZGTTests
