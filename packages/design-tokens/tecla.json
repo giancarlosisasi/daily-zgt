@@ -484,6 +484,13 @@
     "checkboxLine": 1.5,
     "undoLine": 2
   },
+  "layout": {
+    "panelWidth": 360,
+    "sidebarMin": 280,
+    "sidebarIdeal": 340,
+    "sidebarMax": 440,
+    "readableWidth": 560
+  },
   "key": {
     "sideHeight": 4.0,
     "travel": 3.0,

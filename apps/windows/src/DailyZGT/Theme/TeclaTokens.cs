@@ -8,8 +8,8 @@ namespace DailyZGT.Theme;
 public static class TeclaTokens
 {
     public const string Name = "Tecla";
-    public const string SourceDigest = "d86173cb6daaf3b66e12e2fca352f55e39bd45bd5c03ebe4a6574a67d068385b";
-    public const string OutputDigest = "0b308f29dc85abda28ea0d58503a033057927d71699a8d9b9af93a567f0040f2";
+    public const string SourceDigest = "13d2f602ff3927bf7809dd5eea515c33426d62445ac1cf7b7aec4ab76c68662a";
+    public const string OutputDigest = "4d805bb2bcafd8cb3a65c4811fab770013754c9bf4e1f4e52ea8dcce82bdc6b6";
 
     public static class Colors
     {
@@ -163,6 +163,15 @@ public static class TeclaTokens
         public const double LevelBarGap = 1.5;
         public const double CheckboxLine = 1.5;
         public const double UndoLine = 2.0;
+    }
+
+    public static class Layout
+    {
+        public const double PanelWidth = 360.0;
+        public const double SidebarMin = 280.0;
+        public const double SidebarIdeal = 340.0;
+        public const double SidebarMax = 440.0;
+        public const double ReadableWidth = 560.0;
     }
 
     public static class Key
