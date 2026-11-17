@@ -142,7 +142,14 @@ struct DuePopoverContent: View {
     var alertsOff = false
     var onClose: () -> Void = {}
 
+    @State private var shownDay: Date?
+
     private var current: Date { dueAt ?? NewPriorityDraft.defaultDue(after: now) }
+
+    static func calendarPick(_ day: Date, shown: Date, current: Date, calendar: Calendar = .current) -> (shown: Date, dueAt: Date?) {
+        guard !CalendarClick.isMonthStep(from: shown, to: day, calendar: calendar) else { return (day, nil) }
+        return (day, DueParts.join(day: day, time: current, calendar: calendar))
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.DatePopover.columnSpacing) {
@@ -151,7 +158,7 @@ struct DuePopoverContent: View {
                 field {
                     NativeDatePicker(kind: .dayField, date: dayBinding, onCommit: onClose)
                 }
-                NativeDatePicker(kind: .calendar, date: dayBinding, onCommit: onClose)
+                NativeDatePicker(kind: .calendar, date: calendarBinding, onCommit: onClose)
                 HStack(spacing: Theme.DatePopover.iconSpacing) {
                     Text("Hora")
                         .font(Theme.DatePopover.labelFont)
@@ -216,7 +223,23 @@ struct DuePopoverContent: View {
     private var dayBinding: Binding<Date> {
         Binding(
             get: { current },
-            set: { dueAt = DueParts.join(day: $0, time: current) }
+            set: {
+                shownDay = nil
+                dueAt = DueParts.join(day: $0, time: current)
+            }
+        )
+    }
+
+    private var calendarBinding: Binding<Date> {
+        Binding(
+            get: { shownDay ?? current },
+            set: { day in
+                let pick = Self.calendarPick(day, shown: shownDay ?? current, current: current)
+                shownDay = pick.shown
+                if let due = pick.dueAt {
+                    dueAt = due
+                }
+            }
         )
     }
 
