@@ -157,7 +157,7 @@ struct PriorityListView: View {
         let space = "\(Self.stackSpace)-\(group.id)"
         return VStack(spacing: Theme.Row.listSpacing) {
             ForEach(Array(group.priorities.enumerated()), id: \.element.id) { index, priority in
-                rowGroup(priority, now: now)
+                rowGroup(priority, now: now, dueShowsDay: !group.namesDay)
                     .onGeometryChange(for: CGRect.self, of: { $0.frame(in: .named(space)) }) { frame in
                         frames.set(frame, for: priority.id)
                     }
@@ -172,7 +172,7 @@ struct PriorityListView: View {
         )
     }
 
-    private func rowGroup(_ priority: Priority, now: Date) -> some View {
+    private func rowGroup(_ priority: Priority, now: Date, dueShowsDay: Bool) -> some View {
         let progress = store.subtaskProgress(of: priority.id)
         let isLeaving = flow.isLeaving(priority.id)
         let showsConfirmation = flow.isConfirming(priority.id) || isLeaving
@@ -186,6 +186,7 @@ struct PriorityListView: View {
                 isChecked: showsConfirmation,
                 isExpanded: flow.isExpanded(priority.id),
                 isDragging: flow.isDragging(priority.id),
+                dueShowsDay: dueShowsDay,
                 onToggleDone: { flow.toggleConfirmation(for: priority.id) },
                 onOpen: { panel.openDetail(priority.id) },
                 onToggleSubtasks: { flow.toggleSubtasks(for: priority.id) },

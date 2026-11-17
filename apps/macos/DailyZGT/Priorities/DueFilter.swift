@@ -17,6 +17,7 @@ struct DueGroup: Equatable, Identifiable, Sendable {
     let id: String
     let title: String?
     let priorities: [Priority]
+    var namesDay = false
 }
 
 struct DueDays {
@@ -120,7 +121,7 @@ extension DueFilter {
         case .today:
             return Self.nonEmpty([
                 DueGroup(id: "overdue", title: DueFilterLabels.overdueGroup, priorities: shown.filter { Self.isOverdue($0, days) }),
-                DueGroup(id: "today", title: DueFilterLabels.todayGroup, priorities: shown.filter { $0.dueAt.map { $0 >= days.now } ?? false }),
+                DueGroup(id: "today", title: DueFilterLabels.todayGroup, priorities: shown.filter { $0.dueAt.map { $0 >= days.now } ?? false }, namesDay: true),
                 DueGroup(id: "noDate", title: DueFilterLabels.noDateGroup, priorities: shown.filter { $0.dueAt == nil }),
             ])
         case .all:
@@ -131,8 +132,8 @@ extension DueFilter {
             return Self.nonEmpty(
                 [
                     DueGroup(id: "overdue", title: DueFilterLabels.overdueGroup, priorities: shown.filter { Self.isOverdue($0, days) }),
-                    DueGroup(id: "today", title: DueFilterLabels.todayGroup, priorities: today),
-                    DueGroup(id: "tomorrow", title: DueFilterLabels.tomorrowGroup, priorities: tomorrow),
+                    DueGroup(id: "today", title: DueFilterLabels.todayGroup, priorities: today, namesDay: true),
+                    DueGroup(id: "tomorrow", title: DueFilterLabels.tomorrowGroup, priorities: tomorrow, namesDay: true),
                 ]
                 + Self.dayGroups(later, days)
                 + [DueGroup(id: "noDate", title: DueFilterLabels.noDateGroup, priorities: shown.filter { $0.dueAt == nil })]
@@ -140,7 +141,7 @@ extension DueFilter {
         case .week, .range, .overdue:
             return Self.dayGroups(shown, days)
         default:
-            return Self.nonEmpty([DueGroup(id: "list", title: nil, priorities: shown)])
+            return Self.nonEmpty([DueGroup(id: "list", title: nil, priorities: shown, namesDay: isSingleDay)])
         }
     }
 
@@ -212,7 +213,7 @@ extension DueFilter {
         let dated = priorities.compactMap { priority in priority.dueAt.map { (days.key(of: $0), priority) } }
         let byDay = Dictionary(grouping: dated, by: \.0)
         return byDay.keys.sorted().map { key in
-            DueGroup(id: key, title: DueFilterLabels.dayGroup(key, days), priorities: byDay[key, default: []].map(\.1))
+            DueGroup(id: key, title: DueFilterLabels.dayGroup(key, days), priorities: byDay[key, default: []].map(\.1), namesDay: true)
         }
     }
 

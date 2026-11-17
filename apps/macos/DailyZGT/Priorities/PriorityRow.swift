@@ -79,6 +79,7 @@ struct PriorityRow: View {
     var isChecked = false
     var isExpanded = false
     var isDragging = false
+    var dueShowsDay = true
     let onToggleDone: () -> Void
     let onOpen: () -> Void
     let onToggleSubtasks: () -> Void
@@ -100,6 +101,7 @@ struct PriorityRow: View {
         isExpanded: Bool = false,
         isHoveringAtStart: Bool = false,
         isDragging: Bool = false,
+        dueShowsDay: Bool = true,
         onToggleDone: @escaping () -> Void = {},
         onOpen: @escaping () -> Void = {},
         onToggleSubtasks: @escaping () -> Void = {},
@@ -115,6 +117,7 @@ struct PriorityRow: View {
         self.isChecked = isChecked
         self.isExpanded = isExpanded
         self.isDragging = isDragging
+        self.dueShowsDay = dueShowsDay
         self.onToggleDone = onToggleDone
         self.onOpen = onOpen
         self.onToggleSubtasks = onToggleSubtasks
@@ -210,7 +213,7 @@ struct PriorityRow: View {
     private var meta: some View {
         HStack(spacing: Theme.Row.metaSpacing) {
             LevelBars(level: priority.level)
-            if let chip = DueChipState.make(due: priority.dueAt, now: now) {
+            if let chip = DueChipState.make(due: priority.dueAt, now: now, showsDay: dueShowsDay) {
                 DueChip(state: chip, laterIsPlain: true)
             }
             if let ratio = progress.ratioLabel {
