@@ -138,7 +138,7 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
         var bounds = super.renderingSurfaceBounds
         // Task checkboxes too: the box draws left of the first glyph (marker
         // slot), outside the default text surface — TextKit would clip it.
-        if hasCodeBlockBackground || hasThematicBreak || hasBlockquote || hasTaskCheckbox {
+        if hasCodeBlockBackground || hasThematicBreak || hasBlockquote || hasTaskCheckbox || hasBulletMarker {
             let containerWidth = textLayoutManager?.textContainer?.size.width ?? bounds.width
             // Extend left to container edge
             bounds.origin.x = -layoutFragmentFrame.origin.x
@@ -276,6 +276,18 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
         var found = false
         ts.enumerateAttribute(.blockquoteLevel, in: range, options: []) { value, _, stop in
             if value is Int {
+                found = true
+                stop.pointee = true
+            }
+        }
+        return found
+    }
+
+    private var hasBulletMarker: Bool {
+        guard let ts = textStorage, let range = fragmentNSRange, range.length > 0 else { return false }
+        var found = false
+        ts.enumerateAttribute(.bulletMarker, in: range, options: []) { value, _, stop in
+            if (value as? Bool) == true {
                 found = true
                 stop.pointee = true
             }
@@ -832,6 +844,8 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
 
         let theme = (textLayoutManager?.textContainer?.textView as? NativeTextView)?
             .configuration.theme ?? .default
+        let taskBox = (textLayoutManager?.textContainer?.textView as? NativeTextView)?
+            .configuration.taskCheckbox.box
         let storageString = ts.string as NSString
 
         ts.enumerateAttribute(.bulletMarker, in: range, options: []) { [weak self] value, attrRange, _ in
@@ -855,7 +869,16 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
 
             let markerWidth = (raw as NSString).size(withAttributes: [.font: font]).width
             let glyphWidth = glyph.size(withAttributes: glyphAttrs).width
-            let xOffset = max(0, (markerWidth - glyphWidth) / 2)
+            var xOffset = max(0, (markerWidth - glyphWidth) / 2)
+            if let taskBox, !isSelected {
+                var end = NSMaxRange(attrRange)
+                while end < storageString.length, storageString.character(at: end) == 0x20 || storageString.character(at: end) == 0x09 {
+                    end += 1
+                }
+                let group = storageString.substring(with: NSRange(location: attrRange.location, length: end - attrRange.location))
+                let contentOffset = (group as NSString).size(withAttributes: [.font: font]).width
+                xOffset = contentOffset - taskBox.gap - taskBox.size / 2 - glyphWidth / 2
+            }
             // Flipped context: text origin is its top edge, baseline sits one
             // ascent below — so top = baseline − ascent aligns the glyph.
             let topY = pos.baselineY - font.ascender
@@ -929,8 +952,10 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
                 ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
             let ascent = max(0, font.ascender)
             let descent = max(0, -font.descender)
-            let size = TaskCheckboxGeometry.size(for: font)
-            let boxX = TaskCheckboxGeometry.boxX(contentX: pos.x, size: size)
+            let style = (textLayoutManager?.textContainer?.textView as? NativeTextView)?.configuration.taskCheckbox
+                ?? .default
+            let size = TaskCheckboxGeometry.size(for: font, style: style)
+            let boxX = TaskCheckboxGeometry.boxX(contentX: pos.x, size: size, style: style)
             let centerY = pos.baselineY + (descent - ascent) / 2
             let boxY = centerY - size / 2
 
@@ -941,12 +966,15 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
             }
             let boxRect = CGRect(x: alignToPixel(boxX), y: alignToPixel(boxY), width: size, height: size)
             guard !boxRect.isEmpty, !boxRect.isNull else { return }
+            if let box = style.box {
+                self.drawTaskBox(box, in: boxRect, isChecked: isChecked)
+                return
+            }
 
             let iconInset = max(0.0, size * 0.01)
             let iconRect = boxRect.insetBy(dx: iconInset, dy: iconInset)
             let configuration = (textLayoutManager?.textContainer?.textView as? NativeTextView)?.configuration
                 ?? .default
-            let style = configuration.taskCheckbox
             let symbolName = isChecked ? style.checkedSymbolName : style.uncheckedSymbolName
             let fallbackName = isChecked
                 ? TaskCheckboxStyle.default.checkedSymbolName
@@ -960,6 +988,48 @@ final class MarkdownTextLayoutFragment: NSTextLayoutFragment {
                 let symbol = baseSymbol.withSymbolConfiguration(symbolConfig) ?? baseSymbol
                 symbol.draw(in: iconRect)
             }
+        }
+    }
+}
+
+extension MarkdownTextLayoutFragment {
+    fileprivate func drawTaskBox(_ box: TaskCheckboxBox, in rect: CGRect, isChecked: Bool) {
+        if isChecked {
+            box.checkedFill.setFill()
+            NSBezierPath(roundedRect: rect, xRadius: box.cornerRadius, yRadius: box.cornerRadius).fill()
+            let side = rect.width * box.checkRatio
+            let checkRect = CGRect(x: rect.midX - side / 2, y: rect.midY - side / 2, width: side, height: side)
+            if let image = box.checkImage {
+                let tinted = NSImage(size: checkRect.size, flipped: false) { bounds in
+                    image.draw(in: bounds)
+                    box.check.setFill()
+                    bounds.fill(using: .sourceAtop)
+                    return true
+                }
+                tinted.draw(in: checkRect, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
+            } else {
+                let path = NSBezierPath()
+                path.move(to: CGPoint(x: checkRect.minX + side * 0.16, y: checkRect.minY + side * 0.53))
+                path.line(to: CGPoint(x: checkRect.minX + side * 0.38, y: checkRect.minY + side * 0.75))
+                path.line(to: CGPoint(x: checkRect.minX + side * 0.84, y: checkRect.minY + side * 0.28))
+                path.lineWidth = box.borderWidth
+                path.lineCapStyle = .round
+                path.lineJoinStyle = .round
+                box.check.setStroke()
+                path.stroke()
+            }
+        } else {
+            box.fill.setFill()
+            NSBezierPath(roundedRect: rect, xRadius: box.cornerRadius, yRadius: box.cornerRadius).fill()
+            let inset = box.borderWidth / 2
+            let path = NSBezierPath(
+                roundedRect: rect.insetBy(dx: inset, dy: inset),
+                xRadius: max(0, box.cornerRadius - inset),
+                yRadius: max(0, box.cornerRadius - inset)
+            )
+            path.lineWidth = box.borderWidth
+            box.border.setStroke()
+            path.stroke()
         }
     }
 }

@@ -449,8 +449,8 @@ enum MarkdownASTStyler {
             // the font's natural height: the content height flipped 26 ↔ 24
             // as the line crossed in and out of being a task item, and the
             // text below jumped by those 2pt on the way.
-            let room = max(0, TaskCheckboxGeometry.size(for: ctx.baseFont)
-                              + TaskCheckboxGeometry.gap - markerWidth)
+            let room = max(0, TaskCheckboxGeometry.size(for: ctx.baseFont, style: ctx.config.taskCheckbox)
+                              + TaskCheckboxGeometry.gap(ctx.config.taskCheckbox) - markerWidth)
             ps.minimumLineHeight = ctx.baseLineHeight + ctx.config.paragraph.lineHeightExtraSpacing
             ps.lineSpacing = 0
             ps.paragraphSpacing = ctx.baseParagraphSpacing

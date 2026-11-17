@@ -280,6 +280,29 @@ struct RichNoteFieldTests {
     }
 
     @Test
+    func uncheckedAndCheckedTasksDrawAsTheTeclaBox() async throws {
+        let images = NoteImageStore(database: try AppDatabase.inMemory())
+        let box = NoteBox("Lista\n- hola\n- [ ] abierta\n- [x] hecha\n- [ ] ")
+        let harness = RichNoteHarness(RichNoteHost(box: box, documentID: "tasks", images: images))
+        defer { harness.close() }
+        await RichNoteHarness.settle(300)
+        let textView = try harness.textView()
+        await harness.focus(textView)
+        await harness.fitAndSettle(width: 520)
+        let storage = try #require(textView.textStorage)
+        var states: [Bool] = []
+        storage.enumerateAttribute(NSAttributedString.Key("TaskCheckbox"), in: NSRange(location: 0, length: storage.length)) { value, _, _ in
+            if let value = value as? Bool { states.append(value) }
+        }
+        #expect(states == [false, true, false])
+        let style = RichNoteConfiguration.taskCheckbox.box
+        #expect(style?.size == Theme.Notes.checkboxSize)
+        #expect(style?.gap == Theme.Notes.checkboxGap)
+        #expect(style?.checkImage != nil)
+        try harness.screenshot(named: "rich-note-checkboxes")
+    }
+
+    @Test
     func rendersAnEmptyNoteWithItsPlaceholderAndMinimumHeight() async throws {
         let images = NoteImageStore(database: try AppDatabase.inMemory())
         let harness = RichNoteHarness(VStack(alignment: .leading, spacing: Theme.Space.s3) {

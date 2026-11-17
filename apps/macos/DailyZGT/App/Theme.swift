@@ -434,6 +434,8 @@ extension Theme {
         static let padding = Space.s3
         static let radius = TeclaTokens.Radius.input
         static let lineSpacing: CGFloat = 3
+        static let checkboxSize = SubtaskList.checkboxSize
+        static let checkboxGap = SubtaskList.rowSpacing
         static let background = Color(TeclaTokens.Panel.card)
         static let hint = Text.dim
         static let debounce = Duration.milliseconds(400)

@@ -348,6 +348,21 @@ enum RichNoteConfiguration {
         )
     }
 
+    static var taskCheckbox: TaskCheckboxStyle {
+        TaskCheckboxStyle(box: TaskCheckboxBox(
+            size: Theme.Notes.checkboxSize,
+            gap: Theme.Notes.checkboxGap,
+            cornerRadius: Theme.Checkbox.radius,
+            borderWidth: Theme.Checkbox.borderWidth,
+            fill: NSColor(Theme.Checkbox.fill),
+            border: NSColor(Theme.Checkbox.border),
+            checkedFill: NSColor(Theme.Checkbox.checkedFill),
+            check: NSColor(Theme.Checkbox.check),
+            checkRatio: Theme.Checkbox.checkRatio,
+            checkImage: NSImage(named: Icon.check.rawValue)
+        ))
+    }
+
     static func headingMultipliers(_ style: RichNoteFieldStyle) -> [CGFloat] {
         let base = style.text.size
         let sizes = [
@@ -382,6 +397,7 @@ enum RichNoteConfiguration {
             heightBehavior: .fitsContent
         )
         configuration.overscroll = OverscrollPolicy(percent: 0, maxPoints: 0, minPoints: 0)
+        configuration.taskCheckbox = taskCheckbox
         configuration.extensions = [StrikethroughExtension()]
         configuration.services.bus.applyBoldRequest = bus.bold
         configuration.services.bus.applyItalicRequest = bus.italic

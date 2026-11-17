@@ -32,4 +32,16 @@ enum TaskCheckboxGeometry {
     static func boxX(contentX: CGFloat, size: CGFloat) -> CGFloat {
         contentX - size - gap
     }
+
+    static func size(for font: NSFont, style: TaskCheckboxStyle) -> CGFloat {
+        style.box?.size ?? size(for: font)
+    }
+
+    static func gap(_ style: TaskCheckboxStyle) -> CGFloat {
+        style.box?.gap ?? gap
+    }
+
+    static func boxX(contentX: CGFloat, size: CGFloat, style: TaskCheckboxStyle) -> CGFloat {
+        contentX - size - gap(style)
+    }
 }

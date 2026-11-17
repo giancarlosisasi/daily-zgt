@@ -357,16 +357,56 @@ public struct TaskCheckboxStyle: Sendable {
     public var uncheckedSymbolName: String
     /// SF Symbol drawn for a checked task item (`[x]`).
     public var checkedSymbolName: String
+    public var box: TaskCheckboxBox?
 
     public init(
         uncheckedSymbolName: String = "square",
-        checkedSymbolName: String = "checkmark.square.fill"
+        checkedSymbolName: String = "checkmark.square.fill",
+        box: TaskCheckboxBox? = nil
     ) {
         self.uncheckedSymbolName = uncheckedSymbolName
         self.checkedSymbolName = checkedSymbolName
+        self.box = box
     }
 
     public static let `default` = TaskCheckboxStyle()
+}
+
+public struct TaskCheckboxBox: Sendable {
+    public var size: CGFloat
+    public var gap: CGFloat
+    public var cornerRadius: CGFloat
+    public var borderWidth: CGFloat
+    public var fill: NSColor
+    public var border: NSColor
+    public var checkedFill: NSColor
+    public var check: NSColor
+    public var checkRatio: CGFloat
+    public var checkImage: NSImage?
+
+    public init(
+        size: CGFloat,
+        gap: CGFloat,
+        cornerRadius: CGFloat,
+        borderWidth: CGFloat,
+        fill: NSColor,
+        border: NSColor,
+        checkedFill: NSColor,
+        check: NSColor,
+        checkRatio: CGFloat,
+        checkImage: NSImage?
+    ) {
+        self.size = size
+        self.gap = gap
+        self.cornerRadius = cornerRadius
+        self.borderWidth = borderWidth
+        self.fill = fill
+        self.border = border
+        self.checkedFill = checkedFill
+        self.check = check
+        self.checkRatio = checkRatio
+        self.checkImage = checkImage
+    }
 }
 
 // MARK: - Thematic breaks
