@@ -77,9 +77,25 @@ struct PanelStateTests {
         let state = PanelState(store: store)
         state.select(tab: .priorities)
         state.select(filter: .today)
-        state.select(filter: .day("2026-10-12"))
         state.select(noteFilter: .today)
         #expect(try values("SELECT key FROM app_state", in: store.database, as: String.self).isEmpty)
+    }
+
+    @Test
+    func aCalendarPickOfTomorrowKeepsThatDateOnTheNextDay() throws {
+        let clock = TestClock("2026-10-12T09:00:00")
+        let database = try AppDatabase.inMemory()
+        let store = AppStore(database: database, now: { clock.date })
+        let state = PanelState(store: store)
+        state.select(filter: DueFilter.picked(day: localDate("2026-10-13T00:00:00"), store.dueDays))
+        state.select(noteFilter: DueFilter.picked(day: localDate("2026-10-13T00:00:00"), store.dueDays))
+        #expect(state.filter == .day("2026-10-13"))
+        clock.advance(minutes: 24 * 60)
+        let nextStore = AppStore(database: database, now: { clock.date })
+        let next = PanelState(store: nextStore)
+        #expect(next.filter == .day("2026-10-13"))
+        #expect(next.noteFilter == .day("2026-10-13"))
+        #expect(next.filter.resolved(nextStore.dueDays) == .today)
     }
 
     @Test

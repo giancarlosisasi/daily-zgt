@@ -198,7 +198,12 @@ extension DueFilter {
     }
 
     static func picked(day: Date, _ days: DueDays) -> DueFilter {
-        DueFilter.day(days.key(of: day)).resolved(days)
+        DueFilter.day(days.key(of: day))
+    }
+
+    var ordered: DueFilter {
+        guard case let .range(first, last) = self, first > last else { return self }
+        return .range(last, first)
     }
 
     static func picked(from first: Date, to last: Date, _ days: DueDays) -> DueFilter {

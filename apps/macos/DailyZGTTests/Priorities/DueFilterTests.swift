@@ -124,12 +124,14 @@ struct DueFilterTests {
     }
 
     @Test
-    func aPickedDayOfTodayOrTomorrowBecomesThatOption() {
+    func aPickedDayKeepsItsDateAndReadsAsTodayOrTomorrow() {
         let days = Self.days()
         #expect(DueFilter.day("2026-11-17").resolved(days) == .today)
         #expect(DueFilter.day("2026-11-18").resolved(days) == .tomorrow)
         #expect(DueFilter.day("2026-11-19").resolved(days) == .day("2026-11-19"))
-        #expect(DueFilter.picked(day: Self.at("2026-11-17T00:00:00"), days) == .today)
+        #expect(DueFilter.picked(day: Self.at("2026-11-17T00:00:00"), days) == .day("2026-11-17"))
+        #expect(DueFilter.picked(day: Self.at("2026-11-18T00:00:00"), days) == .day("2026-11-18"))
+        #expect(DueFilter.picked(day: Self.at("2026-11-17T00:00:00"), days).resolved(days) == .today)
     }
 
     @Test

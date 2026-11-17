@@ -178,7 +178,7 @@ final class PanelState {
     }
 
     func select(filter newFilter: DueFilter) {
-        let resolved = newFilter.resolved(store.dueDays)
+        let resolved = newFilter.ordered
         guard resolved != filter else { return }
         closeHistory()
         filter = resolved
@@ -191,7 +191,7 @@ final class PanelState {
     }
 
     func select(noteFilter newFilter: DueFilter) {
-        let resolved = newFilter.resolved(store.dueDays)
+        let resolved = newFilter.ordered
         guard resolved != noteFilter else { return }
         noteFilter = resolved
         persist { try store.setValue(resolved, for: Self.noteFilterKey) }
