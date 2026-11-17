@@ -3,6 +3,10 @@ import SwiftUI
 
 @main
 struct DailyZGTApp: App {
+    static func insertsMenuBarItem(isTestHost: Bool) -> Bool {
+        !isTestHost
+    }
+
     private let boot: AppBoot
 
     init() {
@@ -13,7 +17,7 @@ struct DailyZGTApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra {
+        MenuBarExtra(isInserted: .constant(Self.insertsMenuBarItem(isTestHost: AppDatabase.isTestHost))) {
             AppRootView(boot: boot)
         } label: {
             MenuBarLabelHost(boot: boot)

@@ -38,6 +38,13 @@ struct MainWindowTests {
     }
 
     @Test
+    func theTestHostInsertsNoMenuBarItem() {
+        #expect(AppDatabase.isTestHost)
+        #expect(!DailyZGTApp.insertsMenuBarItem(isTestHost: true))
+        #expect(DailyZGTApp.insertsMenuBarItem(isTestHost: false))
+    }
+
+    @Test
     func theWindowHasItsOwnNavigation() throws {
         let store = try makeStore(clock)
         let panel = PanelState(store: store)
