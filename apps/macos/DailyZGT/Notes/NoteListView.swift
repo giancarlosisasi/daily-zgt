@@ -26,6 +26,12 @@ struct NoteListView: View {
                     rows(notes, days: days)
                 }
             }
+            DeletedSection(
+                entries: store.deletedNotes.map { DeletedEntry($0) },
+                onOpen: { panel.openNote($0) },
+                onRestore: { panel.noteFlow.restoreDeleted($0) },
+                onDeleteForever: { panel.noteFlow.deleteForever($0) }
+            )
             if panel.noteFlow.writeFailed || panel.saveError != nil {
                 Text("No se pudo guardar el cambio.")
                     .font(Theme.Font.meta)

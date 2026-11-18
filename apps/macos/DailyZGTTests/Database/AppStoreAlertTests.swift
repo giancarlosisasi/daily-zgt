@@ -84,11 +84,13 @@ struct AppStoreAlertTests {
     }
 
     @Test
-    func aDeletedPriorityTakesItsAlertsWithIt() throws {
+    func aPriorityDeletedForEverTakesItsAlertsWithIt() throws {
         let store = try makeStore(clock)
         let priority = try store.addPriority(title: "With due", list: .today)
         try store.saveAlerts([row("a1", .atDue, at: "2026-10-12T12:00:00", priority: priority.id)])
         try store.deletePriority(priority.id)
+        #expect(try store.alerts().map(\.id) == ["a1"])
+        try store.deletePriorityForever(priority.id)
         #expect(try store.alerts().isEmpty)
     }
 

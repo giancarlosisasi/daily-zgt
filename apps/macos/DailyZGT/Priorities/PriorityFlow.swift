@@ -174,6 +174,27 @@ final class PriorityFlow {
         }
     }
 
+    func restoreDeleted(_ id: Priority.ID) {
+        do {
+            let restored = try store.restoreDeletedPriority(id)
+            writeFailed = false
+            if !restored.isDone {
+                flash(id)
+            }
+        } catch {
+            writeFailed = true
+        }
+    }
+
+    func deleteForever(_ id: Priority.ID) {
+        do {
+            try store.deletePriorityForever(id)
+            writeFailed = false
+        } catch {
+            writeFailed = true
+        }
+    }
+
     func isDragging(_ id: Priority.ID) -> Bool {
         drag?.id == id
     }

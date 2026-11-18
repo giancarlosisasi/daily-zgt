@@ -54,7 +54,7 @@ struct NoteItemMigrationTests {
         #expect(rows.contains("day|2026-10-12|# Lunes\nLlamar a Ana"))
         #expect(rows.contains("week|2026-W43|"))
         let migrations: [String] = try values("SELECT identifier FROM grdb_migrations ORDER BY identifier", in: database)
-        #expect(migrations.last == "004_add_note_item")
+        #expect(migrations.contains("004_add_note_item"))
     }
 
     @Test

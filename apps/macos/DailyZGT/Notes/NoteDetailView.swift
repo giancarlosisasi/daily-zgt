@@ -36,7 +36,7 @@ private struct NoteEditor: View {
                 backLabel: DueFilterLabels.title(panel.noteFilter, store.dueDays),
                 deleteLabel: NoteFilterLabels.deleteNote,
                 onBack: { panel.closeNote() },
-                onDelete: delete
+                onDelete: deleteAction
             ) {
                 TimelineView(.everyMinute) { _ in
                     Text(NoteFilterLabels.meta(note, store.dueDays))
@@ -54,9 +54,15 @@ private struct NoteEditor: View {
                     style: layout == .window ? .page : .panel,
                     focusOnAppear: focusOnAppear
                 )
-                Text(model.writeFailed ? NoteFilterLabels.saveFailed : NoteFilterLabels.saveHint)
-                    .font(Theme.Font.meta)
-                    .foregroundStyle(Theme.Notes.hint)
+                .disabled(note.isDeleted)
+                if note.isDeleted {
+                    RestoreDeletedButton { panel.restoreDeletedNoteFromDetail() }
+                        .padding(.bottom, Theme.Key.sideHeight)
+                } else {
+                    Text(model.writeFailed ? NoteFilterLabels.saveFailed : NoteFilterLabels.saveHint)
+                        .font(Theme.Font.meta)
+                        .foregroundStyle(Theme.Notes.hint)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -75,6 +81,11 @@ private struct NoteEditor: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
             model.flush()
         }
+    }
+
+    private var deleteAction: (() -> Void)? {
+        guard !note.isDeleted else { return nil }
+        return { delete() }
     }
 
     private func delete() {

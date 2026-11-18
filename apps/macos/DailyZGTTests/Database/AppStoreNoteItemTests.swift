@@ -34,16 +34,22 @@ struct AppStoreNoteItemTests {
     }
 
     @Test
-    func deleteRemovesTheRowAndRestoreBringsItBack() throws {
+    func deleteKeepsTheRowAndRestoreBringsItBack() throws {
         let store = try makeStore(clock)
         let note = try store.addNote(body: "Borrar y volver")
+        clock.advance(minutes: 3)
         let deleted = try store.deleteNote(note.id)
-        #expect(deleted == note)
+        #expect(deleted.id == note.id)
+        #expect(deleted.deletedAt == localDate("2026-11-17T16:23:00"))
+        #expect(deleted.updatedAt == note.updatedAt)
         #expect(store.note(id: note.id) == nil)
-        let count: [Int] = try values("SELECT COUNT(*) FROM note_item", in: store.database)
-        #expect(count == [0])
-        try store.restoreNote(deleted)
+        #expect(store.deletedNotes.map(\.id) == [note.id])
+        #expect(store.noteIncludingDeleted(id: note.id) == deleted)
+        let rows: [String] = try values("SELECT deleted_at FROM note_item", in: store.database)
+        #expect(rows == ["2026-11-17T16:23:00"])
+        try store.restoreDeletedNote(note.id)
         #expect(store.note(id: note.id) == note)
+        #expect(store.deletedNotes.isEmpty)
     }
 
     @Test

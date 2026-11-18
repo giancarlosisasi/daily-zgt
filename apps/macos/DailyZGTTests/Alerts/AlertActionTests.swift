@@ -196,7 +196,8 @@ struct AlertActionTests {
 
         await alerts.alertWasAnswered(answer(.snooze, alert: rows[0].id, priority: brief.id))
 
-        #expect(try store.alerts().isEmpty)
+        #expect(try store.alerts(status: .scheduled).isEmpty)
+        #expect(try store.alerts().allSatisfy { $0.kind != .snooze })
         #expect(center.pending.isEmpty)
     }
 
@@ -290,7 +291,7 @@ struct AlertActionTests {
         await alerts.alertWasAnswered(answer(.open, alert: rows[0].id, priority: brief.id))
 
         #expect(state.tab == .priorities)
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
         #expect(state.priorityFlow.highlightedID == brief.id)
         #expect(schedule.entries.map(\.delay) == [.milliseconds(1400)])
     }

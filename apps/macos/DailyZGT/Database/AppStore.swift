@@ -80,6 +80,14 @@ final class AppStore {
         snapshot.open.first { $0.id == id } ?? snapshot.done.first { $0.id == id }
     }
 
+    var deletedPriorities: [Priority] {
+        snapshot.deleted
+    }
+
+    func priorityIncludingDeleted(id: Priority.ID) -> Priority? {
+        priority(id: id) ?? snapshot.deleted.first { $0.id == id }
+    }
+
     func subtasks(of priorityID: Priority.ID) -> [Subtask] {
         snapshot.subtasks[priorityID] ?? []
     }
@@ -118,6 +126,14 @@ final class AppStore {
 
     func note(id: NoteItem.ID) -> NoteItem? {
         snapshot.noteItems.first { $0.id == id }
+    }
+
+    var deletedNotes: [NoteItem] {
+        snapshot.deletedNotes
+    }
+
+    func noteIncludingDeleted(id: NoteItem.ID) -> NoteItem? {
+        note(id: id) ?? snapshot.deletedNotes.first { $0.id == id }
     }
 
     func notes(in filter: DueFilter, days: DueDays? = nil) -> [NoteItem] {
@@ -179,6 +195,7 @@ final class AppStore {
             edited.createdAt = current.createdAt
             edited.updatedAt = current.updatedAt
             edited.repeatSeriesID = current.repeatSeriesID
+            edited.deletedAt = current.deletedAt
             edited.dueAt = edited.dueAt.map(LocalTime.truncated)
 
             let moved = edited.list != current.list
@@ -286,7 +303,30 @@ final class AppStore {
     func deletePriority(_ id: Priority.ID) throws -> Priority {
         let at = timestamp()
         return try write { database in
-            let priority = try Self.priority(id, in: database)
+            var priority = try Self.priority(id, in: database)
+            priority.deletedAt = at
+            try priority.update(database)
+            return priority
+        }
+    }
+
+    @discardableResult
+    func restoreDeletedPriority(_ id: Priority.ID) throws -> Priority {
+        try write { database in
+            var priority = try Self.deletedPriority(id, in: database)
+            priority.deletedAt = nil
+            try priority.update(database)
+            return priority
+        }
+    }
+
+    @discardableResult
+    func deletePriorityForever(_ id: Priority.ID) throws -> Priority {
+        let at = timestamp()
+        return try write { database in
+            guard let priority = try Priority.fetchOne(database, key: id) else {
+                throw AppStoreError.priorityNotFound(id)
+            }
             try priority.delete(database)
             if !priority.isDone {
                 try Self.endSeries(priority.seriesID, at: at, in: database)
@@ -418,15 +458,40 @@ final class AppStore {
 
     @discardableResult
     func deleteNote(_ id: NoteItem.ID) throws -> NoteItem {
-        try write { database in
-            let note = try Self.note(id, in: database)
-            try note.delete(database)
+        let at = timestamp()
+        return try write { database in
+            var note = try Self.note(id, in: database)
+            note.deletedAt = at
+            try note.update(database)
             return note
         }
     }
 
-    func restoreNote(_ note: NoteItem) throws {
-        try write { database in try note.save(database) }
+    @discardableResult
+    func restoreDeletedNote(_ id: NoteItem.ID) throws -> NoteItem {
+        try write { database in
+            guard var note = try NoteItem.fetchOne(
+                database,
+                sql: "SELECT * FROM note_item WHERE id = ? AND deleted_at IS NOT NULL",
+                arguments: [id]
+            ) else {
+                throw AppStoreError.noteNotFound(id)
+            }
+            note.deletedAt = nil
+            try note.update(database)
+            return note
+        }
+    }
+
+    @discardableResult
+    func deleteNoteForever(_ id: NoteItem.ID) throws -> NoteItem {
+        try write { database in
+            guard let note = try NoteItem.fetchOne(database, key: id) else {
+                throw AppStoreError.noteNotFound(id)
+            }
+            try note.delete(database)
+            return note
+        }
     }
 
     func setValue<Value>(_ value: Value, for key: AppStateKey<Value>) throws {
@@ -484,14 +549,33 @@ final class AppStore {
     }
 
     private nonisolated static func priority(_ id: Priority.ID, in database: Database) throws -> Priority {
-        guard let priority = try Priority.fetchOne(database, key: id) else {
+        guard let priority = try Priority.fetchOne(
+            database,
+            sql: "SELECT * FROM priority WHERE id = ? AND deleted_at IS NULL",
+            arguments: [id]
+        ) else {
+            throw AppStoreError.priorityNotFound(id)
+        }
+        return priority
+    }
+
+    private nonisolated static func deletedPriority(_ id: Priority.ID, in database: Database) throws -> Priority {
+        guard let priority = try Priority.fetchOne(
+            database,
+            sql: "SELECT * FROM priority WHERE id = ? AND deleted_at IS NOT NULL",
+            arguments: [id]
+        ) else {
             throw AppStoreError.priorityNotFound(id)
         }
         return priority
     }
 
     private nonisolated static func note(_ id: NoteItem.ID, in database: Database) throws -> NoteItem {
-        guard let note = try NoteItem.fetchOne(database, key: id) else {
+        guard let note = try NoteItem.fetchOne(
+            database,
+            sql: "SELECT * FROM note_item WHERE id = ? AND deleted_at IS NULL",
+            arguments: [id]
+        ) else {
             throw AppStoreError.noteNotFound(id)
         }
         return note
@@ -507,7 +591,7 @@ final class AppStore {
     private nonisolated static func openCopies(ofSeries seriesID: String, in database: Database) throws -> [Priority] {
         try Priority.fetchAll(
             database,
-            sql: "SELECT * FROM priority WHERE COALESCE(repeat_series_id, id) = ? AND done_at IS NULL ORDER BY position, id",
+            sql: "SELECT * FROM priority WHERE COALESCE(repeat_series_id, id) = ? AND done_at IS NULL AND deleted_at IS NULL ORDER BY position, id",
             arguments: [seriesID]
         )
     }

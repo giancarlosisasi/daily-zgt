@@ -9,23 +9,23 @@ enum PanelTab: String, Codable, CaseIterable, Sendable {
 @MainActor
 final class PanelState {
     static let tabKey = AppStateKey(name: "open_tab", defaultValue: PanelTab.priorities)
-    static let filterKey = AppStateKey<DueFilter?>(name: "due_filter", defaultValue: nil)
-    static let noteScopeKey = AppStateKey<NoteScope?>(name: "note_scope", defaultValue: nil)
-    static let noteFilterKey = AppStateKey<DueFilter?>(name: "note_filter", defaultValue: nil)
-    static let legacyScopeKey = AppStateKey<PriorityList?>(name: "open_scope", defaultValue: nil)
     static let doneOpenKey = AppStateKey(name: "done_open", defaultValue: false)
+    static let deletedOpenKey = AppStateKey(name: "deleted_open", defaultValue: false)
 
     private(set) var tab: PanelTab
-    private(set) var filter: DueFilter
-    private(set) var noteFilter: DueFilter
+    private(set) var filter = DueFilter.all
+    private(set) var noteFilter = DueFilter.all
     private(set) var openNoteID: NoteItem.ID?
     private(set) var focusNoteID: NoteItem.ID?
     private(set) var isDoneOpen: Bool
+    private(set) var isDeletedOpen: Bool
     private(set) var saveError: (any Error)?
     private(set) var openPriorityID: Priority.ID?
     private(set) var isSettingsOpen = false
     private(set) var isHistoryOpen = false
     private(set) var detailOpenedDone = false
+    private(set) var detailOpenedDeleted = false
+    private(set) var noteOpenedDeleted = false
     private(set) var detailReturnsToHistory = false
 
     @ObservationIgnored let priorityFlow: PriorityFlow
@@ -48,23 +48,21 @@ final class PanelState {
         self.loginItem = loginItem ?? LoginItemSettings(service: InertLoginItemService())
         self.shortcut = shortcut ?? ShortcutSettings(service: InertHotkeyService())
         tab = store.value(for: Self.tabKey)
-        let legacy = store.value(for: Self.legacyScopeKey)
-        filter = store.value(for: Self.filterKey) ?? (legacy == .week ? .week : .today)
-        noteFilter = DueFilter.noteStart(
-            stored: store.value(for: Self.noteFilterKey),
-            legacyScope: store.value(for: Self.noteScopeKey) ?? (legacy == .week ? .week : nil)
-        )
         isDoneOpen = store.value(for: Self.doneOpenKey)
+        isDeletedOpen = store.value(for: Self.deletedOpenKey)
     }
 
     var detailPriority: Priority? {
-        guard let id = openPriorityID, let priority = store.priority(id: id) else { return nil }
+        guard let id = openPriorityID, let priority = store.priorityIncludingDeleted(id: id) else { return nil }
+        guard !priority.isDeleted || detailOpenedDeleted else { return nil }
         guard !priority.isDone || detailOpenedDone else { return nil }
         return priority
     }
 
     var detailNote: NoteItem? {
-        openNoteID.flatMap { store.note(id: $0) }
+        guard let id = openNoteID, let note = store.noteIncludingDeleted(id: id) else { return nil }
+        guard !note.isDeleted || noteOpenedDeleted else { return nil }
+        return note
     }
 
     var page: PanelPage {
@@ -74,18 +72,19 @@ final class PanelState {
     }
 
     func openDetail(_ id: Priority.ID) {
-        guard let priority = store.priority(id: id) else { return }
+        guard let priority = store.priorityIncludingDeleted(id: id) else { return }
         let fromHistory = isHistoryOpen
         priorityFlow.cancelConfirmation()
         closeSettings()
         closeHistory()
         select(tab: .priorities)
         let days = store.dueDays
-        if !priority.isDone, !filter.includes(priority, days) {
+        if !priority.isDone, !priority.isDeleted, !filter.includes(priority, days) {
             select(filter: DueFilter.home(for: priority, days))
         }
         openPriorityID = id
         detailOpenedDone = priority.isDone
+        detailOpenedDeleted = priority.isDeleted
         detailReturnsToHistory = fromHistory
     }
 
@@ -103,6 +102,20 @@ final class PanelState {
         guard !priorityFlow.writeFailed else { return }
         detailOpenedDone = false
         detailReturnsToHistory = false
+    }
+
+    func restoreDeletedFromDetail() {
+        guard let id = openPriorityID else { return }
+        priorityFlow.restoreDeleted(id)
+        guard !priorityFlow.writeFailed else { return }
+        detailOpenedDeleted = false
+    }
+
+    func restoreDeletedNoteFromDetail() {
+        guard let id = openNoteID else { return }
+        noteFlow.restoreDeleted(id)
+        guard !noteFlow.writeFailed else { return }
+        noteOpenedDeleted = false
     }
 
     func openSettings() {
@@ -146,7 +159,7 @@ final class PanelState {
                 select(filter: DueFilter.home(for: priority, days))
             }
         } else {
-            select(filter: .today)
+            select(filter: .all)
         }
         if let priority {
             priorityFlow.flash(priority.id)
@@ -157,6 +170,7 @@ final class PanelState {
         guard openPriorityID != nil else { return }
         openPriorityID = nil
         detailOpenedDone = false
+        detailOpenedDeleted = false
         detailReturnsToHistory = false
         priorityFlow.cancelConfirmation()
     }
@@ -182,7 +196,6 @@ final class PanelState {
         guard resolved != filter else { return }
         closeHistory()
         filter = resolved
-        persist { try store.setValue(resolved, for: Self.filterKey) }
     }
 
     func step(by days: Int) {
@@ -194,7 +207,6 @@ final class PanelState {
         let resolved = newFilter.ordered
         guard resolved != noteFilter else { return }
         noteFilter = resolved
-        persist { try store.setValue(resolved, for: Self.noteFilterKey) }
     }
 
     func stepNotes(by days: Int) {
@@ -203,13 +215,14 @@ final class PanelState {
     }
 
     func openNote(_ id: NoteItem.ID) {
-        guard store.note(id: id) != nil else { return }
+        guard let note = store.noteIncludingDeleted(id: id) else { return }
         closeSettings()
         closeHistory()
         if tab != .notes {
             select(tab: .notes)
         }
         openNoteID = id
+        noteOpenedDeleted = note.isDeleted
         focusNoteID = nil
     }
 
@@ -249,6 +262,7 @@ final class PanelState {
     func closeNote() {
         guard openNoteID != nil else { return }
         openNoteID = nil
+        noteOpenedDeleted = false
         focusNoteID = nil
     }
 
@@ -270,6 +284,12 @@ final class PanelState {
         let next = !isDoneOpen
         isDoneOpen = next
         persist { try store.setValue(next, for: Self.doneOpenKey) }
+    }
+
+    func toggleDeleted() {
+        let next = !isDeletedOpen
+        isDeletedOpen = next
+        persist { try store.setValue(next, for: Self.deletedOpenKey) }
     }
 
     private func persist(_ write: () throws -> Void) {

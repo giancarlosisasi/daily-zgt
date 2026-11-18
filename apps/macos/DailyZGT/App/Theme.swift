@@ -402,6 +402,7 @@ extension Theme {
         static let rowSpacing = Space.s2
         static let checkSize: CGFloat = 12
         static let checkColor = Text.done
+        static let deletedIconColor = Text.dim
         static let title = Text.dim
         static let timeFont = Font.meta
         static let timeText = Text.dim
@@ -629,7 +630,7 @@ extension Theme {
         static let titleText = Text.strong
         static let subtitleFont = Font.label
         static let subtitleText = Text.muted
-        static let subtitleSpacing = Space.s1
+        static let stepSpacing = Space.s1
         static let stepSize = Ghost.height
         static let stepIconSize: CGFloat = 12
         static let stepText = Text.muted

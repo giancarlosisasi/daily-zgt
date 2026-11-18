@@ -17,11 +17,6 @@ enum RepeatRule: String, Codable, CaseIterable, Sendable, DatabaseValueConvertib
     case daily
 }
 
-enum NoteScope: String, Codable, CaseIterable, Sendable, DatabaseValueConvertible {
-    case day
-    case week
-}
-
 enum AlertKind: String, Codable, CaseIterable, Sendable, DatabaseValueConvertible {
     case before30m = "before_30m"
     case atDue = "at_due"
@@ -73,8 +68,10 @@ struct Priority: LocalTimeRecord, Identifiable {
     var updatedAt: Date
     var repeatRule = RepeatRule.none
     var repeatSeriesID: String?
+    var deletedAt: Date?
 
     var isDone: Bool { doneAt != nil }
+    var isDeleted: Bool { deletedAt != nil }
     var seriesID: String { repeatSeriesID ?? id }
 
     enum CodingKeys: String, CodingKey {
@@ -90,6 +87,7 @@ struct Priority: LocalTimeRecord, Identifiable {
         case updatedAt = "updated_at"
         case repeatRule = "repeat_rule"
         case repeatSeriesID = "repeat_series_id"
+        case deletedAt = "deleted_at"
     }
 }
 
@@ -122,12 +120,16 @@ struct NoteItem: LocalTimeRecord, Identifiable {
     var body: String
     var createdAt: Date
     var updatedAt: Date
+    var deletedAt: Date?
+
+    var isDeleted: Bool { deletedAt != nil }
 
     enum CodingKeys: String, CodingKey {
         case id
         case body
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
     }
 }
 

@@ -179,7 +179,7 @@ struct AlertReconcilerTests {
     }
 
     @Test
-    func deleteRemovesTheRowsAndTheRequests() async throws {
+    func deleteCancelsTheRowsAndRemovesTheRequests() async throws {
         let store = try makeStore(clock)
         let brief = try addBrief(to: store)
         let reconciler = makeReconciler(store)
@@ -188,9 +188,45 @@ struct AlertReconcilerTests {
         try store.deletePriority(brief.id)
         await reconciler.reconcile()
 
-        #expect(try store.alerts().isEmpty)
+        #expect(try store.alerts(status: .scheduled).isEmpty)
+        #expect(try store.alerts(status: .cancelled).count == 2)
         #expect(center.pending.isEmpty)
         try await expectNoChangeOnTheNextRun(store, reconciler)
+    }
+
+    @Test
+    func restoreOfADeletedPriorityPlansItsAlertsAgain() async throws {
+        let store = try makeStore(clock)
+        let brief = try addBrief(to: store)
+        let reconciler = makeReconciler(store)
+        await reconciler.reconcile()
+        try store.deletePriority(brief.id)
+        await reconciler.reconcile()
+
+        try store.restoreDeletedPriority(brief.id)
+        await reconciler.reconcile()
+
+        let scheduled = try store.alerts(status: .scheduled)
+        #expect(scheduled.map(\.kind) == [.before30m, .atDue])
+        #expect(scheduled.map(\.priorityID) == [brief.id, brief.id])
+        #expect(Set(center.pending.keys) == Set(scheduled.map(\.id)))
+        try await expectNoChangeOnTheNextRun(store, reconciler)
+    }
+
+    @Test
+    func aDeletedDonePriorityPlansNothingOnRestore() async throws {
+        let store = try makeStore(clock)
+        let brief = try addBrief(to: store)
+        try store.markDone(brief.id)
+        try store.deletePriority(brief.id)
+        let reconciler = makeReconciler(store)
+
+        try store.restoreDeletedPriority(brief.id)
+        await reconciler.reconcile()
+
+        #expect(store.donePriorities(in: .today).map(\.id) == [brief.id])
+        #expect(try store.alerts(status: .scheduled).isEmpty)
+        #expect(center.pending.isEmpty)
     }
 
     @Test

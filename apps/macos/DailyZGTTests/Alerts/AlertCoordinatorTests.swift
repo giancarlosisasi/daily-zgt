@@ -127,7 +127,8 @@ struct AlertCoordinatorTests {
 
         try store.deletePriority(brief.id)
         await alerts.settle()
-        #expect(try store.alerts().isEmpty)
+        #expect(try store.alerts(status: .scheduled).isEmpty)
+        #expect(try store.alerts(status: .cancelled).count == 2)
         #expect(center.pending.isEmpty)
     }
 
