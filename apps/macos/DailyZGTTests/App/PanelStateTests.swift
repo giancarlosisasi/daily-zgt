@@ -6,42 +6,41 @@ import Testing
 @MainActor
 struct PanelStateTests {
     @Test
-    func startsOnPrioritiesAndToday() throws {
+    func startsOnPrioritiesAndAll() throws {
         let state = PanelState(store: try makeStore())
         #expect(state.tab == .priorities)
-        #expect(state.filter == .today)
-        #expect(state.noteFilter == .today)
+        #expect(state.filter == .all)
+        #expect(state.noteFilter == .all)
     }
 
     @Test
-    func tabFilterAndNoteFilterAreSavedInAppState() throws {
+    func theTabIsSavedInAppStateAndTheFiltersAreNot() throws {
         let store = try makeStore()
         let state = PanelState(store: store)
         state.select(tab: .notes)
         state.select(filter: .week)
         state.select(noteFilter: .week)
+        #expect(try values("SELECT key FROM app_state", in: store.database, as: String.self) == ["open_tab"])
         #expect(try values("SELECT value FROM app_state WHERE key = 'open_tab'", in: store.database) == ["\"notes\""])
-        #expect(try values("SELECT value FROM app_state WHERE key = 'due_filter'", in: store.database) == ["{\"week\":{}}"])
-        #expect(try values("SELECT value FROM app_state WHERE key = 'note_filter'", in: store.database) == ["{\"week\":{}}"])
         #expect(state.saveError == nil)
     }
 
     @Test
-    func aNewStoreOnTheSameDatabaseRestoresTheTabTheFilterAndTheNoteFilter() throws {
+    func aNewLaunchRestoresTheTabAndStartsBothFiltersAtAll() throws {
         let database = try AppDatabase.inMemory()
         let first = PanelState(store: AppStore(database: database))
         first.select(tab: .notes)
         first.select(filter: .range("2026-11-17", "2026-11-24"))
-        first.select(noteFilter: .all)
+        first.select(noteFilter: .today)
 
         let second = PanelState(store: AppStore(database: database))
         #expect(second.tab == .notes)
-        #expect(second.filter == .range("2026-11-17", "2026-11-24"))
+        #expect(second.filter == .all)
         #expect(second.noteFilter == .all)
     }
 
     @Test
-    func theValuesSurviveAFileReopen() throws {
+    func aFileReopenKeepsTheTabAndStartsTheFilterAtAll() throws {
         let url = try temporaryFolder("panel-state").appending(path: "daily-zgt.sqlite")
         let first = PanelState(store: AppStore(database: try AppDatabase.onDisk(at: url)))
         first.select(tab: .notes)
@@ -49,25 +48,32 @@ struct PanelStateTests {
 
         let second = PanelState(store: AppStore(database: try AppDatabase.onDisk(at: url)))
         #expect(second.tab == .notes)
-        #expect(second.filter == .overdue)
+        #expect(second.filter == .all)
     }
 
     @Test
-    func theOldScopeKeyGivesTheFirstFilterAndNoteFilter() throws {
+    func oldSavedFilterAndScopeKeysDoNotChangeTheFirstFilter() throws {
         let database = try AppDatabase.inMemory()
-        try execute("INSERT INTO app_state (key, value) VALUES ('open_scope', '\"week\"')", in: database)
+        try execute("INSERT INTO app_state (key, value) VALUES ('open_scope', '\"today\"')", in: database)
+        try execute("INSERT INTO app_state (key, value) VALUES ('note_scope', '\"week\"')", in: database)
+        try execute("INSERT INTO app_state (key, value) VALUES ('due_filter', '{\"today\":{}}')", in: database)
+        try execute("INSERT INTO app_state (key, value) VALUES ('note_filter', 'not json')", in: database)
         let state = PanelState(store: AppStore(database: database))
+        #expect(state.filter == .all)
+        #expect(state.noteFilter == .all)
+        #expect(try values("SELECT key FROM app_state ORDER BY key", in: database, as: String.self) == ["due_filter", "note_filter", "note_scope", "open_scope"])
+    }
+
+    @Test
+    func theFilterChoiceStaysInsideOneRun() throws {
+        let state = PanelState(store: try makeStore())
+        state.select(filter: .week)
+        state.select(noteFilter: .today)
+        state.select(tab: .notes)
+        state.openSettings()
+        state.closeSettings()
+        state.select(tab: .priorities)
         #expect(state.filter == .week)
-        #expect(state.noteFilter == .week)
-    }
-
-    @Test
-    func aFilterThatDoesNotReadGivesToday() throws {
-        let database = try AppDatabase.inMemory()
-        try execute("INSERT INTO app_state (key, value) VALUES ('due_filter', 'not json')", in: database)
-        try execute("INSERT INTO app_state (key, value) VALUES ('open_scope', '42')", in: database)
-        let state = PanelState(store: AppStore(database: database))
-        #expect(state.filter == .today)
         #expect(state.noteFilter == .today)
     }
 
@@ -76,31 +82,31 @@ struct PanelStateTests {
         let store = try makeStore()
         let state = PanelState(store: store)
         state.select(tab: .priorities)
-        state.select(filter: .today)
-        state.select(noteFilter: .today)
+        state.select(filter: .all)
+        state.select(noteFilter: .all)
         #expect(try values("SELECT key FROM app_state", in: store.database, as: String.self).isEmpty)
     }
 
     @Test
     func aCalendarPickOfTomorrowKeepsThatDateOnTheNextDay() throws {
         let clock = TestClock("2026-10-12T09:00:00")
-        let database = try AppDatabase.inMemory()
-        let store = AppStore(database: database, now: { clock.date })
+        let store = AppStore(database: try AppDatabase.inMemory(), now: { clock.date })
         let state = PanelState(store: store)
         state.select(filter: DueFilter.picked(day: localDate("2026-10-13T00:00:00"), store.dueDays))
         state.select(noteFilter: DueFilter.picked(day: localDate("2026-10-13T00:00:00"), store.dueDays))
         #expect(state.filter == .day("2026-10-13"))
         clock.advance(minutes: 24 * 60)
-        let nextStore = AppStore(database: database, now: { clock.date })
-        let next = PanelState(store: nextStore)
-        #expect(next.filter == .day("2026-10-13"))
-        #expect(next.noteFilter == .day("2026-10-13"))
-        #expect(next.filter.resolved(nextStore.dueDays) == .today)
+        #expect(state.filter == .day("2026-10-13"))
+        #expect(state.noteFilter == .day("2026-10-13"))
+        #expect(state.filter.resolved(store.dueDays) == .today)
     }
 
     @Test
     func theDayStepMovesTheFilterOneDay() throws {
         let state = PanelState(store: try makeStore())
+        state.step(by: 1)
+        #expect(state.filter == .all)
+        state.select(filter: .today)
         state.step(by: 1)
         #expect(state.filter == .tomorrow)
         state.step(by: 1)
@@ -129,19 +135,11 @@ struct PanelStateTests {
     }
 
     @Test
-    func theOldNoteScopeGivesTheFirstNoteFilterOnce() throws {
-        let database = try AppDatabase.inMemory()
-        try execute("INSERT INTO app_state (key, value) VALUES ('note_scope', '\"week\"')", in: database)
-        let first = PanelState(store: AppStore(database: database))
-        #expect(first.noteFilter == .week)
-        first.select(noteFilter: .today)
-        let second = PanelState(store: AppStore(database: database))
-        #expect(second.noteFilter == .today)
-    }
-
-    @Test
     func theNoteDayStepStopsAtToday() throws {
         let state = PanelState(store: try makeStore())
+        state.stepNotes(by: 1)
+        #expect(state.noteFilter == .all)
+        state.select(noteFilter: .today)
         state.stepNotes(by: 1)
         #expect(state.noteFilter == .today)
         state.stepNotes(by: -1)

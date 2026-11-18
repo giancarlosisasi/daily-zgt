@@ -97,7 +97,7 @@ struct PanelSettingsNavigationTests {
 
         #expect(!state.isSettingsOpen)
         #expect(state.tab == .priorities)
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
     }
 
     @Test

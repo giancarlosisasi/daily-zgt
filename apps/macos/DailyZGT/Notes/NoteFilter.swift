@@ -9,10 +9,6 @@ extension DueFilter {
         [.all, .today, yesterday(days), .week]
     }
 
-    static func noteStart(stored: DueFilter?, legacyScope: NoteScope?) -> DueFilter {
-        stored ?? (legacyScope == .week ? .week : .today)
-    }
-
     func includesNote(_ note: NoteItem, _ days: DueDays) -> Bool {
         guard let span = span(days) else { return true }
         return span.contains(note.createdAt)

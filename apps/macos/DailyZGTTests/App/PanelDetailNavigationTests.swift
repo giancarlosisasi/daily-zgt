@@ -24,6 +24,7 @@ struct PanelDetailNavigationTests {
         let state = makeState(store)
         let week = try store.addPriority(title: "Week item", dueAt: localDate("2026-10-16T09:00:00"))
         state.select(tab: .notes)
+        state.select(filter: .today)
 
         state.openDetail(week.id)
         #expect(state.openPriorityID == week.id)
@@ -42,7 +43,7 @@ struct PanelDetailNavigationTests {
         state.closeDetail()
         #expect(state.openPriorityID == nil)
         #expect(state.detailPriority == nil)
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
         #expect(store.priority(id: first.id) != nil)
     }
 
@@ -139,6 +140,7 @@ struct PanelDetailNavigationTests {
         let store = try makeStore(clock)
         let state = makeState(store)
         let first = try store.addPriority(title: "First", list: .today)
+        state.select(filter: .today)
 
         state.openDetail(first.id)
         try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-20T09:00:00") }
