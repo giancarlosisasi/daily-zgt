@@ -88,7 +88,7 @@ struct CaptureModelTests {
     }
 
     @Test
-    func theAddedRowHasNoDueSoItShowsInSinFechaAndNotInTheMenuBarCount() throws {
+    func theAddedRowHasNoDueSoItShowsInSinFechaAndInTheMenuBarCount() throws {
         let store = try makeStore(clock)
         let state = PanelState(store: store)
         let capture = CaptureController(store: store)
@@ -99,7 +99,7 @@ struct CaptureModelTests {
         capture.model.draft.title = "Pagar la luz"
         capture.model.submit()
 
-        #expect(boot.menuBarCount == 0)
+        #expect(boot.menuBarCount == 1)
         #expect(boot.menuBarTitle == nil)
         #expect(store.openGroups(in: .today).map(\.id) == ["noDate"])
         #expect(store.openPriorities(in: .today).map(\.title) == ["Pagar la luz"])
