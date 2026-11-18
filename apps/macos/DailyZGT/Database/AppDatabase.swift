@@ -15,8 +15,8 @@ enum AppDatabase {
     }
 
     static func url(isDebugBuild: Bool) -> URL {
-        let name = isDebugBuild ? "daily-zgt-dev.sqlite" : "daily-zgt.sqlite"
-        return URL.applicationSupportDirectory.appending(path: "DailyZGT/\(name)")
+        let path = isDebugBuild ? "DailyZGT-Dev/daily-zgt-dev.sqlite" : "DailyZGT/daily-zgt.sqlite"
+        return URL.applicationSupportDirectory.appending(path: path)
     }
 
     static var isTestHost: Bool {

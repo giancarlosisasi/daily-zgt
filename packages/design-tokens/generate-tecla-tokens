@@ -125,7 +125,7 @@ def render(raw):
     tokens = json.loads(raw)
     known = {
         "name", "source", "appearance", "units", "color", "palette", "panel", "font", "type",
-        "space", "radius", "size", "key", "shadow", "duration", "easing", "spring",
+        "space", "radius", "size", "layout", "key", "shadow", "duration", "easing", "spring",
     }
     unknown = set(tokens) - known
     if unknown:
@@ -139,6 +139,7 @@ def render(raw):
         group("Space", sizes(tokens["space"])),
         group("Radius", sizes(tokens["radius"])),
         group("Size", sizes(tokens["size"])),
+        group("Layout", sizes(tokens["layout"])),
         group("Key", key_values(tokens["key"])),
         group("Shadows", shadows(tokens["shadow"])),
         group("Durations", doubles(tokens["duration"])),
@@ -279,6 +280,7 @@ def render_csharp(raw):
         cs_group("Space", cs_doubles(tokens["space"])),
         cs_group("Radius", cs_doubles(tokens["radius"])),
         cs_group("Size", cs_doubles(tokens["size"])),
+        cs_group("Layout", cs_doubles(tokens["layout"])),
         cs_group("Key", cs_key_values(tokens["key"])),
         cs_group("Shadows", cs_shadows(tokens["shadow"])),
         cs_group("Durations", cs_durations(tokens["duration"])),

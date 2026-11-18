@@ -39,7 +39,6 @@ final class RowFrames {
 struct PriorityStackDropDelegate: DropDelegate {
     let ids: [Priority.ID]
     let frames: RowFrames
-    let list: PriorityList
     let flow: PriorityFlow
 
     func validateDrop(info: DropInfo) -> Bool {
@@ -56,17 +55,17 @@ struct PriorityStackDropDelegate: DropDelegate {
     }
 
     func dropExited(info: DropInfo) {
-        flow.hover(gap: nil, in: list)
+        flow.hover(gap: nil, in: ids)
     }
 
     func performDrop(info: DropInfo) -> Bool {
         hover(info)
-        flow.drop(in: list)
+        flow.drop(in: ids)
         return true
     }
 
     private func hover(_ info: DropInfo) {
-        flow.hover(gap: PriorityOrder.gap(at: info.location.y, midpoints: frames.midpoints(of: ids)), in: list)
+        flow.hover(gap: PriorityOrder.gap(at: info.location.y, midpoints: frames.midpoints(of: ids)), in: ids)
     }
 }
 

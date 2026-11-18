@@ -12,16 +12,16 @@ struct PanelAlertNavigationTests {
     }
 
     @Test
-    func showingAPriorityInTheListSelectsItsListAndHighlightsIt() throws {
+    func showingAPriorityInTheListSelectsItsDayAndHighlightsIt() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
-        let week = try store.addPriority(title: "Week item", list: .week)
+        let week = try store.addPriority(title: "Week item", dueAt: localDate("2026-10-15T09:00:00"))
         state.select(tab: .notes)
 
         state.showInList(week.id)
 
         #expect(state.tab == .priorities)
-        #expect(state.scope == .week)
+        #expect(state.filter == .day("2026-10-15"))
         #expect(state.detailPriority == nil)
         #expect(state.priorityFlow.highlightedID == week.id)
         #expect(state.priorityFlow.scrollTargetID == week.id)
@@ -49,12 +49,12 @@ struct PanelAlertNavigationTests {
         let store = try makeStore(clock)
         let state = makeState(store)
         state.select(tab: .notes)
-        state.select(scope: .week)
+        state.select(filter: .week)
 
         state.showInList(nil)
 
         #expect(state.tab == .priorities)
-        #expect(state.scope == .today)
+        #expect(state.filter == .today)
         #expect(state.priorityFlow.highlightedID == nil)
         #expect(recorder.entries.isEmpty)
     }
@@ -69,7 +69,7 @@ struct PanelAlertNavigationTests {
         state.showInList(done.id)
         state.showInList("missing")
 
-        #expect(state.scope == .today)
+        #expect(state.filter == .today)
         #expect(state.priorityFlow.highlightedID == nil)
     }
 

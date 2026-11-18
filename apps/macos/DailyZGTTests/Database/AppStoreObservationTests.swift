@@ -7,18 +7,18 @@ import Testing
 @MainActor
 struct AppStoreObservationTests {
     static let insertPriority = """
-        INSERT INTO priority (id, title, level, list, position, created_at, updated_at)
-        VALUES ('p1', 'From another writer', 'high', 'today', 1, '2026-10-12T09:00:00', '2026-10-12T09:00:00')
+        INSERT INTO priority (id, title, level, list, due_at, position, created_at, updated_at)
+        VALUES ('p1', 'From another writer', 'high', 'today', '2026-10-12T09:00:00', 1, '2026-10-12T09:00:00', '2026-10-12T09:00:00')
         """
 
     @Test(.timeLimit(.minutes(1)))
     func aStoreWriteChangesThePublishedValue() async throws {
         let store = try makeStore()
-        #expect(store.openCount(in: .today) == 0)
+        #expect(store.openPriorities(in: .today).isEmpty)
         try await nextChange(of: store) {
             try store.addPriority(title: "Observed", list: .today)
         }
-        #expect(store.openCount(in: .today) == 1)
+        #expect(store.openPriorities(in: .today).count == 1)
     }
 
     @Test(.timeLimit(.minutes(1)))

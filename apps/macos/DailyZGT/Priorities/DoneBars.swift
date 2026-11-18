@@ -12,8 +12,7 @@ struct DoneConfirmationBar: View {
                 Text("¿Marcar como hecha?")
                     .font(Theme.Confirm.titleFont)
                     .foregroundStyle(Theme.Confirm.title)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
+                    .fixedSize(horizontal: false, vertical: true)
                 if let openSubtasksLabel {
                     Text(openSubtasksLabel)
                         .font(Theme.Confirm.hintFont)
@@ -59,7 +58,7 @@ struct DoneConfirmationBar: View {
     }
 }
 
-extension PendingUndo {
+extension TimedUndo {
     func lineFraction(at now: Date, reduceMotion: Bool) -> Double {
         reduceMotion ? 1 : remainingFraction(at: now)
     }
@@ -68,13 +67,15 @@ extension PendingUndo {
 struct UndoBar: View {
     let title: String
     var remaining: Double = 1
+    var prefix = "Hecha"
+    var icon = Icon.check
     let onUndo: () -> Void
 
     var body: some View {
         HStack(spacing: Theme.Undo.spacing) {
-            IconView(icon: .check, size: Theme.Undo.checkSize)
+            IconView(icon: icon, size: Theme.Undo.checkSize)
                 .foregroundStyle(Theme.Undo.check)
-            Text("Hecha: \(title)")
+            Text("\(prefix): \(title)")
                 .font(Theme.Undo.font)
                 .foregroundStyle(Theme.Undo.text)
                 .lineLimit(1)
@@ -104,8 +105,10 @@ struct UndoBar: View {
     }
 }
 
-struct TimedUndoBar: View {
-    let undo: PendingUndo
+struct TimedUndoBar<Undo: TimedUndo>: View {
+    let undo: Undo
+    var prefix = "Hecha"
+    var icon = Icon.check
     let onUndo: () -> Void
 
     @Environment(AppStore.self) private var store
@@ -116,6 +119,8 @@ struct TimedUndoBar: View {
             UndoBar(
                 title: undo.title,
                 remaining: undo.lineFraction(at: store.now(), reduceMotion: motion.reduceMotion),
+                prefix: prefix,
+                icon: icon,
                 onUndo: onUndo
             )
         }

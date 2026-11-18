@@ -24,6 +24,14 @@ struct GlobalHotkeyServiceTests {
     }
 
     @Test
+    func aDebugBuildHasNoDefaultShortcut() {
+        #expect(CaptureShortcut.initialShortcut(isDebugBuild: false) == CaptureShortcut.defaultShortcut)
+        #expect(CaptureShortcut.initialShortcut(isDebugBuild: true) == nil)
+        #expect(CaptureShortcut.captureWindow.initialShortcut == nil)
+        #expect(CaptureShortcut.captureWindow.rawValue == CaptureShortcut.rawValue)
+    }
+
+    @Test
     func theDefaultIsStoredWhenNothingIsStored() {
         let hotkey = FakeHotkeyService()
         defer { hotkey.removeStoredValue() }

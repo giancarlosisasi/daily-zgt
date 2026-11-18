@@ -9,10 +9,14 @@ enum HotkeyLog {
 enum CaptureShortcut {
     static let rawValue = "captureWindow"
     static let defaultShortcut = KeyboardShortcuts.Shortcut(.p, modifiers: [.control, .option, .command])
-    static let captureWindow = name(rawValue)
+    static let captureWindow = name(rawValue, initial: initialShortcut(isDebugBuild: AppDatabase.isDebugBuild))
 
-    static func name(_ rawValue: String) -> KeyboardShortcuts.Name {
-        KeyboardShortcuts.Name(rawValue, initial: defaultShortcut)
+    static func initialShortcut(isDebugBuild: Bool) -> KeyboardShortcuts.Shortcut? {
+        isDebugBuild ? nil : defaultShortcut
+    }
+
+    static func name(_ rawValue: String, initial: KeyboardShortcuts.Shortcut? = defaultShortcut) -> KeyboardShortcuts.Name {
+        KeyboardShortcuts.Name(rawValue, initial: initial)
     }
 }
 

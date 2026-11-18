@@ -17,6 +17,15 @@ enum LocalTime {
         date.formatted(Date.ISO8601FormatStyle(timeZone: timeZone).year().month().day().dateSeparator(.dash))
     }
 
+    static func day(from key: String, in timeZone: TimeZone = .current) -> Date? {
+        guard let date = try? Date(key, strategy: Date.ISO8601FormatStyle(timeZone: timeZone).year().month().day().dateSeparator(.dash)) else {
+            return nil
+        }
+        var calendar = Calendar(identifier: .iso8601)
+        calendar.timeZone = timeZone
+        return calendar.startOfDay(for: date)
+    }
+
     static func weekKey(for date: Date, in timeZone: TimeZone = .current) -> String {
         var calendar = Calendar(identifier: .iso8601)
         calendar.timeZone = timeZone

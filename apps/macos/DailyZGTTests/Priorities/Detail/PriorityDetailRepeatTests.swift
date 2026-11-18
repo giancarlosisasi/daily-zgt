@@ -22,7 +22,7 @@ struct PriorityDetailRepeatTests {
     }
 
     private func box(_ priority: Priority) -> PriorityDetailBox {
-        PriorityDetailBox(priority: priority, now: clock.date, onLevel: { _ in }, onDue: { _ in }, onList: { _ in })
+        PriorityDetailBox(priority: priority, now: clock.date, onLevel: { _ in }, onDue: { _ in })
     }
 
     @Test

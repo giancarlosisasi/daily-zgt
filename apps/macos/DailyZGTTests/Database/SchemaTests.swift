@@ -11,7 +11,7 @@ struct SchemaTests {
         """
 
     @Test
-    func createsTheSixTables() throws {
+    func createsTheEightTables() throws {
         let database = try AppDatabase.inMemory()
         let tables: [String] = try values(
             """
@@ -21,7 +21,7 @@ struct SchemaTests {
             """,
             in: database
         )
-        #expect(tables == ["alert", "app_state", "note", "priority", "priority_event", "subtask"])
+        #expect(tables == ["alert", "app_state", "image", "note", "note_item", "priority", "priority_event", "subtask"])
     }
 
     @Test(arguments: [
@@ -37,6 +37,8 @@ struct SchemaTests {
         ("alert", ["id", "priority_id", "kind", "fire_at", "status"]),
         ("priority_event", ["id", "priority_id", "at", "type"]),
         ("app_state", ["key", "value"]),
+        ("image", ["id", "mime", "width", "height", "bytes", "created_at"]),
+        ("note_item", ["id", "body", "created_at", "updated_at"]),
     ])
     func tableHasThePlannedColumns(table: String, columns: [String]) throws {
         let database = try AppDatabase.inMemory()
@@ -150,8 +152,11 @@ struct SchemaTests {
     }
 
     @Test
-    func aDebugBuildKeepsItsDataOutOfTheReleaseDatabase() {
-        #expect(AppDatabase.url(isDebugBuild: true).path.hasSuffix("/Library/Application Support/DailyZGT/daily-zgt-dev.sqlite"))
+    func aDebugBuildKeepsItsDataOutOfTheReleaseFolder() {
+        let debug = AppDatabase.url(isDebugBuild: true)
+        let release = AppDatabase.url(isDebugBuild: false)
+        #expect(debug.path.hasSuffix("/Library/Application Support/DailyZGT-Dev/daily-zgt-dev.sqlite"))
+        #expect(debug.deletingLastPathComponent() != release.deletingLastPathComponent())
         #expect(AppDatabase.isDebugBuild)
         #expect(AppDatabase.defaultURL == AppDatabase.url(isDebugBuild: true))
     }

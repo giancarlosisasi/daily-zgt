@@ -21,22 +21,21 @@ enum SettingsCopy {
 struct SettingsHeader: View {
     let onBack: () -> Void
 
+    @Environment(\.panelLayout) private var layout
+
     var body: some View {
-        HStack {
-            Button(action: onBack) {
-                HStack(spacing: Theme.Detail.backSpacing) {
-                    IconView(icon: .caretLeft, size: Theme.Detail.backChevronSize)
-                    Text(SettingsCopy.title)
-                        .font(Theme.Font.body)
-                }
-                .foregroundStyle(Theme.Detail.backText)
-                .padding(.leading, Theme.Detail.backLeadingPadding)
-                .padding(.trailing, Theme.Detail.backTrailingPadding)
-                .frame(height: Theme.Detail.backHeight)
+        switch layout {
+        case .panel:
+            HStack {
+                DetailBackButton(title: SettingsCopy.title, accessibilityTitle: SettingsCopy.close, action: onBack)
+                Spacer(minLength: 0)
             }
-            .buttonStyle(GhostButtonStyle(radius: Theme.Detail.backRadius))
-            .accessibilityLabel(SettingsCopy.close)
-            Spacer(minLength: 0)
+        case .window:
+            Text(SettingsCopy.title)
+                .font(Theme.Detail.windowTitleFont)
+                .foregroundStyle(Theme.Text.strong)
+                .accessibilityAddTraits(.isHeader)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

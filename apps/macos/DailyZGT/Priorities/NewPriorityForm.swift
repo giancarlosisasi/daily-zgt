@@ -28,7 +28,10 @@ struct NewPriorityForm: Equatable {
     private(set) var isBlockedByLimit = false
     var draft = NewPriorityDraft()
 
-    mutating func open() {
+    mutating func open(defaultDue: Date? = nil) {
+        if !isOpen, draft == NewPriorityDraft() {
+            draft.dueAt = defaultDue
+        }
         isOpen = true
     }
 
@@ -44,9 +47,9 @@ struct NewPriorityForm: Equatable {
 
     @MainActor
     @discardableResult
-    mutating func submit(to store: AppStore, list: PriorityList) throws -> Priority? {
+    mutating func submit(to store: AppStore) throws -> Priority? {
         guard draft.canAdd else { return nil }
-        if list == .today, !store.canAddToToday() {
+        if store.addBlock(forDue: draft.dueAt) != nil {
             isBlockedByLimit = true
             return nil
         }
@@ -54,7 +57,6 @@ struct NewPriorityForm: Equatable {
         let added = try store.addPriority(
             title: draft.trimmedTitle,
             level: draft.level,
-            list: list,
             dueAt: draft.dueAt
         )
         cancel()

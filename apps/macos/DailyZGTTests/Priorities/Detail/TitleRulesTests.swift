@@ -85,6 +85,21 @@ struct ClickableTitleViewTests {
     }
 
     @Test
+    func aMeasureAtAnotherWidthKeepsTheTextInsideTheFrame() throws {
+        let view = ClickableTitleView.make()
+        view.apply(text: "Revisar con calma el informe trimestral de ventas y escribir un resumen corto", isUnderlined: false)
+        view.setFrameSize(NSSize(width: 160, height: 80))
+        let measured = view.size(fittingWidth: 10_000)
+        let container = try #require(view.textContainer)
+        let layout = try #require(view.layoutManager)
+        layout.ensureLayout(for: container)
+        #expect(measured.width > 160)
+        #expect(container.containerSize.width == 160)
+        #expect(layout.usedRect(for: container).width <= 160)
+        #expect(view.clipsToBounds)
+    }
+
+    @Test
     func theUnderlineKeepsTheSelection() {
         let view = ClickableTitleView.make()
         view.apply(text: "Selectable title", isUnderlined: false)

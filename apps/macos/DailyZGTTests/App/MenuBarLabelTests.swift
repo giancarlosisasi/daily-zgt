@@ -1,3 +1,4 @@
+import AppKit
 import Observation
 import SwiftUI
 import Testing
@@ -39,12 +40,13 @@ struct MenuBarLabelTests {
     }
 
     @Test
-    func theCountIsTheOpenPrioritiesOfToday() throws {
+    func theCountIsTheOpenPrioritiesDueTodayOrBefore() throws {
         let store = try makeStore()
-        try store.addPriority(title: "Today open", list: .today)
-        try store.addPriority(title: "Today open too", list: .today)
-        try store.addPriority(title: "Week open", list: .week)
-        let done = try store.addPriority(title: "Today done", list: .today)
+        try store.addPriority(title: "Today open", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "Today open too", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "Week open", list: .week, dueAt: localDate("2026-10-14T18:00:00"))
+        try store.addPriority(title: "No date")
+        let done = try store.addPriority(title: "Today done", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.markDone(done.id)
 
         #expect(readyBoot(store).menuBarCount == 2)
@@ -57,11 +59,11 @@ struct MenuBarLabelTests {
         #expect(boot.menuBarCount == 0)
 
         var added: Priority?
-        try await nextChange(of: store) { added = try store.addPriority(title: "First", list: .today) }
+        try await nextChange(of: store) { added = try store.addPriority(title: "First", list: .today, dueAt: localDate("2026-10-12T18:00:00")) }
         #expect(boot.menuBarCount == 1)
         let first = try #require(added)
 
-        try await nextChange(of: store) { try store.addPriority(title: "Second", list: .today) }
+        try await nextChange(of: store) { try store.addPriority(title: "Second", list: .today, dueAt: localDate("2026-10-12T18:00:00")) }
         #expect(boot.menuBarCount == 2)
 
         try await nextChange(of: store) { try store.markDone(first.id) }
@@ -70,10 +72,10 @@ struct MenuBarLabelTests {
         try await nextChange(of: store) { try store.restorePriority(first.id) }
         #expect(boot.menuBarCount == 2)
 
-        try await nextChange(of: store) { try store.movePriority(first.id, to: .week) }
+        try await nextChange(of: store) { try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-14T18:00:00") } }
         #expect(boot.menuBarCount == 1)
 
-        try await nextChange(of: store) { try store.movePriority(first.id, to: .today) }
+        try await nextChange(of: store) { try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-12T18:00:00") } }
         #expect(boot.menuBarCount == 2)
 
         try await nextChange(of: store) { try store.deletePriority(first.id) }
@@ -111,7 +113,7 @@ struct MenuBarLabelTests {
             continuation.yield()
         }
 
-        try store.addPriority(title: "Observed", list: .today)
+        try store.addPriority(title: "Observed", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
 
         for await _ in changes {
             break
@@ -119,8 +121,8 @@ struct MenuBarLabelTests {
         #expect(boot.menuBarCount == 1)
     }
 
-    private func renderLabel(count: Int?, dark: Bool, name: String) throws {
-        let label = MenuBarLabel(count: count)
+    private func renderLabel(count: Int?, badge: String? = nil, dark: Bool, name: String) throws {
+        let label = MenuBarLabel(count: count, badge: badge)
             .foregroundStyle(dark ? Color(TeclaTokens.Colors.keyT) : Color(TeclaTokens.Colors.mbBg))
             .padding(.horizontal, 7)
             .frame(height: 22)
@@ -129,6 +131,15 @@ struct MenuBarLabelTests {
         let url = try Screenshot.writeHosted(label, named: name)
         let size = try #require(try url.resourceValues(forKeys: [.fileSizeKey]).fileSize)
         #expect(size > 0)
+    }
+
+    @Test
+    func rendersTheDevBadgeNextToTheIcon() throws {
+        try renderLabel(count: 4, badge: MenuBarBadge.text(isDebugBuild: true), dark: true, name: "menu-bar-label-dev-dark")
+        try renderLabel(count: 4, badge: MenuBarBadge.text(isDebugBuild: true), dark: false, name: "menu-bar-label-dev-light")
+        let plain = NSHostingView(rootView: MenuBarLabel(count: 4)).fittingSize.width
+        let dev = NSHostingView(rootView: MenuBarLabel(count: 4, badge: "DEV")).fittingSize.width
+        #expect(dev > plain)
     }
 
     @Test

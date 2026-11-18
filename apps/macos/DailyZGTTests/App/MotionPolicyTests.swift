@@ -9,12 +9,8 @@ struct MotionPolicyTests {
     private static let tokens: [(MotionStyle, Animation)] = [
         (.press, Theme.Motion.press),
         (.pop, Theme.Motion.panelPop),
-        (.rowIn, Theme.Motion.out),
-        (.rowOut, Theme.Motion.slowOut),
-        (.fade, Theme.Motion.fade),
+        (.ring, Theme.Motion.fade),
         (.slide, Theme.Motion.spring),
-        (.caret, Theme.Motion.spring),
-        (.draw, Theme.Motion.slowOut),
     ]
 
     @Test
@@ -46,10 +42,8 @@ struct MotionPolicyTests {
     }
 
     @Test
-    func theLeaveDelayIsTheSlowDurationOrZero() {
-        #expect(MotionPolicy(reduceMotion: false).leaveDelay == Duration.tecla(TeclaTokens.Durations.slow))
-        #expect(MotionPolicy(reduceMotion: false).leaveDelay > .zero)
-        #expect(MotionPolicy(reduceMotion: true).leaveDelay == .zero)
+    func onlyTheKeyPressThePopTheBellAndTheToggleMove() {
+        #expect(MotionStyle.allCases == [.press, .pop, .ring, .slide])
     }
 
     @Test
@@ -89,42 +83,30 @@ struct MotionPolicyTests {
         #expect(angles.count == 6)
     }
 
-    @Test(arguments: [false, true])
-    func theRowThatIsMarkedDoneLeavesAfterTheAnimationOrAtOnce(reduceMotion: Bool) throws {
+    @Test
+    func theRowThatIsMarkedDoneLeavesAtOnce() throws {
         let recorder = ScheduleRecorder()
         let store = try makeStore(TestClock("2026-10-12T10:24:00"))
         let flow = PriorityFlow(store: store, schedule: recorder.schedule)
         let first = try store.addPriority(title: "First", list: .today)
         flow.toggleConfirmation(for: first.id)
 
-        flow.confirmDone(first.id, leaving: MotionPolicy(reduceMotion: reduceMotion).leaveDelay)
+        flow.confirmDone(first.id)
 
-        if reduceMotion {
-            #expect(!flow.isLeaving(first.id))
-            #expect(store.priority(id: first.id)?.isDone == true)
-            #expect(flow.undo?.priorityID == first.id)
-            #expect(recorder.entries.map(\.delay) == [Theme.Timing.undoLifetime])
-        } else {
-            #expect(flow.isLeaving(first.id))
-            #expect(store.priority(id: first.id)?.isDone == false)
-            #expect(recorder.entries.map(\.delay) == [.milliseconds(320)])
-            recorder.fire(0)
-            #expect(store.priority(id: first.id)?.isDone == true)
-            #expect(flow.undo?.priorityID == first.id)
-        }
+        #expect(!flow.isLeaving(first.id))
+        #expect(store.priority(id: first.id)?.isDone == true)
+        #expect(flow.undo?.priorityID == first.id)
+        #expect(recorder.entries.map(\.delay) == [Theme.Timing.undoLifetime])
     }
 
     @Test
     func theUndoBarGoesAwayAfterItsLifetimeWithEitherSetting() throws {
-        for reduceMotion in [false, true] {
+        do {
             let recorder = ScheduleRecorder()
             let store = try makeStore(TestClock("2026-10-12T10:24:00"))
             let flow = PriorityFlow(store: store, schedule: recorder.schedule)
             let first = try store.addPriority(title: "First", list: .today)
-            flow.confirmDone(first.id, leaving: MotionPolicy(reduceMotion: reduceMotion).leaveDelay)
-            if !reduceMotion {
-                recorder.fire(0)
-            }
+            flow.confirmDone(first.id)
             #expect(flow.undo != nil)
             #expect(recorder.entries.last?.delay == Theme.Timing.undoLifetime)
 

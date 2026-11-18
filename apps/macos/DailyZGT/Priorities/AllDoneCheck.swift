@@ -34,13 +34,7 @@ struct AllDoneMark: View {
 }
 
 struct AllDoneCheck: View {
-    @Environment(\.motionPolicy) private var motion
-    @State private var isDrawn = false
-
     var body: some View {
-        AllDoneMark(progress: motion.animates && !isDrawn ? 0 : 1)
-            .onAppear {
-                motion.perform(.draw) { isDrawn = true }
-            }
+        AllDoneMark()
     }
 }

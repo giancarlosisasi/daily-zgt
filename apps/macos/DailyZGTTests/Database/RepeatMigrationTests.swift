@@ -100,6 +100,8 @@ struct RepeatMigrationTests {
         #expect(try values("SELECT identifier FROM grdb_migrations ORDER BY identifier", in: database) == [
             FirstSchema.name,
             "002_add_repeat_to_priority",
+            "003_add_image",
+            "004_add_note_item",
         ])
     }
 
@@ -191,13 +193,13 @@ struct RepeatMigrationTests {
 
         let again = try AppDatabase.onDisk(at: url)
         #expect(try FirstSchema.contents(of: again) == before)
-        #expect(try values("SELECT COUNT(*) FROM grdb_migrations", in: again) == [2])
+        #expect(try values("SELECT COUNT(*) FROM grdb_migrations", in: again) == [4])
     }
 
     private func expectTheStoreReadsTheOldRows(in database: DatabaseQueue) throws {
         let store = AppStore(database: database, now: { localDate("2026-10-12T10:00:00") })
         #expect(store.openPriorities(in: .today).map(\.title) == ["Meditar", "Sin nada"])
-        #expect(store.donePriorities(in: .week).map(\.repeatRule) == [.none])
+        #expect(store.snapshot.done.map(\.repeatRule) == [.none])
         #expect(store.subtasks(of: "p1").map(\.title) == ["Respirar", "Estirar"])
         #expect(try store.alerts().map(\.id) == ["a3", "a1", "a2"])
     }

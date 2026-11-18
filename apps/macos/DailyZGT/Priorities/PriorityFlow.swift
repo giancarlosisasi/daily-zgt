@@ -3,18 +3,26 @@ import Observation
 
 typealias PrioritySchedule = @MainActor (Duration, @escaping @MainActor () -> Void) -> Void
 
-struct PendingUndo: Equatable {
-    let priorityID: Priority.ID
-    let title: String
-    let token: Int
-    let startedAt: Date
-    let lifetime: Duration
+protocol TimedUndo: Equatable {
+    var title: String { get }
+    var startedAt: Date { get }
+    var lifetime: Duration { get }
+}
 
+extension TimedUndo {
     func remainingFraction(at now: Date) -> Double {
         let total = Double(lifetime.components.seconds) + Double(lifetime.components.attoseconds) / 1e18
         guard total > 0 else { return 0 }
         return min(max(1 - now.timeIntervalSince(startedAt) / total, 0), 1)
     }
+}
+
+struct PendingUndo: TimedUndo {
+    let priorityID: Priority.ID
+    let title: String
+    let token: Int
+    let startedAt: Date
+    let lifetime: Duration
 }
 
 extension SubtaskProgress {
@@ -180,20 +188,18 @@ final class PriorityFlow {
         }
     }
 
-    func hover(gap: Int?, in list: PriorityList) {
+    func hover(gap: Int?, in ids: [Priority.ID]) {
         guard var current = drag else { return }
-        let ids = store.openPriorities(in: list).map(\.id)
         let next = gap.flatMap { PriorityOrder.changesOrder(current.id, gap: $0, in: ids) ? $0 : nil }
         guard next != current.gap else { return }
         current.gap = next
         drag = current
     }
 
-    func drop(in list: PriorityList) {
+    func drop(in ids: [Priority.ID]) {
         guard let current = drag else { return }
         drag = nil
         guard let gap = current.gap else { return }
-        let ids = store.openPriorities(in: list).map(\.id)
         do {
             try store.reorderPriorities(PriorityOrder.moving(current.id, toGap: gap, in: ids))
             writeFailed = false

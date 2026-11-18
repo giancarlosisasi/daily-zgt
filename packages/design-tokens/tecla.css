@@ -170,6 +170,11 @@
   --panel-level-gap: 1.5px;
   --panel-checkbox-line: 1.5px;
   --panel-undo-line: 2px;
+  --layout-panel-width: 360px;
+  --layout-sidebar-min: 280px;
+  --layout-sidebar-ideal: 340px;
+  --layout-sidebar-max: 440px;
+  --layout-readable-width: 560px;
 
   --elevation-1: 0 4px 0 var(--color-key-side);
   --elevation-2: 0 6px 0 var(--color-key-side), 0 22px 50px rgba(0,0,0,0.5);

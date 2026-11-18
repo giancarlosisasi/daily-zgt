@@ -115,18 +115,18 @@ struct Subtask: LocalTimeRecord, Identifiable {
     }
 }
 
-struct Note: LocalTimeRecord {
-    static let databaseTableName = "note"
+struct NoteItem: LocalTimeRecord, Identifiable {
+    static let databaseTableName = "note_item"
 
-    var scope: NoteScope
-    var period: String
+    var id: String
     var body: String
+    var createdAt: Date
     var updatedAt: Date
 
     enum CodingKeys: String, CodingKey {
-        case scope
-        case period
+        case id
         case body
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
 }

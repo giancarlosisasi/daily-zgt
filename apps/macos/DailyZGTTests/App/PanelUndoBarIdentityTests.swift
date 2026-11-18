@@ -51,7 +51,7 @@ struct PanelUndoBarIdentityTests {
         let store = try makeStore(clock)
         let first = try store.addPriority(title: "Mandar el reporte", list: .today)
         try store.addPriority(title: "Otra", list: .today)
-        try store.saveNote("Hablar con Ana sobre el brief.", scope: .day)
+        try store.addNote(body: "Hablar con Ana sobre el brief.")
         let state = makeState(store)
 
         func height(_ tab: PanelTab, named name: String? = nil) throws -> CGFloat {

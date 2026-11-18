@@ -56,7 +56,7 @@ enum Screenshot {
         return try save(data, named: name)
     }
 
-    private static func save(_ data: Data, named name: String) throws -> URL {
+    static func save(_ data: Data, named name: String) throws -> URL {
         let directory = try repositoryRoot().appending(path: "build/screens", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: "\(name).png")

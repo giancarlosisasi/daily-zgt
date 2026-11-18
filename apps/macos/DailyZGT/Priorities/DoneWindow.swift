@@ -6,17 +6,6 @@ enum DoneWindow {
     static func cutoff(now: Date) -> Date {
         LocalTime.truncated(now).addingTimeInterval(-length)
     }
-
-    static func periodStart(for list: PriorityList, at now: Date, in timeZone: TimeZone = .current) -> Date {
-        var calendar = Calendar(identifier: .iso8601)
-        calendar.timeZone = timeZone
-        switch list {
-        case .today:
-            return calendar.startOfDay(for: now)
-        case .week:
-            return calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? calendar.startOfDay(for: now)
-        }
-    }
 }
 
 struct DoneDayGroup: Equatable, Identifiable {

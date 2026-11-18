@@ -10,7 +10,7 @@ struct CaptureModelTests {
     private func limited(_ store: AppStore, open: Int) throws {
         PanelState(store: store).setTodayLimit(true)
         for index in 0..<open {
-            try store.addPriority(title: "Open \(index)", list: .today)
+            try store.addPriority(title: "Open \(index)", dueAt: clock.date)
         }
     }
 
@@ -88,7 +88,7 @@ struct CaptureModelTests {
     }
 
     @Test
-    func theAddedRowShowsInTheMenuBarCountAndTitle() throws {
+    func theAddedRowHasNoDueSoItShowsInSinFechaAndNotInTheMenuBarCount() throws {
         let store = try makeStore(clock)
         let state = PanelState(store: store)
         let capture = CaptureController(store: store)
@@ -99,9 +99,10 @@ struct CaptureModelTests {
         capture.model.draft.title = "Pagar la luz"
         capture.model.submit()
 
-        #expect(boot.menuBarCount == 1)
-        #expect(boot.menuBarTitle == "Pagar la luz")
-        #expect(store.openCount(in: .today) == 1)
+        #expect(boot.menuBarCount == 0)
+        #expect(boot.menuBarTitle == nil)
+        #expect(store.openGroups(in: .today).map(\.id) == ["noDate"])
+        #expect(store.openPriorities(in: .today).map(\.title) == ["Pagar la luz"])
     }
 
     @Test(.timeLimit(.minutes(1)))
@@ -147,19 +148,19 @@ struct CaptureModelTests {
         let model = CaptureModel(store: store)
         model.draft.title = "La quinta"
         #expect(model.submit())
-        #expect(store.openCount(in: .today) == TodayLimit.maxOpen)
+        #expect(store.openPriorities(in: .today).count == TodayLimit.maxOpen)
     }
 
     @Test
     func withTheLimitOffTheAddWorksWithManyOpen() throws {
         let store = try makeStore(clock)
         for index in 0..<7 {
-            try store.addPriority(title: "Open \(index)", list: .today)
+            try store.addPriority(title: "Open \(index)", dueAt: clock.date)
         }
         let model = CaptureModel(store: store)
         model.draft.title = "La octava"
         #expect(model.submit())
-        #expect(store.openCount(in: .today) == 8)
+        #expect(store.openPriorities(in: .today).count == 8)
     }
 
     @Test

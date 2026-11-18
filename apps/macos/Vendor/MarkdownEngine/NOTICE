@@ -1,0 +1,27 @@
+MarkdownEngine, vendored copy
+
+Origin: https://github.com/nodes-app/swift-markdown-engine
+Version: 0.16.0, commit 8cb63c1
+License: Apache-2.0, see LICENSE in this folder.
+
+This folder holds only the MarkdownEngine target of that repository.
+The MarkdownEngineCodeBlocks and MarkdownEngineLatex targets, the SwiftMath
+dependency, the tests and the demo app are not copied.
+Package.swift is rewritten for the one target.
+
+Patches by Daily ZGT:
+1. Styling/MarkdownASTStyler.swift, shrinkInactiveMarkers: heading markers
+   (#, ##, ###) stay hidden also when the caret is on the heading line.
+2. Styling/MarkdownASTStyler.swift, styleBlockquote: the quote marker (>)
+   stays hidden also when the caret is on the quote line.
+3. Styling/MarkdownASTStyler.swift, adding(_:to:): a font with no italic
+   face (Onest) gets an oblique skew matrix for italic text.
+4. Input/MarkdownListHandler.swift, TAB branch and orderedNumberRegex: Tab on
+   a numbered item nests it and restarts its number at 1.
+5. Configuration/MarkdownEditorConfiguration.swift (TaskCheckboxBox),
+   Renderer/TaskCheckboxGeometry.swift, Renderer/MarkdownTextLayoutFragment.swift,
+   TextView/NativeTextView/NativeTextView+TaskCheckbox.swift and
+   Styling/MarkdownASTStyler.swift: an optional TaskCheckboxBox draws the task
+   box as a rounded square with the colors, size and gap of the host app. The
+   click area and the drawn box use the same size and gap. A bullet then sits
+   on the center of the box column, so bullets and boxes line up.

@@ -1,47 +1,46 @@
+import AppKit
 import SwiftUI
 
 struct MainWindowView: View {
-    static let title = "Daily ZGT"
+    static let title = title(isDebugBuild: AppDatabase.isDebugBuild)
+
+    static func title(isDebugBuild: Bool) -> String {
+        isDebugBuild ? "Daily ZGT Dev" : "Daily ZGT"
+    }
     static let emptyDetail = "Elige una prioridad para ver su detalle."
+    static let emptyNoteDetail = NoteFilterLabels.emptyDetail
 
     @Environment(AppStore.self) private var store
     @Environment(PanelState.self) private var state
+    @AppStorage private var sidebarWidth: Double
+    @State private var dragStartWidth: Double?
+
+    init(defaults: UserDefaults = .standard) {
+        _sidebarWidth = AppStorage(
+            wrappedValue: Double(Theme.Window.sidebarIdeal),
+            Theme.Window.sidebarWidthKey,
+            store: defaults
+        )
+    }
 
     var body: some View {
-        VStack(spacing: Theme.Panel.spacing) {
-            Group {
-                switch state.page {
-                case .settings:
-                    ScrollView {
-                        SettingsView()
-                            .frame(maxWidth: Theme.Window.pageMaxWidth)
-                    }
-                    .motionTransition(.slideIn)
-                case .history:
-                    DoneHistoryView(list: state.scope)
-                        .frame(maxWidth: Theme.Window.pageMaxWidth)
-                        .motionTransition(.slideIn)
-                case .browse:
-                    browse
-                        .motionTransition(.slideBack)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .motion(.slide, value: state.page)
-            TimelineView(.everyMinute) { _ in
-                PanelFooterBar(now: store.now())
-            }
+        HStack(spacing: 0) {
+            sidebar
+                .frame(width: Theme.Window.clampedSidebar(sidebarWidth))
+            divider
+            detailPane
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .font(Theme.Font.body)
         .foregroundStyle(Theme.Text.primary)
-        .padding(Theme.Window.padding)
         .frame(minWidth: Theme.Window.minWidth, minHeight: Theme.Window.minHeight)
         .background(Theme.Panel.background)
         .environment(\.panelLayout, .window)
         .onChange(of: state.detailPriority == nil) { state.closeDetailIfGone() }
+        .onChange(of: state.detailNote == nil) { state.closeNoteIfGone() }
     }
 
-    private var browse: some View {
+    private var sidebar: some View {
         VStack(alignment: .leading, spacing: Theme.Panel.spacing) {
             SegmentedTabs(
                 style: .top,
@@ -51,71 +50,102 @@ struct MainWindowView: View {
                 ],
                 selection: Binding(get: { state.tab }, set: { state.select(tab: $0) })
             )
-            .frame(width: Theme.Window.listWidth)
+            BrowseHeader()
             switch state.tab {
             case .priorities:
-                HStack(alignment: .top, spacing: Theme.Window.columnSpacing) {
-                    listColumn
-                        .frame(width: Theme.Window.listWidth)
-                    Rectangle()
-                        .fill(Theme.Window.divider)
-                        .frame(width: Theme.Window.dividerWidth)
-                    detailColumn
+                ScrollView {
+                    PriorityListView(filter: state.filter)
                 }
-                .motionTransition(.fadeIn)
+                .scrollIndicators(.automatic)
             case .notes:
-                VStack(spacing: Theme.Panel.spacing) {
-                    ScopeRow()
-                        .frame(width: Theme.Window.listWidth)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    undoBar
-                    NotesView(scope: state.scope.noteScope)
+                ScrollView {
+                    NoteListView(filter: state.noteFilter)
                 }
-                .motionTransition(.fadeIn)
-            }
-        }
-        .motion(.fade, value: state.tab)
-    }
-
-    private var listColumn: some View {
-        VStack(spacing: Theme.Panel.spacing) {
-            ScopeRow()
-            ScrollView {
-                PriorityListView(list: state.scope)
+                .scrollIndicators(.automatic)
             }
             undoBar
-        }
-        .motion(.rowIn, value: state.priorityFlow.undo?.token)
-    }
-
-    private var detailColumn: some View {
-        Group {
-            if let priority = state.detailPriority {
-                ScrollView {
-                    PriorityDetailView(priority: priority)
-                        .id(priority.id)
-                        .frame(maxWidth: Theme.Window.detailMaxWidth, alignment: .leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .motionTransition(.fadeIn)
-            } else {
-                Text(Self.emptyDetail)
-                    .font(Theme.Font.body)
-                    .foregroundStyle(Theme.EmptyList.text)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .motionTransition(.fadeIn)
+            TimelineView(.everyMinute) { _ in
+                PanelFooterBar(now: store.now())
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .motion(.fade, value: state.detailPriority?.id)
+        .padding(.horizontal, Theme.Window.sidebarPadding)
+        .padding(.top, Theme.Window.sidebarTopPadding)
+        .padding(.bottom, Theme.Window.sidebarPadding)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(Theme.Window.sidebarBackground)
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(Theme.Window.divider)
+            .frame(width: Theme.Window.dividerWidth)
+            .overlay {
+                Color.clear
+                    .frame(width: Theme.Window.dividerGrabWidth)
+                    .contentShape(Rectangle())
+                    .onHover { inside in
+                        if inside {
+                            NSCursor.resizeLeftRight.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
+                    .gesture(
+                        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                            .onChanged { value in
+                                let start = dragStartWidth ?? Theme.Window.clampedSidebar(sidebarWidth)
+                                dragStartWidth = start
+                                sidebarWidth = Theme.Window.clampedSidebar(start + value.translation.width)
+                            }
+                            .onEnded { _ in dragStartWidth = nil }
+                    )
+                    .accessibilityHidden(true)
+            }
     }
 
     @ViewBuilder
-    private var undoBar: some View {
-        let flow = state.priorityFlow
-        if let undo = flow.undo {
-            TimedUndoBar(undo: undo, onUndo: { flow.undoDone() })
-                .motionTransition(.rowIn)
+    private var detailPane: some View {
+        switch state.page {
+        case .settings:
+            ScrollView {
+                SettingsView()
+                    .readableColumn()
+            }
+        case .history:
+            DoneHistoryView(filter: state.filter)
+        case .browse:
+            switch state.tab {
+            case .priorities:
+                if let priority = state.detailPriority {
+                    ScrollView {
+                        PriorityDetailView(priority: priority)
+                            .id(priority.id)
+                            .readableColumn()
+                    }
+                } else {
+                    emptyPane(Self.emptyDetail)
+                }
+            case .notes:
+                if let note = state.detailNote {
+                    ScrollView {
+                        NoteDetailView(note: note)
+                            .readableColumn()
+                    }
+                } else {
+                    emptyPane(Self.emptyNoteDetail)
+                }
+            }
         }
+    }
+
+    private func emptyPane(_ text: String) -> some View {
+        Text(text)
+            .font(Theme.Font.body)
+            .foregroundStyle(Theme.EmptyList.text)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var undoBar: some View {
+        PanelUndoBars()
     }
 }

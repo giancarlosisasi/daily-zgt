@@ -16,7 +16,7 @@ struct MainWindowTests {
         controller.show(store: store, alerts: nil, panel: panel)
         let window = try #require(controller.window)
         #expect(window.isVisible)
-        #expect(window.title == "Daily ZGT")
+        #expect(window.title == "Daily ZGT Dev")
         #expect(window.contentMinSize == NSSize(width: Theme.Window.minWidth, height: Theme.Window.minHeight))
         #expect(NSApp.activationPolicy() == .regular)
 
@@ -26,6 +26,22 @@ struct MainWindowTests {
         window.close()
         #expect(!window.isVisible)
         #expect(NSApp.activationPolicy() == .accessory)
+    }
+
+    @Test
+    func theDevBuildNamesItsWindowDev() {
+        #expect(MainWindowView.title(isDebugBuild: false) == "Daily ZGT")
+        #expect(MainWindowView.title(isDebugBuild: true) == "Daily ZGT Dev")
+        #expect(MenuBarBadge.text(isDebugBuild: false) == nil)
+        #expect(MenuBarBadge.text(isDebugBuild: true) == "DEV")
+        #expect(MenuBarBadge.text == "DEV")
+    }
+
+    @Test
+    func theTestHostInsertsNoMenuBarItem() {
+        #expect(AppDatabase.isTestHost)
+        #expect(!DailyZGTApp.insertsMenuBarItem(isTestHost: true))
+        #expect(DailyZGTApp.insertsMenuBarItem(isTestHost: false))
     }
 
     @Test

@@ -66,6 +66,8 @@ struct PanelFooter<Actions: View>: View {
     let quit: () -> Void
     @ViewBuilder let actions: Actions
 
+    @Environment(\.panelLayout) private var layout
+
     init(
         summary: String,
         quit: @escaping () -> Void = { NSApplication.shared.terminate(nil) },
@@ -78,9 +80,11 @@ struct PanelFooter<Actions: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Rectangle()
-                .fill(Theme.Footer.divider)
-                .frame(height: Theme.Footer.dividerHeight)
+            if layout == .panel {
+                Rectangle()
+                    .fill(Theme.Footer.divider)
+                    .frame(height: Theme.Footer.dividerHeight)
+            }
             HStack {
                 Text(summary)
                     .font(Theme.Font.footer)
@@ -98,7 +102,7 @@ struct PanelFooter<Actions: View>: View {
                     .buttonStyle(.ghost)
                 }
             }
-            .padding(.top, Theme.Footer.topPadding)
+            .padding(.top, layout == .window ? Theme.Footer.windowTopPadding : Theme.Footer.panelTopPadding)
             .padding(.horizontal, Theme.Footer.horizontalPadding)
         }
     }

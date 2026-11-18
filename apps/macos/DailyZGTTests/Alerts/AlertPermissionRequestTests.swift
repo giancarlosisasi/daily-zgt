@@ -37,7 +37,7 @@ struct AlertPermissionRequestTests {
         form.open()
         form.draft.title = title
         form.draft.dueAt = localDate("2026-10-12T16:00:00")
-        return try #require(try form.submit(to: store, list: .today))
+        return try #require(try form.submit(to: store))
     }
 
     @Test

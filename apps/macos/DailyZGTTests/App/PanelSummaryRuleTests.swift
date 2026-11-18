@@ -13,7 +13,8 @@ struct PanelSummaryRuleTests {
         try addDone(store, clock, title: "Before", at: "2026-10-12T23:59:59")
         try addDone(store, clock, title: "At midnight", at: "2026-10-13T00:00:00")
         try addDone(store, clock, title: "Morning", at: "2026-10-13T08:00:00")
-        try store.addPriority(title: "Open", list: .today)
+        try store.addPriority(title: "Open", dueAt: localDate("2026-10-13T18:00:00"))
+        try store.addPriority(title: "No date")
         clock.date = localDate("2026-10-13T09:00:00")
         #expect(PanelLabels.summary(for: .today, store: store) == "2 de 3 hechas hoy")
     }
@@ -22,7 +23,7 @@ struct PanelSummaryRuleTests {
     func aDayChangeMovesTheDonePrioritiesOutOfTheCount() throws {
         let store = try makeStore(clock)
         try addDone(store, clock, title: "Morning", at: "2026-10-12T08:00:00")
-        try store.addPriority(title: "Open", list: .today)
+        try store.addPriority(title: "Open", dueAt: localDate("2026-10-12T18:00:00"))
         clock.date = localDate("2026-10-12T23:59:59")
         #expect(PanelLabels.summary(for: .today, store: store) == "1 de 2 hechas hoy")
         clock.date = localDate("2026-10-13T00:00:00")
@@ -35,7 +36,7 @@ struct PanelSummaryRuleTests {
         try addDone(store, clock, title: "Sunday", list: .week, at: "2026-10-11T23:59:59")
         try addDone(store, clock, title: "Monday", list: .week, at: "2026-10-12T00:00:00")
         try addDone(store, clock, title: "Friday", list: .week, at: "2026-10-16T12:00:00")
-        try store.addPriority(title: "Open", list: .week)
+        try store.addPriority(title: "Open", dueAt: localDate("2026-10-17T18:00:00"))
         clock.date = localDate("2026-10-17T09:00:00")
         #expect(PanelLabels.summary(for: .week, store: store) == "2 de 3 hechas esta semana")
     }
@@ -66,21 +67,21 @@ struct PanelSummaryRuleTests {
             try addDone(store, clock, title: "Old \(day)", at: "2026-10-0\(day)T09:00:00")
         }
         try addDone(store, clock, title: "Today", at: "2026-10-13T08:00:00")
-        try store.addPriority(title: "Open", list: .today)
+        try store.addPriority(title: "Open", dueAt: localDate("2026-10-13T18:00:00"))
         clock.date = localDate("2026-10-13T09:00:00")
         #expect(PanelLabels.summary(for: .today, store: store) == "1 de 2 hechas hoy")
     }
 
     @Test
-    func theCountOfHoyAndOfSemanaAreIndependent() throws {
+    func theCountOfHoyAndOfEstaSemanaFollowTheirDays() throws {
         let store = try makeStore(clock)
         try addDone(store, clock, title: "Today", at: "2026-10-13T08:00:00")
         try addDone(store, clock, title: "Week", list: .week, at: "2026-10-13T08:30:00")
         try addDone(store, clock, title: "Week again", list: .week, at: "2026-10-13T08:40:00")
-        try store.addPriority(title: "Open week", list: .week)
+        try store.addPriority(title: "Open week", dueAt: localDate("2026-10-15T18:00:00"))
         clock.date = localDate("2026-10-13T09:00:00")
-        #expect(PanelLabels.summary(for: .today, store: store) == "1 de 1 hechas hoy")
-        #expect(PanelLabels.summary(for: .week, store: store) == "2 de 3 hechas esta semana")
+        #expect(PanelLabels.summary(for: .today, store: store) == "3 de 3 hechas hoy")
+        #expect(PanelLabels.summary(for: .week, store: store) == "3 de 4 hechas esta semana")
     }
 
     @Test

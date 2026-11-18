@@ -145,8 +145,8 @@ struct AlertPermissionTests {
     func aPriorityWithNoDueShowsNoAlertsOffLineInTheDetailBox() throws {
         let store = try makeStore(clock)
         let plain = try store.addPriority(title: "Ordenar el escritorio", list: .week)
-        let off = PriorityDetailBox(priority: plain, now: clock.date, alertsOff: true, onLevel: { _ in }, onDue: { _ in }, onList: { _ in })
-        let on = PriorityDetailBox(priority: plain, now: clock.date, onLevel: { _ in }, onDue: { _ in }, onList: { _ in })
+        let off = PriorityDetailBox(priority: plain, now: clock.date, alertsOff: true, onLevel: { _ in }, onDue: { _ in })
+        let on = PriorityDetailBox(priority: plain, now: clock.date, onLevel: { _ in }, onDue: { _ in })
         let width = Theme.Panel.width
         let offHeight = NSHostingView(rootView: off.frame(width: width)).fittingSize.height
         let onHeight = NSHostingView(rootView: on.frame(width: width)).fittingSize.height

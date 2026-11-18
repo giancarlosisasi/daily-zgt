@@ -11,6 +11,8 @@ packages:
   KeyboardShortcuts:
     url: https://github.com/sindresorhus/KeyboardShortcuts
     exactVersion: 3.1.0
+  MarkdownEngine:
+    path: Vendor/MarkdownEngine
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -30,6 +32,7 @@ targets:
     dependencies:
       - package: GRDB
       - package: KeyboardShortcuts
+      - package: MarkdownEngine
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt
@@ -40,6 +43,12 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_APP_SANDBOX: NO
         ENABLE_HARDENED_RUNTIME: NO
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt.dev
+          PRODUCT_NAME: DailyZGT Dev
+          PRODUCT_MODULE_NAME: DailyZGT
+          INFOPLIST_KEY_CFBundleDisplayName: Daily ZGT Dev
   DailyZGTTests:
     type: bundle.unit-test
     platform: macOS
@@ -56,6 +65,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.giancarlosisasi.dailyzgt.tests
+      configs:
+        Debug:
+          TEST_HOST: "$(BUILT_PRODUCTS_DIR)/DailyZGT Dev.app/Contents/MacOS/DailyZGT Dev"
 schemes:
   DailyZGT:
     build:
@@ -64,7 +76,11 @@ schemes:
         DailyZGTTests: [test]
     run:
       config: Debug
+      environmentVariables:
+        MD_PERF: "0"
     test:
       config: Debug
+      environmentVariables:
+        MD_PERF: "0"
       targets:
         - DailyZGTTests

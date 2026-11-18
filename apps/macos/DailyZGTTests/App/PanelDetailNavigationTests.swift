@@ -19,17 +19,17 @@ struct PanelDetailNavigationTests {
     }
 
     @Test
-    func openingAPriorityByIDShowsItAndSetsTheTabAndTheList() throws {
+    func openingAPriorityByIDShowsItAndSetsTheTabAndTheDay() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
-        let week = try store.addPriority(title: "Week item", list: .week)
+        let week = try store.addPriority(title: "Week item", dueAt: localDate("2026-10-16T09:00:00"))
         state.select(tab: .notes)
 
         state.openDetail(week.id)
         #expect(state.openPriorityID == week.id)
         #expect(state.detailPriority?.id == week.id)
         #expect(state.tab == .priorities)
-        #expect(state.scope == .week)
+        #expect(state.filter == .day("2026-10-16"))
     }
 
     @Test
@@ -42,7 +42,7 @@ struct PanelDetailNavigationTests {
         state.closeDetail()
         #expect(state.openPriorityID == nil)
         #expect(state.detailPriority == nil)
-        #expect(state.scope == .today)
+        #expect(state.filter == .today)
         #expect(store.priority(id: first.id) != nil)
     }
 
@@ -57,13 +57,14 @@ struct PanelDetailNavigationTests {
     func aDonePriorityOpensItsDetailToReadOnly() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
-        let done = try store.addPriority(title: "Done", list: .week)
+        let done = try store.addPriority(title: "Done", dueAt: localDate("2026-10-16T09:00:00"))
         try store.markDone(done.id)
+        state.select(filter: .week)
 
         state.openDetail(done.id)
         #expect(state.detailPriority?.id == done.id)
         #expect(state.detailPriority?.isDone == true)
-        #expect(state.scope == .week)
+        #expect(state.filter == .week)
         state.closeDetailIfGone()
         #expect(state.openPriorityID == done.id)
     }
@@ -134,17 +135,16 @@ struct PanelDetailNavigationTests {
     }
 
     @Test
-    func theDetailFollowsAMoveToTheOtherList() throws {
+    func theDetailStaysOpenWhenItsDueLeavesTheFilter() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
         let first = try store.addPriority(title: "First", list: .today)
 
         state.openDetail(first.id)
-        try store.movePriority(first.id, to: .week)
-        state.select(scope: .week)
+        try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-20T09:00:00") }
         #expect(state.detailPriority?.id == first.id)
-        #expect(state.detailPriority?.list == .week)
-        #expect(state.scope == .week)
+        #expect(state.filter == .today)
+        #expect(store.openPriorities(in: .today).isEmpty)
     }
 
     @Test

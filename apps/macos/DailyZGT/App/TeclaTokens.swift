@@ -2,8 +2,8 @@ import CoreGraphics
 
 enum TeclaTokens {
     static let name = "Tecla"
-    static let sourceDigest = "d86173cb6daaf3b66e12e2fca352f55e39bd45bd5c03ebe4a6574a67d068385b"
-    static let outputDigest = "4965843c0c07c725f56ff9ab419127469e919699edf47c2521f3333b8ccce6b9"
+    static let sourceDigest = "13d2f602ff3927bf7809dd5eea515c33426d62445ac1cf7b7aec4ab76c68662a"
+    static let outputDigest = "4b46a8f0e93fb689b6976e6e43c9054af23e35e949f1867fff32b2d64fcaace1"
 
     enum Colors {
         static let ground = TeclaColor(hex: 0x17171A, alpha: 1.0)
@@ -149,6 +149,14 @@ enum TeclaTokens {
         static let levelBarGap: CGFloat = 1.5
         static let checkboxLine: CGFloat = 1.5
         static let undoLine: CGFloat = 2
+    }
+
+    enum Layout {
+        static let panelWidth: CGFloat = 360
+        static let sidebarMin: CGFloat = 280
+        static let sidebarIdeal: CGFloat = 340
+        static let sidebarMax: CGFloat = 440
+        static let readableWidth: CGFloat = 560
     }
 
     enum Key {

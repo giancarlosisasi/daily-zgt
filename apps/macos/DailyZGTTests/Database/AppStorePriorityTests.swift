@@ -34,8 +34,10 @@ struct AppStorePriorityTests {
         #expect(added.level == .medium)
         #expect(added.dueAt == nil)
         #expect(added.note == "")
-        #expect(store.openPriorities(in: .week) == [added])
-        #expect(store.openPriorities(in: .today).isEmpty)
+        #expect(added.list == .week)
+        #expect(store.openPriorities(in: .noDate) == [added])
+        #expect(store.openPriorities(in: .today) == [added])
+        #expect(store.openPriorities(in: .week).isEmpty)
     }
 
     @Test
@@ -82,7 +84,7 @@ struct AppStorePriorityTests {
         let store = try makeStore(clock)
         let added = try store.addPriority(title: "Plan the trip", list: .week)
         clock.advance(minutes: 5)
-        let moved = try store.movePriority(added.id, to: .today)
+        let moved = try store.editPriority(added.id) { $0.list = .today }
 
         #expect(moved.list == .today)
         #expect(moved.updatedAt == clock.date)
@@ -90,7 +92,7 @@ struct AppStorePriorityTests {
         #expect(store.openPriorities(in: .today) == [moved])
         #expect(try store.events(of: added.id).map(\.type) == [.created, .moved])
 
-        try store.movePriority(added.id, to: .today)
+        try store.editPriority(added.id) { $0.list = .today }
         #expect(try store.events(of: added.id).map(\.type) == [.created, .moved])
     }
 
@@ -187,8 +189,12 @@ struct AppStorePriorityTests {
         }
         try store.addPriority(title: "other list", level: .high, list: .week)
 
-        #expect(store.openPriorities(in: .today).map(\.title) == rows.map(\.0))
-        #expect(store.openPriorities(in: .week).map(\.title) == ["other list"])
+        #expect(store.snapshot.open.map(\.title) == rows.map(\.0) + ["other list"])
+        #expect(store.openGroups(in: .today).map { $0.priorities.map(\.title) } == [
+            ["low, 08:00", "high, the day before"],
+            ["high, 18:00", "medium, 10:00, first", "high, 16:00", "medium, 10:00, second"],
+            ["low, no due", "high, no due", "medium, no due", "other list"],
+        ])
     }
 
     @Test
@@ -207,16 +213,19 @@ struct AppStorePriorityTests {
     }
 
     @Test
-    func openCountIsPerList() throws {
+    func openCountOfHoyCountsOpenDueTodayOrBefore() throws {
         let store = try makeStore(clock)
-        let done = try store.addPriority(title: "A", list: .today)
-        try store.addPriority(title: "B", list: .today)
-        try store.addPriority(title: "C", list: .today)
-        try store.addPriority(title: "D", list: .week)
+        let done = try store.addPriority(title: "A", dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "B", dueAt: localDate("2026-10-12T18:00:00"))
+        try store.addPriority(title: "C", dueAt: localDate("2026-10-11T18:00:00"))
+        try store.addPriority(title: "D", dueAt: localDate("2026-10-14T18:00:00"))
+        try store.addPriority(title: "E")
         try store.markDone(done.id)
 
         #expect(store.openCount(in: .today) == 2)
-        #expect(store.openCount(in: .week) == 1)
+        #expect(store.openCount(in: .week) == 2)
+        #expect(store.openCount(in: .noDate) == 1)
+        #expect(store.openCount(in: .all) == 4)
     }
 
     @Test

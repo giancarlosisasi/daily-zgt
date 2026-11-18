@@ -290,7 +290,7 @@ struct AlertActionTests {
         await alerts.alertWasAnswered(answer(.open, alert: rows[0].id, priority: brief.id))
 
         #expect(state.tab == .priorities)
-        #expect(state.scope == .week)
+        #expect(state.filter == .today)
         #expect(state.priorityFlow.highlightedID == brief.id)
         #expect(schedule.entries.map(\.delay) == [.milliseconds(1400)])
     }

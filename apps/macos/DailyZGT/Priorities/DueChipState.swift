@@ -12,7 +12,7 @@ struct DueChipState: Equatable, Sendable {
 
     static let weekdays = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"]
 
-    static func make(due: Date?, now: Date, calendar: Calendar = .current) -> DueChipState? {
+    static func make(due: Date?, now: Date, calendar: Calendar = .current, showsDay: Bool = true) -> DueChipState? {
         guard let due else { return nil }
         let minutes = Int((due.timeIntervalSince(now) / 60 + 0.5).rounded(.down))
         if minutes < 0 {
@@ -24,6 +24,9 @@ struct DueChipState: Equatable, Sendable {
         }
         let parts = calendar.dateComponents([.hour, .minute, .weekday], from: due)
         let time = String(format: "%02d:%02d", parts.hour ?? 0, parts.minute ?? 0)
+        if !showsDay {
+            return DueChipState(label: time, tone: .later)
+        }
         if calendar.isDate(due, inSameDayAs: now) {
             return DueChipState(label: "Hoy \(time)", tone: .later)
         }

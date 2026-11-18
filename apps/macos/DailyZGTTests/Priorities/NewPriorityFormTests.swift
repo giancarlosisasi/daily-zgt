@@ -22,7 +22,7 @@ struct NewPriorityFormTests {
         let store = try makeStore(clock)
         var form = NewPriorityForm()
         form.draft.title = "  \n Send the report \t "
-        let added = try #require(try form.submit(to: store, list: .today))
+        let added = try #require(try form.submit(to: store))
         #expect(added.title == "Send the report")
         #expect(store.openPriorities(in: .today).map(\.title) == ["Send the report"])
     }
@@ -32,10 +32,10 @@ struct NewPriorityFormTests {
         let store = try makeStore(clock)
         var form = NewPriorityForm()
         form.open()
-        #expect(try form.submit(to: store, list: .today) == nil)
+        #expect(try form.submit(to: store) == nil)
         form.draft.title = "   \n "
         #expect(!form.draft.canAdd)
-        #expect(try form.submit(to: store, list: .today) == nil)
+        #expect(try form.submit(to: store) == nil)
         #expect(store.openPriorities(in: .today).isEmpty)
         #expect(form.isOpen)
         #expect(form.draft.title == "   \n ")
@@ -46,7 +46,7 @@ struct NewPriorityFormTests {
         let store = try makeStore(clock)
         var form = NewPriorityForm()
         form.draft.title = "Read"
-        let added = try #require(try form.submit(to: store, list: .today))
+        let added = try #require(try form.submit(to: store))
         #expect(added.level == .medium)
     }
 
@@ -56,7 +56,7 @@ struct NewPriorityFormTests {
         var form = NewPriorityForm()
         form.draft.title = "Urgent"
         form.draft.level = .high
-        let added = try #require(try form.submit(to: store, list: .today))
+        let added = try #require(try form.submit(to: store))
         #expect(added.level == .high)
     }
 
@@ -65,27 +65,31 @@ struct NewPriorityFormTests {
         let store = try makeStore(clock)
         var form = NewPriorityForm()
         form.draft.title = "No due"
-        let without = try #require(try form.submit(to: store, list: .today))
+        let without = try #require(try form.submit(to: store))
         #expect(without.dueAt == nil)
 
         let due = localDate("2026-10-12T16:00:00")
         form.draft.title = "With due"
         form.draft.dueAt = due
         #expect(form.draft.showsAlertHint)
-        let with = try #require(try form.submit(to: store, list: .today))
+        let with = try #require(try form.submit(to: store))
         #expect(with.dueAt == due)
     }
 
     @Test
-    func theNewPriorityGoesToTheOpenList() throws {
+    func theNewPriorityShowsInTheFilterOfItsDue() throws {
         let store = try makeStore(clock)
         var form = NewPriorityForm()
-        form.draft.title = "For the week"
-        try form.submit(to: store, list: .week)
+        form.open(defaultDue: DueFilter.day("2026-10-15").newDue(store.dueDays))
+        form.draft.title = "For Thursday"
+        try form.submit(to: store)
+        form.open(defaultDue: DueFilter.today.newDue(store.dueDays))
         form.draft.title = "For today"
-        try form.submit(to: store, list: .today)
-        #expect(store.openPriorities(in: .week).map(\.title) == ["For the week"])
+        try form.submit(to: store)
+        #expect(store.openPriorities(in: .day("2026-10-15")).map(\.title) == ["For Thursday"])
+        #expect(store.openPriorities(in: .week).map(\.title) == ["For Thursday"])
         #expect(store.openPriorities(in: .today).map(\.title) == ["For today"])
+        #expect(try values("SELECT list FROM priority", in: store.database, as: String.self) == ["today", "today"])
     }
 
     @Test
@@ -96,7 +100,7 @@ struct NewPriorityFormTests {
         var form = NewPriorityForm()
         form.draft.title = "high"
         form.draft.level = .high
-        try form.submit(to: store, list: .today)
+        try form.submit(to: store)
         #expect(store.openPriorities(in: .today).map(\.title) == ["medium", "low", "high"])
     }
 
@@ -108,7 +112,7 @@ struct NewPriorityFormTests {
         form.draft.title = "Done"
         form.draft.level = .low
         form.draft.dueAt = localDate("2026-10-12T16:00:00")
-        try form.submit(to: store, list: .today)
+        try form.submit(to: store)
         #expect(form == NewPriorityForm())
     }
 

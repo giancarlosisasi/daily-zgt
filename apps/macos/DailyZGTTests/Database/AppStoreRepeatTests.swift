@@ -81,8 +81,8 @@ struct AppStoreRepeatTests {
         #expect(copy.position == 3)
         #expect(store.priority(id: copy.id) == copy)
 
-        #expect(store.openPriorities(in: .today).map(\.id) == [copy.id])
-        #expect(store.donePriorities(in: .today).map(\.id) == [source.id])
+        #expect(store.openGroups(in: .today).first?.priorities.map(\.id) == [copy.id])
+        #expect(store.donePriorities(in: .day("2026-10-12")).map(\.id) == [source.id])
         #expect(store.openCount(in: .today) == 1)
         #expect(store.openCount(in: .week) == 1)
 
@@ -200,7 +200,7 @@ struct AppStoreRepeatTests {
         #expect(store.donePriorities(in: .week).map(\.id) == [source.id])
         #expect(store.openPriorities(in: .week).isEmpty)
 
-        try store.movePriority(copy.id, to: .week)
+        try store.editPriority(copy.id) { $0.list = .week }
         try store.markDone(copy.id)
         nextDay("2026-10-14T07:00:00")
         let third = try #require(try store.addRepeatCopies().first)
@@ -311,7 +311,7 @@ struct AppStoreRepeatTests {
         nextDay()
         let copy = try #require(try store.addRepeatCopies().first)
         switch change {
-        case .moved: try store.movePriority(copy.id, to: .week)
+        case .moved: try store.editPriority(copy.id) { $0.list = .week }
         case .subtaskDone: try store.toggleSubtask(try #require(store.subtasks(of: copy.id).first).id)
         default: try store.editPriority(copy.id, { $0.note = "Nota de hoy" })
         }

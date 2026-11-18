@@ -15,6 +15,7 @@ struct AppStateKey<Value: Codable & Sendable>: Sendable {
 enum AppStoreError: Error, Equatable {
     case priorityNotFound(String)
     case subtaskNotFound(String)
+    case noteNotFound(String)
 }
 
 @Observable
@@ -24,6 +25,7 @@ final class AppStore {
     private(set) var observationError: (any Error)?
 
     let database: DatabaseQueue
+    let images: NoteImageStore
     let now: @MainActor () -> Date
 
     @ObservationIgnored private var observation: AnyDatabaseCancellable?
@@ -31,6 +33,7 @@ final class AppStore {
 
     init(database: DatabaseQueue, now: @escaping @MainActor () -> Date = { Date() }) {
         self.database = database
+        images = NoteImageStore(database: database)
         self.now = now
         watcher = ExternalChangeWatcher(database: database)
         observation = ValueObservation
@@ -43,16 +46,34 @@ final class AppStore {
             )
     }
 
-    func openPriorities(in list: PriorityList) -> [Priority] {
-        snapshot.open.filter { $0.list == list }
+    var dueDays: DueDays {
+        DueDays(now: now())
     }
 
-    func donePriorities(in list: PriorityList) -> [Priority] {
-        snapshot.done.filter { $0.list == list }
+    func openGroups(in filter: DueFilter, days: DueDays? = nil) -> [DueGroup] {
+        filter.groups(snapshot.open, days ?? dueDays)
     }
 
-    func openCount(in list: PriorityList) -> Int {
-        openPriorities(in: list).count
+    func openPriorities(in filter: DueFilter, days: DueDays? = nil) -> [Priority] {
+        filter.open(snapshot.open, days ?? dueDays)
+    }
+
+    func openCount(in filter: DueFilter, days: DueDays? = nil) -> Int {
+        filter.counted(snapshot.open, days ?? dueDays).count
+    }
+
+    func hiddenOverdueCount(in filter: DueFilter, days: DueDays? = nil) -> Int {
+        filter.hiddenOverdueCount(snapshot.open, days ?? dueDays)
+    }
+
+    func donePriorities(in filter: DueFilter, days: DueDays? = nil) -> [Priority] {
+        let days = days ?? dueDays
+        return snapshot.done.filter { filter.showsDone($0, days) }
+    }
+
+    func olderDonePriorities(outside filter: DueFilter, days: DueDays? = nil) -> [Priority] {
+        let days = days ?? dueDays
+        return snapshot.done.filter { !filter.showsDone($0, days) }
     }
 
     func priority(id: Priority.ID) -> Priority? {
@@ -68,58 +89,6 @@ final class AppStore {
         return SubtaskProgress(done: subtasks.filter(\.isDone).count, total: subtasks.count)
     }
 
-    func donePriorities(in list: PriorityList, after cutoff: Date) throws -> [Priority] {
-        _ = snapshot
-        return try database.read { database in
-            try Priority.fetchAll(
-                database,
-                sql: """
-                    SELECT * FROM priority
-                    WHERE list = ? AND done_at IS NOT NULL AND done_at > ?
-                    ORDER BY done_at DESC, position DESC, id
-                    """,
-                arguments: [list, LocalTime.text(from: cutoff)]
-            )
-        }
-    }
-
-    func donePriorities(in list: PriorityList, atOrBefore cutoff: Date) throws -> [Priority] {
-        _ = snapshot
-        return try database.read { database in
-            try Priority.fetchAll(
-                database,
-                sql: """
-                    SELECT * FROM priority
-                    WHERE list = ? AND done_at IS NOT NULL AND done_at <= ?
-                    ORDER BY done_at DESC, position DESC, id
-                    """,
-                arguments: [list, LocalTime.text(from: cutoff)]
-            )
-        }
-    }
-
-    func doneCount(in list: PriorityList, atOrBefore cutoff: Date) throws -> Int {
-        _ = snapshot
-        return try database.read { database in
-            try Int.fetchOne(
-                database,
-                sql: "SELECT COUNT(*) FROM priority WHERE list = ? AND done_at IS NOT NULL AND done_at <= ?",
-                arguments: [list, LocalTime.text(from: cutoff)]
-            ) ?? 0
-        }
-    }
-
-    func doneCount(in list: PriorityList, from start: Date) throws -> Int {
-        _ = snapshot
-        return try database.read { database in
-            try Int.fetchOne(
-                database,
-                sql: "SELECT COUNT(*) FROM priority WHERE list = ? AND done_at IS NOT NULL AND done_at >= ?",
-                arguments: [list, LocalTime.text(from: start)]
-            ) ?? 0
-        }
-    }
-
     func events(of priorityID: Priority.ID) throws -> [PriorityEvent] {
         try database.read { database in
             try PriorityEvent.fetchAll(
@@ -128,23 +97,6 @@ final class AppStore {
                 arguments: [priorityID]
             )
         }
-    }
-
-    func enteringEvents(in list: PriorityList) throws -> [Priority.ID: [PriorityEvent]] {
-        _ = snapshot
-        let events = try database.read { database in
-            try PriorityEvent.fetchAll(
-                database,
-                sql: """
-                    SELECT e.* FROM priority_event e
-                    JOIN priority p ON p.id = e.priority_id
-                    WHERE p.list = ? AND p.done_at IS NULL AND e.type IN ('created', 'moved')
-                    ORDER BY e.id
-                    """,
-                arguments: [list]
-            )
-        }
-        return Dictionary(grouping: events, by: \.priorityID)
     }
 
     func alerts(status: AlertStatus? = nil) throws -> [PriorityAlert] {
@@ -164,15 +116,13 @@ final class AppStore {
         try database.read { try PriorityAlert.fetchOne($0, key: id) }
     }
 
-    func period(_ scope: NoteScope) -> String {
-        switch scope {
-        case .day: LocalTime.dayKey(for: now())
-        case .week: LocalTime.weekKey(for: now())
-        }
+    func note(id: NoteItem.ID) -> NoteItem? {
+        snapshot.noteItems.first { $0.id == id }
     }
 
-    func noteBody(_ scope: NoteScope, period: String? = nil) -> String {
-        snapshot.notes[scope]?[period ?? self.period(scope)] ?? ""
+    func notes(in filter: DueFilter, days: DueDays? = nil) -> [NoteItem] {
+        let days = days ?? dueDays
+        return snapshot.noteItems.filter { filter.includesNote($0, days) }
     }
 
     func value<Value>(for key: AppStateKey<Value>) -> Value {
@@ -188,7 +138,7 @@ final class AppStore {
     func addPriority(
         title: String,
         level: PriorityLevel = .medium,
-        list: PriorityList,
+        list: PriorityList = .today,
         dueAt: Date? = nil,
         note: String = ""
     ) throws -> Priority {
@@ -293,11 +243,6 @@ final class AppStore {
                 try database.execute(sql: "UPDATE priority SET position = ? WHERE id = ?", arguments: [position, id])
             }
         }
-    }
-
-    @discardableResult
-    func movePriority(_ id: Priority.ID, to list: PriorityList) throws -> Priority {
-        try editPriority(id) { $0.list = list }
     }
 
     @discardableResult
@@ -450,19 +395,38 @@ final class AppStore {
         }
     }
 
-    func saveNote(_ body: String, scope: NoteScope, period: String? = nil) throws {
+    @discardableResult
+    func addNote(body: String = "") throws -> NoteItem {
         let at = timestamp()
-        let period = period ?? self.period(scope)
-        try write { database in
-            try database.execute(
-                sql: """
-                    INSERT INTO note (scope, period, body, updated_at) VALUES (?, ?, ?, ?)
-                    ON CONFLICT (scope, period)
-                    DO UPDATE SET body = excluded.body, updated_at = excluded.updated_at
-                    """,
-                arguments: [scope, period, body, LocalTime.text(from: at)]
-            )
+        let note = NoteItem(id: UUID().uuidString, body: body, createdAt: at, updatedAt: at)
+        try write { database in try note.insert(database) }
+        return note
+    }
+
+    @discardableResult
+    func editNote(_ id: NoteItem.ID, body: String) throws -> NoteItem {
+        let at = timestamp()
+        return try write { database in
+            var note = try Self.note(id, in: database)
+            guard note.body != body else { return note }
+            note.body = body
+            note.updatedAt = at
+            try note.update(database)
+            return note
         }
+    }
+
+    @discardableResult
+    func deleteNote(_ id: NoteItem.ID) throws -> NoteItem {
+        try write { database in
+            let note = try Self.note(id, in: database)
+            try note.delete(database)
+            return note
+        }
+    }
+
+    func restoreNote(_ note: NoteItem) throws {
+        try write { database in try note.save(database) }
     }
 
     func setValue<Value>(_ value: Value, for key: AppStateKey<Value>) throws {
@@ -524,6 +488,13 @@ final class AppStore {
             throw AppStoreError.priorityNotFound(id)
         }
         return priority
+    }
+
+    private nonisolated static func note(_ id: NoteItem.ID, in database: Database) throws -> NoteItem {
+        guard let note = try NoteItem.fetchOne(database, key: id) else {
+            throw AppStoreError.noteNotFound(id)
+        }
+        return note
     }
 
     private nonisolated static func subtask(_ id: Subtask.ID, in database: Database) throws -> Subtask {

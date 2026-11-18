@@ -2,11 +2,26 @@ import AppKit
 import SwiftUI
 
 enum Theme {
+    enum Space {
+        static let s1 = TeclaTokens.Space.s1
+        static let s2 = TeclaTokens.Space.s2
+        static let s3 = TeclaTokens.Space.s3
+        static let s4 = TeclaTokens.Space.s4
+        static let s5 = TeclaTokens.Space.s5
+        static let s6 = TeclaTokens.Space.s6
+        static let s7 = TeclaTokens.Space.s7
+        static let s8 = TeclaTokens.Space.s8
+
+        static func group(_ layout: PanelLayout) -> CGFloat {
+            layout == .window ? s5 : s4
+        }
+    }
+
     enum Panel {
-        static let width: CGFloat = 360
+        static let width = TeclaTokens.Layout.panelWidth
         static let cornerRadius = TeclaTokens.Radius.panel
-        static let padding: CGFloat = 10
-        static let spacing: CGFloat = 10
+        static let padding = Space.s3
+        static let spacing = Space.s3
         static let borderWidth: CGFloat = 1
         static let background = Color(TeclaTokens.Panel.bg)
         static let border = Color(TeclaTokens.Panel.line)
@@ -19,14 +34,25 @@ enum Theme {
         static let defaultHeight: CGFloat = 680
         static let minWidth: CGFloat = 760
         static let minHeight: CGFloat = 520
-        static let padding: CGFloat = 16
-        static let columnSpacing: CGFloat = 16
-        static let listWidth: CGFloat = 400
-        static let detailMaxWidth: CGFloat = 560
-        static let pageMaxWidth: CGFloat = 480
+        static let sidebarMin = TeclaTokens.Layout.sidebarMin
+        static let sidebarIdeal = TeclaTokens.Layout.sidebarIdeal
+        static let sidebarMax = TeclaTokens.Layout.sidebarMax
+        static let sidebarPadding = Space.s3
+        static let sidebarTopPadding = Space.s2
+        static let sidebarBackground = Color(TeclaTokens.Colors.ground)
+        static let readableWidth = TeclaTokens.Layout.readableWidth
+        static let detailTopPadding = Space.s6
+        static let detailGutter = Space.s5
+        static let detailBottomPadding = Space.s5
         static let divider = Color(TeclaTokens.Panel.div)
         static let dividerWidth: CGFloat = 1
+        static let dividerGrabWidth = Space.s2
         static let autosaveName = "DailyZGTMainWindow"
+        static let sidebarWidthKey = "\(autosaveName).sidebarWidth"
+
+        static func clampedSidebar(_ width: CGFloat) -> CGFloat {
+            min(max(width, sidebarMin), sidebarMax)
+        }
     }
 
     enum Text {
@@ -51,6 +77,7 @@ enum Theme {
         static let meta = TeclaFonts.font(TeclaTokens.TextStyles.panelMeta)
         static let metaStrong = TeclaFonts.font(TeclaTokens.TextStyles.panelChip)
         static let title = TeclaFonts.font(TeclaTokens.TextStyles.panelTitle)
+        static let subhead = TeclaFonts.font(TeclaTokens.TextStyles.subhead)
 
         static var rowTitle: NSFont { TeclaFonts.nsFont(TeclaTokens.TextStyles.panel) }
         static var field: NSFont { TeclaFonts.nsFont(TeclaTokens.TextStyles.panelLabel, tabularDigits: true) }
@@ -77,9 +104,6 @@ enum Theme {
     enum MotionShape {
         static let popOffset: CGFloat = 8
         static let popScale: CGFloat = 0.96
-        static let rowInOffset: CGFloat = 4
-        static let rowOutOffset: CGFloat = 28
-        static let slideOffset: CGFloat = 18
         static let caretOpenDegrees: Double = 90
         static let ringAngles: [Double] = [0, 14, -12, 8, -4, 0]
         static let ringAnchor = UnitPoint(x: 0.5, y: 0.1)
@@ -134,8 +158,9 @@ enum Theme {
     enum Footer {
         static let divider = Color(TeclaTokens.Panel.div)
         static let dividerHeight: CGFloat = 1
-        static let topPadding: CGFloat = 8
-        static let horizontalPadding: CGFloat = 4
+        static let panelTopPadding = Space.s2
+        static let windowTopPadding = Space.s3
+        static let horizontalPadding = Space.s1
         static let actionSpacing: CGFloat = 2
         static let text = Text.muted
         static let bellText = Text.muted
@@ -148,8 +173,8 @@ enum Theme {
 
     enum EmptyList {
         static let text = Text.muted
-        static let verticalPadding: CGFloat = 14
-        static let horizontalPadding: CGFloat = 8
+        static let verticalPadding = Space.s3
+        static let horizontalPadding = Space.s2
     }
 
     enum Accent {
@@ -179,6 +204,8 @@ enum Theme {
         static let soonBackground = Color(TeclaTokens.Panel.soonBg)
         static let laterText = Color(TeclaTokens.Panel.laterT)
         static let laterBackground = Color(TeclaTokens.Panel.laterBg)
+        static let plainText = Text.muted
+        static let plainFont = Font.meta
         static let font = Font.metaStrong
         static let verticalPadding: CGFloat = 1
         static let horizontalPadding: CGFloat = 6
@@ -186,12 +213,13 @@ enum Theme {
     }
 
     enum Row {
-        static let listSpacing: CGFloat = 2
+        static let listSpacing: CGFloat = 0
         static let listMaxHeight: CGFloat = 330
-        static let sectionSpacing: CGFloat = 8
-        static let minHeight: CGFloat = 36
-        static let horizontalPadding: CGFloat = 4
-        static let spacing: CGFloat = 8
+        static let minHeight = Space.s5 + Space.s1
+        static let windowMinHeight = Space.s6
+        static let horizontalPadding = Space.s2
+        static let verticalPadding = Space.s2
+        static let spacing = Space.s2
         static let radius = TeclaTokens.Radius.row
         static let hoverOverlay = Color(TeclaTokens.Panel.hover)
         static let highlight = Color(TeclaTokens.Panel.hl)
@@ -200,9 +228,11 @@ enum Theme {
         static let caretHeight: CGFloat = 22
         static let caretIconSize: CGFloat = 11
         static let checkboxSize: CGFloat = 16
-        static let titleVerticalPadding: CGFloat = 5
-        static let titleSpacing: CGFloat = 2
-        static let metaSpacing: CGFloat = 6
+        static let titleMaxLines = 2
+        static let titleSpacing = Space.s1
+        static let metaSpacing = Space.s2
+        static let metaHeight = (TeclaTokens.TextStyles.panelChip.size * TeclaTokens.TextStyles.panelChip.lineHeight).rounded(.up)
+            + Due.verticalPadding * 2
         static let noteIconSize: CGFloat = 11
         static let removeSize: CGFloat = 22
         static let removeIconSize: CGFloat = 12
@@ -254,38 +284,28 @@ enum Theme {
     }
 
     enum NewPriority {
-        static let buttonBorder = Color(TeclaTokens.Panel.dash)
-        static let buttonHeight: CGFloat = 32
-        static let buttonPadding: CGFloat = 8
+        static let buttonHeight = Space.s5
+        static let buttonPadding = Space.s2
         static let buttonRadius = TeclaTokens.Radius.row
         static let buttonIconSize: CGFloat = 13
-        static let buttonSpacing: CGFloat = 8
+        static let buttonSpacing = Space.s2
         static let cardBackground = Color(TeclaTokens.Panel.card)
         static let cardBorder = Color(TeclaTokens.Panel.line)
-        static let cardPadding: CGFloat = 10
-        static let cardSpacing: CGFloat = 8
+        static let cardPadding = Space.s3
+        static let cardSpacing = Space.s2
         static let cardRadius = TeclaTokens.Radius.bar
         static let inputBackground = Color(TeclaTokens.Panel.in)
-        static let inputBorder = Color(TeclaTokens.Panel.line)
         static let titleHeight: CGFloat = 30
         static let titlePadding: CGFloat = 10
         static let titleRadius = TeclaTokens.Radius.input
-        static let labelWidth: CGFloat = 64
+        static let labelWidth = Space.s8
         static let segmentHeight: CGFloat = 24
         static let segmentRadius = TeclaTokens.Radius.input - Segmented.trackPadding
         static let segmentSpacing: CGFloat = 6
         static let segmentTrackRadius = TeclaTokens.Radius.input
-        static let dateHeight: CGFloat = 28
-        static let datePadding: CGFloat = 8
-        static let dateRadius = TeclaTokens.Radius.input
-        static let dateText = Text.secondary
-        static let datePickerInset: CGFloat = 3
-        static let dateIconSize: CGFloat = 12
-        static let dateClearIconSize: CGFloat = 10
-        static let dateClearSize: CGFloat = 20
         static let hintIconSize: CGFloat = 12
-        static let hintSpacing: CGFloat = 6
-        static let buttonsSpacing: CGFloat = 6
+        static let hintSpacing = Space.s2
+        static let buttonsSpacing = Space.s2
         static let actionHeight = Key.height
         static let actionRadius = Key.radius
         static let cancelPadding: CGFloat = 10
@@ -320,6 +340,31 @@ extension Theme {
         static let checkSpacing: CGFloat = 5
     }
 
+    enum DatePopover {
+        static let padding = Space.s3
+        static let columnSpacing = Space.s4
+        static let rowSpacing = Space.s2
+        static let optionWidth: CGFloat = 132
+        static let optionHeight = Space.s5 - Space.s1
+        static let optionPadding = Space.s2
+        static let optionFont = Font.body
+        static let optionText = Text.secondary
+        static let clearText = Text.muted
+        static var fieldFont: NSFont { Font.field }
+        static let fieldText = Text.secondary
+        static let fieldHeight = Space.s4
+        static let fieldPadding = Space.s2
+        static let fieldRadius = TeclaTokens.Radius.input
+        static let fieldBackground = Color(TeclaTokens.Panel.in)
+        static let labelFont = Font.label
+        static let labelText = Text.muted
+        static let alertFont = Font.meta
+        static let alertText = Text.muted
+        static let iconSize: CGFloat = 12
+        static let iconSpacing = Space.s2
+        static let background = Color(TeclaTokens.Panel.bg)
+    }
+
     enum Undo {
         static let background = Color(TeclaTokens.Panel.undo)
         static let text = Text.secondary
@@ -341,30 +386,36 @@ extension Theme {
     }
 
     enum DoneSection {
-        static let divider = Color(TeclaTokens.Panel.div)
-        static let dividerHeight: CGFloat = 1
-        static let topPadding: CGFloat = 6
-        static let spacing: CGFloat = 2
+        static let spacing: CGFloat = 0
         static let headerFont = Font.labelStrong
+        static let countFont = Font.meta
+        static let countText = Text.dim
         static let headerHeight: CGFloat = 28
-        static let headerPadding: CGFloat = 8
+        static let headerPadding = Space.s2
         static let headerRadius = Ghost.radius
-        static let headerSpacing: CGFloat = 6
+        static let headerSpacing = Space.s2
         static let caretSize: CGFloat = 10
         static let rowMinHeight: CGFloat = 34
         static let rowLeadingPadding: CGFloat = 30
-        static let rowTrailingPadding: CGFloat = 4
-        static let rowSpacing: CGFloat = 10
+        static let rowTrailingPadding = Space.s1
+        static let rowVerticalPadding = Space.s2
+        static let rowSpacing = Space.s2
         static let checkSize: CGFloat = 12
         static let checkColor = Text.done
         static let title = Text.dim
+        static let timeFont = Font.meta
+        static let timeText = Text.dim
         static let restoreFont = Font.meta
         static let restoreHeight: CGFloat = 24
-        static let restorePadding: CGFloat = 8
-        static let restoreRadius = Key.radius
-        static let restoreSpacing: CGFloat = 4
+        static let restorePadding = Space.s2
+        static let restoreRadius = Ghost.radius
+        static let restoreSpacing = Space.s1
         static let restoreIconSize: CGFloat = 11
         static let restoreText = Text.ghost
+        static let restoreHoverText = Text.primary
+        static let historyLinkFont = Font.label
+        static let historyLinkText = Text.link
+        static let historyLinkHeight: CGFloat = 24
     }
 
     enum Timing {
@@ -375,97 +426,102 @@ extension Theme {
 
 extension Theme {
     enum Notes {
-        static let spacing: CGFloat = 6
-        static let height: CGFloat = 200
-        static let padding: CGFloat = 10
-        static let borderWidth: CGFloat = 1
-        static let editorInset: CGFloat = 5
-        static let radius = TeclaTokens.Radius.bar
+        static let spacing = Space.s2
+        static let panelMaxHeight = Row.listMaxHeight
+        static let windowMinHeight = Space.s8 * 2
+        static let panelMinHeight = Space.s8 + Space.s6
+        static let pageMinHeight = Space.s8 * 4
+        static let padding = Space.s3
+        static let radius = TeclaTokens.Radius.input
         static let lineSpacing: CGFloat = 3
+        static let checkboxSize = SubtaskList.checkboxSize
+        static let checkboxGap = SubtaskList.rowSpacing
+        static let imageSpacing = Space.s3
         static let background = Color(TeclaTokens.Panel.card)
-        static let border = Color(TeclaTokens.Panel.line)
-        static let placeholder = Text.dim
         static let hint = Text.dim
         static let debounce = Duration.milliseconds(400)
-        static let syncInterval = Duration.seconds(30)
     }
 }
 
 extension Theme {
     enum Detail {
-        static let spacing: CGFloat = 12
+        static let spacing = Space.s3
         static let backText = Text.link
         static let backHeight: CGFloat = 26
-        static let backLeadingPadding: CGFloat = 4
-        static let backTrailingPadding: CGFloat = 8
+        static let backLeadingPadding = Space.s1
+        static let backTrailingPadding = Space.s2
         static let backRadius = Ghost.radius
         static let backSpacing: CGFloat = 2
         static let backChevronSize: CGFloat = 14
         static let deleteSize: CGFloat = 26
         static let deleteIconSize: CGFloat = 14
         static let deleteRadius = Ghost.radius
-        static let headSpacing: CGFloat = 6
+        static let headSpacing = Space.s2
         static let titleFont = Font.title
-        static let titleHeight: CGFloat = 34
+        static let windowTitleFont = Font.subhead
         static let titleInset: CGFloat = 6
+        static let titleVerticalInset = Space.s1
         static let titleRadius = TeclaTokens.Radius.input
-        static let titleHoverBorder = Color(TeclaTokens.Panel.line)
+        static let titleHoverBackground = Color(TeclaTokens.Panel.in)
         static let chipFont = Font.metaStrong
         static let chipHorizontalPadding: CGFloat = 7
         static let chipVerticalPadding: CGFloat = 1
         static let chipRadius = TeclaTokens.Radius.chip
-        static let chipSpacing: CGFloat = 6
-        static let stateBackground = Color(TeclaTokens.Panel.laterBg)
-        static let stateText = Color(TeclaTokens.Panel.laterT)
+        static let chipSpacing = Space.s2
         static let doneStateBackground = Color(TeclaTokens.Panel.doneBg)
         static let doneStateText = Color(TeclaTokens.Panel.doneText)
-        static let boxBackground = Color(TeclaTokens.Panel.card)
-        static let boxBorder = Color(TeclaTokens.Panel.div)
-        static let boxPadding: CGFloat = 10
-        static let boxRadius = TeclaTokens.Radius.bar
-        static let boxSpacing: CGFloat = 8
-        static let labelWidth: CGFloat = 84
-        static let valueFont = Font.label
-        static let alertSpacing: CGFloat = 6
+        static let labelWidth = Space.s8
+        static let labelFont = Font.label
+        static let labelText = Text.muted
+        static let propertyHeight = Space.s5
+        static let propertySpacing = Space.s1
+        static let valueFont = Font.body
+        static let valueText = Text.secondary
+        static let valueDim = Text.dim
+        static let valueLate = Due.overdueText
+        static let valuePadding = Space.s2
+        static let valueHeight = Space.s5 - Space.s1
+        static let valueSpacing = Space.s2
+        static let valueIconSize: CGFloat = 12
+        static let valueCaretSize: CGFloat = 9
+        static let menuPadding = Space.s1
+        static let menuWidth: CGFloat = 168
+        static let menuRowHeight = Space.s5 - Space.s1
+        static let menuSelected = Color(TeclaTokens.Panel.hover2)
+        static let alertSpacing = Space.s2
         static let alertIconSize: CGFloat = 12
-        static let sectionSpacing: CGFloat = 4
-        static let sectionTitleFont = Font.metaStrong
-        static let sectionTitleTracking: CGFloat = 0.33
+        static let sectionSpacing = Space.s2
+        static let sectionTitleFont = Font.labelStrong
+        static let sectionTitleText = Text.muted
+        static let sectionCountText = Text.dim
         static let markDoneHeight: CGFloat = 30
         static let markDoneRadius = TeclaTokens.Radius.row
         static let markDoneText = Color(TeclaTokens.Panel.doneText)
         static let markDoneFont = Font.bodyStrong
         static let markDoneIconSize: CGFloat = 13
-        static let markDoneSpacing: CGFloat = 6
+        static let markDoneSpacing = Space.s2
+        static let markDonePadding = Space.s3
         static let created = Text.dim
     }
 }
 
 extension Theme {
     enum SubtaskList {
-        static let rowMinHeight: CGFloat = 26
-        static let rowSpacing: CGFloat = 8
+        static let rowMinHeight = Space.s5
+        static let rowSpacing = Space.s2
         static let checkboxSize: CGFloat = 14
-        static let font = Font.label
+        static let font = Font.body
         static let openText = Text.secondary
         static let doneText = Text.dim
-        static let inputHeight: CGFloat = 26
-        static let inputPadding: CGFloat = 8
+        static let addText = Text.ghost
+        static let addIconSize: CGFloat = 11
+        static let inputHeight = Space.s5 - Space.s1
+        static let inputPadding = Space.s2
         static let inputRadius = TeclaTokens.Radius.input
-        static let inputBackground = Color(TeclaTokens.Panel.card)
-        static let inputBorder = Color(TeclaTokens.Panel.line)
-        static let rowListSpacing: CGFloat = 1
-        static let rowListInputTop: CGFloat = 2
+        static let inputBackground = Color(TeclaTokens.Panel.in)
         static let rowListLeading: CGFloat = 50
-        static let rowListTrailing: CGFloat = 4
-        static let rowListBottom: CGFloat = 6
-        static let detailSpacing: CGFloat = 4
-    }
-
-    enum PriorityNoteArea {
-        static let height: CGFloat = 110
-        static let horizontalPadding: CGFloat = 10
-        static let verticalPadding: CGFloat = 9
+        static let rowListTrailing = Space.s1
+        static let rowListBottom = Space.s2
     }
 }
 
@@ -474,6 +530,7 @@ extension Theme {
         static let spacing: CGFloat = 5
         static let font = Font.labelStrong
         static let titleFont = Font.label
+        static let badgeFont = Font.meta
     }
 
     enum AlertsOff {
@@ -511,9 +568,9 @@ extension Theme {
         static let controlSpacing: CGFloat = 12
         static let textSpacing: CGFloat = 2
         static let noteSpacing: CGFloat = 6
-        static let background = Detail.boxBackground
-        static let border = Detail.boxBorder
-        static let radius = Detail.boxRadius
+        static let background = Color(TeclaTokens.Panel.card)
+        static let border = Color(TeclaTokens.Panel.div)
+        static let radius = TeclaTokens.Radius.bar
         static let titleFont = Font.body
         static let detailFont = Font.meta
         static let noteFont = Font.meta
@@ -548,25 +605,72 @@ extension Theme {
 
 extension Theme {
     enum History {
-        static let rowHeight = DoneSection.headerHeight
-        static let rowRadius = DoneSection.headerRadius
-        static let rowLeadingPadding = DoneSection.rowLeadingPadding
-        static let rowTrailingPadding = DoneSection.headerPadding
-        static let rowSpacing: CGFloat = 8
-        static let rowFont = Font.label
-        static let countFont = Font.meta
-        static let countText = Text.dim
-        static let caretSize = DoneSection.caretSize
-        static let daySpacing: CGFloat = 12
-        static let dayRowSpacing = DoneSection.spacing
         static let dayFont = DoneSection.headerFont
         static let dayText = Text.muted
-        static let dayPadding = DoneSection.headerPadding
-        static let doneRowLeadingPadding: CGFloat = 8
-        static let titleFont = Font.label
-        static let titleText = Text.muted
+        static let countFont = Font.meta
+        static let countText = Text.dim
+        static let dayBottomPadding = Space.s1
+        static let dayHorizontalPadding = Space.s2
+        static let rowLeadingPadding = Space.s2
+        static let titleText = Text.secondary
         static let emptyText = Text.muted
         static let emptyVerticalPadding = EmptyList.verticalPadding
         static let emptyHorizontalPadding = EmptyList.horizontalPadding
+        static let headerBackground = Panel.background
+        static let backTitleSpacing = Space.s1
+    }
+}
+
+extension Theme {
+    enum Filter {
+        static let titleSpacing = Space.s1
+        static let panelTitleFont = Font.title
+        static let windowTitleFont = Font.subhead
+        static let titleText = Text.strong
+        static let subtitleFont = Font.label
+        static let subtitleText = Text.muted
+        static let subtitleSpacing = Space.s1
+        static let stepSize = Ghost.height
+        static let stepIconSize: CGFloat = 12
+        static let stepText = Text.muted
+        static let keyHeight = Key.height
+        static let keyRadius = Key.radius
+        static let keyPadding = Space.s2
+        static let keySpacing = Space.s1
+        static let keyIconSize: CGFloat = 13
+        static let keyCaretSize = Detail.valueCaretSize
+        static let linkFont = Font.label
+        static let linkText = Due.overdueText
+        static let linkHeight = Ghost.height
+        static let linkPadding = Space.s2
+        static let linkBottomPadding = Space.s1
+        static let groupFont = Font.labelStrong
+        static let groupText = Text.muted
+        static let groupBottomPadding = Space.s1
+        static let groupHorizontalPadding = Space.s2
+        static let emptyFont = Font.body
+        static let emptyText = Text.muted
+        static let emptyTopPadding = Space.s4
+        static let emptyBottomPadding = Space.s2
+        static let emptyHorizontalPadding = Space.s2
+        static let popoverPadding = DatePopover.padding
+        static let popoverColumnSpacing = DatePopover.columnSpacing
+        static let popoverRowSpacing = DatePopover.rowSpacing
+        static let optionWidth = DatePopover.optionWidth
+        static let optionHeight = DatePopover.optionHeight
+        static let optionPadding = DatePopover.optionPadding
+        static let optionFont = DatePopover.optionFont
+        static let optionText = DatePopover.optionText
+        static let optionCountFont = Font.meta
+        static let optionCountText = Text.dim
+        static let optionSelected = Detail.menuSelected
+        static let optionRadius = Ghost.radius
+        static let hintFont = Font.meta
+        static let hintText = Text.muted
+        static let background = DatePopover.background
+
+        static func groupTopPadding(_ layout: PanelLayout) -> CGFloat {
+            layout == .window ? Space.s4 : Space.s3
+        }
     }
 }

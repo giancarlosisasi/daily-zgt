@@ -39,7 +39,7 @@ final class CaptureModel {
     @discardableResult
     func submit() -> Bool {
         guard draft.canAdd else { return false }
-        if let block = store.todayAddBlock() {
+        if let block = store.addBlock(forDue: nil) {
             limitMessage = block
             return false
         }

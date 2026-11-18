@@ -2,13 +2,14 @@ import AppKit
 import SwiftUI
 
 struct NewPriorityButton: View {
+    var title = "Nueva prioridad"
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: Theme.NewPriority.buttonSpacing) {
                 IconView(icon: .plus, size: Theme.NewPriority.buttonIconSize)
-                Text("Nueva prioridad")
+                Text(title)
                 Spacer(minLength: 0)
             }
             .font(Theme.Font.body)
@@ -17,11 +18,6 @@ struct NewPriorityButton: View {
             .frame(height: Theme.NewPriority.buttonHeight)
         }
         .buttonStyle(GhostButtonStyle(radius: Theme.NewPriority.buttonRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.NewPriority.buttonRadius, style: .continuous)
-                .strokeBorder(Theme.NewPriority.buttonBorder, style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
-                .allowsHitTesting(false)
-        )
     }
 }
 
@@ -41,7 +37,6 @@ struct LevelSegmentedPicker: View {
             Theme.NewPriority.inputBackground,
             in: RoundedRectangle(cornerRadius: Theme.NewPriority.segmentTrackRadius, style: .continuous)
         )
-        .motion(.fade, value: selection)
     }
 }
 
@@ -87,7 +82,6 @@ struct FormInputChrome: ViewModifier {
         content
             .frame(height: height)
             .background(Theme.NewPriority.inputBackground, in: shape)
-            .overlay(shape.strokeBorder(Theme.NewPriority.inputBorder, lineWidth: 1))
             .overlay {
                 if isFocused {
                     shape.strokeBorder(Theme.Accent.focusRing, lineWidth: Theme.Accent.focusRingWidth)
@@ -113,103 +107,6 @@ private struct FormActionButton: View {
     }
 }
 
-struct DateFieldPicker: NSViewRepresentable {
-    @Binding var date: Date
-
-    @MainActor
-    final class Coordinator: NSObject {
-        var date: Binding<Date>
-
-        init(date: Binding<Date>) {
-            self.date = date
-        }
-
-        @objc func dateChanged(_ sender: NSDatePicker) {
-            date.wrappedValue = sender.dateValue
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(date: $date)
-    }
-
-    func makeNSView(context: Context) -> NSDatePicker {
-        let picker = NSDatePicker()
-        picker.datePickerStyle = .textField
-        picker.datePickerElements = [.yearMonthDay, .hourMinute]
-        picker.locale = Locale(identifier: "es")
-        picker.isBezeled = false
-        picker.isBordered = false
-        picker.drawsBackground = false
-        picker.font = Theme.Font.field
-        picker.textColor = NSColor(Theme.NewPriority.dateText)
-        picker.dateValue = date
-        picker.target = context.coordinator
-        picker.action = #selector(Coordinator.dateChanged(_:))
-        picker.setAccessibilityLabel("Fecha límite")
-        return picker
-    }
-
-    func updateNSView(_ picker: NSDatePicker, context: Context) {
-        context.coordinator.date = $date
-        if picker.dateValue != date {
-            picker.dateValue = date
-        }
-    }
-
-    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSDatePicker, context: Context) -> CGSize? {
-        nsView.fittingSize
-    }
-}
-
-struct DueDateField: View {
-    @Binding var dueAt: Date?
-    let now: Date
-
-    var body: some View {
-        if dueAt == nil {
-            Button {
-                dueAt = NewPriorityDraft.defaultDue(after: now)
-            } label: {
-                HStack {
-                    Text("Sin fecha")
-                        .font(Theme.Font.label)
-                        .foregroundStyle(Theme.Text.dim)
-                    Spacer(minLength: 0)
-                    IconView(icon: .calendar, size: Theme.NewPriority.dateIconSize)
-                        .foregroundStyle(Theme.Text.muted)
-                }
-                .padding(.horizontal, Theme.NewPriority.datePadding)
-                .modifier(FormInputChrome(height: Theme.NewPriority.dateHeight, radius: Theme.NewPriority.dateRadius))
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-        } else {
-            HStack(spacing: 4) {
-                DateFieldPicker(
-                    date: Binding(
-                        get: { dueAt ?? now },
-                        set: { dueAt = $0 }
-                    )
-                )
-                .padding(.leading, -Theme.NewPriority.datePickerInset)
-                Spacer(minLength: 0)
-                Button {
-                    dueAt = nil
-                } label: {
-                    IconView(icon: .close, size: Theme.NewPriority.dateClearIconSize)
-                        .foregroundStyle(Theme.Text.muted)
-                        .frame(width: Theme.NewPriority.dateClearSize, height: Theme.NewPriority.dateClearSize)
-                }
-                .buttonStyle(.ghost)
-                .accessibilityLabel("Quitar fecha")
-            }
-            .padding(.horizontal, Theme.NewPriority.datePadding)
-            .modifier(FormInputChrome(height: Theme.NewPriority.dateHeight, radius: Theme.NewPriority.dateRadius))
-        }
-    }
-}
-
 struct NewPriorityFormView: View {
     @Binding var form: NewPriorityForm
     let now: Date
@@ -227,7 +124,8 @@ struct NewPriorityFormView: View {
                 LevelSegmentedPicker(selection: $form.draft.level)
             }
             labeledRow("Fecha límite") {
-                DueDateField(dueAt: $form.draft.dueAt, now: now)
+                DueDateField(dueAt: $form.draft.dueAt, now: now, alertsOff: alertsOff)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             if form.draft.showsAlertHint {
                 HStack(spacing: Theme.NewPriority.hintSpacing) {
