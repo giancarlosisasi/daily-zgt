@@ -47,28 +47,35 @@ struct FilterHeader<Popover: View>: View {
                     .font(layout == .window ? Theme.Filter.windowTitleFont : Theme.Filter.panelTitleFont)
                     .foregroundStyle(Theme.Filter.titleText)
                     .lineLimit(1)
+                    .truncationMode(.tail)
                     .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: 0)
+                if showsSteps {
+                    steps
+                }
                 filterKey
             }
-            if subtitle != nil || showsSteps {
-                HStack(spacing: Theme.Filter.subtitleSpacing) {
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(Theme.Filter.subtitleFont)
-                            .foregroundStyle(Theme.Filter.subtitleText)
-                            .lineLimit(1)
-                    }
-                    if showsSteps {
-                        stepButton(.caretLeft, label: DueFilterLabels.previousDay) { onStep(-1) }
-                        stepButton(.caretRight, label: DueFilterLabels.nextDay) { onStep(1) }
-                            .disabled(!canStepForward)
-                            .opacity(canStepForward ? 1 : 0)
-                    }
-                }
+            if let subtitle {
+                Text(subtitle)
+                    .font(Theme.Filter.subtitleFont)
+                    .foregroundStyle(Theme.Filter.subtitleText)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var steps: some View {
+        HStack(spacing: Theme.Filter.stepSpacing) {
+            stepButton(.caretLeft, label: DueFilterLabels.previousDay) { onStep(-1) }
+            stepButton(.caretRight, label: DueFilterLabels.nextDay) { onStep(1) }
+                .disabled(!canStepForward)
+                .opacity(canStepForward ? 1 : 0)
+        }
+        .fixedSize()
+        .padding(.bottom, Theme.Key.sideHeight)
     }
 
     private func stepButton(_ icon: Icon, label: String, action: @escaping () -> Void) -> some View {

@@ -17,6 +17,7 @@ struct PanelAlertNavigationTests {
         let state = makeState(store)
         let week = try store.addPriority(title: "Week item", dueAt: localDate("2026-10-15T09:00:00"))
         state.select(tab: .notes)
+        state.select(filter: .today)
 
         state.showInList(week.id)
 
@@ -45,7 +46,7 @@ struct PanelAlertNavigationTests {
     }
 
     @Test
-    func showingNoPriorityOpensTheListOfToday() throws {
+    func showingNoPriorityOpensTheListOfAll() throws {
         let store = try makeStore(clock)
         let state = makeState(store)
         state.select(tab: .notes)
@@ -54,7 +55,7 @@ struct PanelAlertNavigationTests {
         state.showInList(nil)
 
         #expect(state.tab == .priorities)
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
         #expect(state.priorityFlow.highlightedID == nil)
         #expect(recorder.entries.isEmpty)
     }
@@ -69,7 +70,7 @@ struct PanelAlertNavigationTests {
         state.showInList(done.id)
         state.showInList("missing")
 
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
         #expect(state.priorityFlow.highlightedID == nil)
     }
 

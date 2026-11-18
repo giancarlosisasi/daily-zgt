@@ -145,6 +145,61 @@ struct DueFilterRenderTests {
         #expect(store.openPriorities(in: .overdue).map(\.title) == ["Release notes v2", "Revisar el MR de compass.ui"])
     }
 
+    private func header(_ title: String, _ subtitle: String, layout: PanelLayout, width: CGFloat) -> some View {
+        FilterHeader(title: title, subtitle: subtitle, showsSteps: true, onStep: { _ in }) { _ in EmptyView() }
+            .environment(\.panelLayout, layout)
+            .frame(width: width)
+            .background(Theme.Panel.background)
+    }
+
+    private func stepStrip(_ view: some View, scale: CGFloat = 2) throws -> [UInt8] {
+        let renderer = ImageRenderer(content: view.environment(\.colorScheme, .dark))
+        renderer.scale = scale
+        let image = try #require(renderer.cgImage)
+        let stripWidth = Int(((Theme.Filter.stepSize * 2 + Theme.Filter.stepSpacing + Theme.Space.s2 * 2) * scale).rounded(.down))
+        let stripHeight = min(Int((Theme.Filter.keyHeight * scale).rounded(.down)), image.height)
+        let strip = try #require(image.cropping(to: CGRect(x: image.width - stripWidth, y: 0, width: stripWidth, height: stripHeight)))
+        var bytes = [UInt8](repeating: 0, count: strip.width * strip.height * 4)
+        bytes.withUnsafeMutableBytes { buffer in
+            let context = CGContext(
+                data: buffer.baseAddress,
+                width: strip.width,
+                height: strip.height,
+                bitsPerComponent: 8,
+                bytesPerRow: strip.width * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            )
+            context?.draw(strip, in: CGRect(x: 0, y: 0, width: strip.width, height: strip.height))
+        }
+        return bytes
+    }
+
+    @Test
+    func theDayStepButtonsKeepTheirPlaceForShortAndLongLabels() throws {
+        let days = DueDays(now: clock.date)
+        let labels: [(String, String, String)] = [
+            ("short", DueFilterLabels.title(.today, days), DueFilterLabels.subtitle(.today, days, openCount: 0) ?? ""),
+            ("tomorrow", DueFilterLabels.title(.tomorrow, days), DueFilterLabels.subtitle(.tomorrow, days, openCount: 0) ?? ""),
+            ("day", DueFilterLabels.title(.day("2026-11-19"), days), DueFilterLabels.subtitle(.day("2026-11-19"), days, openCount: 0) ?? ""),
+            ("long", "miércoles 18 nov de un año muy largo que no cabe en la fila", "en 2 días y un texto largo que tampoco cabe en la fila"),
+        ]
+        #expect(labels.prefix(3).map { $0.1 } == ["Hoy", "Mañana", "jueves 19 nov"])
+        let sizes: [(String, PanelLayout, CGFloat)] = [
+            ("panel", .panel, Theme.Panel.width - Theme.Panel.padding * 2),
+            ("window", .window, 640),
+        ]
+        for (place, layout, width) in sizes {
+            var strips: [[UInt8]] = []
+            for (name, title, subtitle) in labels {
+                let view = header(title, subtitle, layout: layout, width: width)
+                try expectPNG(view, named: "filter-header-steps-\(place)-\(name)")
+                strips.append(try stepStrip(view))
+            }
+            #expect(strips.allSatisfy { strip in zip(strip, strips[0]).filter { $0 != $1 }.count <= 16 }, "The day-step buttons moved in the \(place) header")
+        }
+    }
+
     @Test
     func aClickOnTheCalendarArrowIsNotADayPick() {
         let calendar = DueDays(now: clock.date).calendar

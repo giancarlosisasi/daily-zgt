@@ -67,7 +67,7 @@ struct ProductionRehearsalTests {
              try StoreSnapshot.fetch(database))
         }
         #expect(after.1 == ["ok"])
-        #expect(after.2 == ["001_create_tables", "002_add_repeat_to_priority", "003_add_image", "004_add_note_item"])
+        #expect(after.2 == ["001_create_tables", "002_add_repeat_to_priority", "003_add_image", "004_add_note_item", "005_add_soft_delete"])
         #expect(after.0 == before.0)
         #expect(after.3 == before.0.filledNoteHashes)
         #expect(after.4 == 0)

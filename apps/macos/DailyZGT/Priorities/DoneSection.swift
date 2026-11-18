@@ -1,16 +1,59 @@
 import SwiftUI
 
+enum DoneRowKind: Equatable {
+    case done
+    case deleted
+
+    var icon: Icon {
+        switch self {
+        case .done: .check
+        case .deleted: .trash
+        }
+    }
+
+    var iconColor: Color {
+        switch self {
+        case .done: Theme.DoneSection.checkColor
+        case .deleted: Theme.DoneSection.deletedIconColor
+        }
+    }
+
+    var iconLabel: String {
+        switch self {
+        case .done: "Hecha"
+        case .deleted: "Eliminada"
+        }
+    }
+
+    var restoreTitle: String {
+        switch self {
+        case .done: "Regresar"
+        case .deleted: "Restaurar"
+        }
+    }
+
+    var removeLabel: String {
+        switch self {
+        case .done: "Quitar"
+        case .deleted: "Borrar para siempre"
+        }
+    }
+}
+
 struct DoneCheckIcon: View {
+    var kind = DoneRowKind.done
+
     var body: some View {
-        IconView(icon: .check, size: Theme.DoneSection.checkSize)
-            .foregroundStyle(Theme.DoneSection.checkColor)
+        IconView(icon: kind.icon, size: Theme.DoneSection.checkSize)
+            .foregroundStyle(kind.iconColor)
             .accessibilityElement()
-            .accessibilityLabel("Hecha")
+            .accessibilityLabel(kind.iconLabel)
     }
 }
 
 struct DoneRow: View {
-    let priority: Priority
+    let title: String
+    let kind: DoneRowKind
     let onOpen: () -> Void
     let onRestore: () -> Void
     let onRemove: () -> Void
@@ -31,7 +74,31 @@ struct DoneRow: View {
         onRestore: @escaping () -> Void = {},
         onRemove: @escaping () -> Void = {}
     ) {
-        self.priority = priority
+        self.init(
+            title: priority.title,
+            isHoveringAtStart: isHoveringAtStart,
+            leadingPadding: leadingPadding,
+            look: look,
+            doneTime: doneTime,
+            onOpen: onOpen,
+            onRestore: onRestore,
+            onRemove: onRemove
+        )
+    }
+
+    init(
+        title: String,
+        kind: DoneRowKind = .done,
+        isHoveringAtStart: Bool = false,
+        leadingPadding: CGFloat = Theme.DoneSection.rowLeadingPadding,
+        look: TitleLook = .done,
+        doneTime: String? = nil,
+        onOpen: @escaping () -> Void = {},
+        onRestore: @escaping () -> Void = {},
+        onRemove: @escaping () -> Void = {}
+    ) {
+        self.title = title
+        self.kind = kind
         self.onOpen = onOpen
         self.onRestore = onRestore
         self.onRemove = onRemove
@@ -43,10 +110,10 @@ struct DoneRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: Theme.DoneSection.rowSpacing) {
-            DoneCheckIcon()
+            DoneCheckIcon(kind: kind)
                 .frame(height: Theme.Font.rowTitleLineHeight)
             SelectableTitle(
-                text: priority.title,
+                text: title,
                 isUnderlined: isTitleHovering,
                 look: look,
                 maxLines: Theme.Row.titleMaxLines,
@@ -68,7 +135,7 @@ struct DoneRow: View {
             Button(action: onRestore) {
                 HStack(spacing: Theme.DoneSection.restoreSpacing) {
                     IconView(icon: .arrowBack, size: Theme.DoneSection.restoreIconSize)
-                    Text("Regresar")
+                    Text(kind.restoreTitle)
                         .font(Theme.DoneSection.restoreFont)
                 }
                 .foregroundStyle(isHovering ? Theme.DoneSection.restoreHoverText : Theme.DoneSection.restoreText)
@@ -84,7 +151,7 @@ struct DoneRow: View {
                 width: Theme.Row.removeSize,
                 height: Theme.Row.removeSize,
                 radius: Theme.Row.removeRadius,
-                label: "Quitar",
+                label: kind.removeLabel,
                 action: onRemove
             )
             .opacity(isHovering ? 1 : 0)
@@ -175,11 +242,27 @@ struct DoneSectionContent: View {
     }
 
     private func header(count: Int) -> some View {
-        Button(action: { panel.toggleDone() }) {
+        SectionToggleHeader(
+            title: DoneSection.headerTitle,
+            count: count,
+            isOpen: panel.isDoneOpen,
+            onToggle: { panel.toggleDone() }
+        )
+    }
+}
+
+struct SectionToggleHeader: View {
+    let title: String
+    let count: Int
+    let isOpen: Bool
+    let onToggle: () -> Void
+
+    var body: some View {
+        Button(action: onToggle) {
             HStack(spacing: Theme.DoneSection.headerSpacing) {
                 IconView(icon: .caretRight, size: Theme.DoneSection.caretSize)
-                    .rotationEffect(.degrees(panel.isDoneOpen ? Theme.MotionShape.caretOpenDegrees : 0))
-                Text(DoneSection.headerTitle)
+                    .rotationEffect(.degrees(isOpen ? Theme.MotionShape.caretOpenDegrees : 0))
+                Text(title)
                     .font(Theme.DoneSection.headerFont)
                 Text("\(count)")
                     .font(Theme.DoneSection.countFont)
@@ -191,7 +274,7 @@ struct DoneSectionContent: View {
             .frame(height: Theme.DoneSection.headerHeight)
         }
         .buttonStyle(GhostButtonStyle(radius: Theme.DoneSection.headerRadius))
-        .accessibilityLabel(DoneSection.headerTitle)
-        .accessibilityValue("\(count), \(panel.isDoneOpen ? "expandido" : "colapsado")")
+        .accessibilityLabel(title)
+        .accessibilityValue("\(count), \(isOpen ? "expandido" : "colapsado")")
     }
 }

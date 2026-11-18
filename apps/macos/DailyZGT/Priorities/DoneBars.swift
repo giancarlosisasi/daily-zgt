@@ -1,15 +1,18 @@
 import SwiftUI
 
 struct DoneConfirmationBar: View {
+    var title = "¿Marcar como hecha?"
     let openSubtasksLabel: String?
     var usesRowMargins = true
+    var confirmIcon = Icon.check
+    var confirmTitle = "Hecha"
     let onCancel: () -> Void
     let onConfirm: () -> Void
 
     var body: some View {
         HStack(spacing: Theme.Confirm.spacing) {
             VStack(alignment: .leading, spacing: Theme.Confirm.textSpacing) {
-                Text("¿Marcar como hecha?")
+                Text(title)
                     .font(Theme.Confirm.titleFont)
                     .foregroundStyle(Theme.Confirm.title)
                     .fixedSize(horizontal: false, vertical: true)
@@ -31,8 +34,8 @@ struct DoneConfirmationBar: View {
             .fixedSize()
             Button(action: onConfirm) {
                 HStack(spacing: Theme.Confirm.checkSpacing) {
-                    IconView(icon: .check, size: Theme.Confirm.checkSize)
-                    Text("Hecha")
+                    IconView(icon: confirmIcon, size: Theme.Confirm.checkSize)
+                    Text(confirmTitle)
                         .font(Theme.Confirm.doneFont)
                 }
                 .padding(.horizontal, Theme.Confirm.buttonPadding)

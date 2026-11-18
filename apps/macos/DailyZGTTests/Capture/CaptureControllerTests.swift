@@ -158,7 +158,7 @@ struct CaptureControllerTests {
         controller.open()
         controller.model.draft.title = "Pagar la luz"
         controller.submit()
-        #expect(state.filter == .today)
+        #expect(state.filter == .all)
         #expect(store.openPriorities(in: state.filter).map(\.title) == ["Pagar la luz"])
     }
 

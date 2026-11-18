@@ -21,7 +21,7 @@ final class RepeatCoordinator {
     func run() {
         let snapshot = store.snapshot
         let ready = RepeatPlanner.copies(
-            of: snapshot.open + snapshot.done,
+            of: snapshot.open + snapshot.done + snapshot.deleted,
             subtasks: snapshot.subtasks,
             now: store.now()
         )

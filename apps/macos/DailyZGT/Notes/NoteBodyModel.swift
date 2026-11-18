@@ -31,11 +31,11 @@ final class NoteBodyModel {
         self.noteID = noteID
         self.debounce = debounce
         self.schedule = schedule
-        text = store.note(id: noteID)?.body ?? ""
+        text = store.noteIncludingDeleted(id: noteID)?.body ?? ""
     }
 
     var externalBody: String {
-        store.note(id: noteID)?.body ?? ""
+        store.noteIncludingDeleted(id: noteID)?.body ?? ""
     }
 
     func edit(_ newText: String) {
@@ -81,6 +81,6 @@ final class NoteBodyModel {
     func leave() {
         flush()
         guard !hasUnsavedEdit, let current = store.note(id: noteID), NoteBody.isEmpty(current.body) else { return }
-        try? store.deleteNote(noteID)
+        try? store.deleteNoteForever(noteID)
     }
 }

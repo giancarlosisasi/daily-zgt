@@ -19,9 +19,11 @@ enum RepeatPlanner {
     ) -> [RepeatCopy] {
         let today = LocalTime.dayKey(for: now, in: calendar.timeZone)
         return Dictionary(grouping: priorities, by: \.seriesID).values
-            .compactMap { series -> Priority? in
-                guard series.allSatisfy(\.isDone),
+            .compactMap { rows -> Priority? in
+                let series = rows.filter { !$0.isDeleted || !$0.isDone }
+                guard series.allSatisfy({ $0.isDone || $0.isDeleted }),
                       let last = series.max(by: wasDoneBefore),
+                      !last.isDeleted,
                       last.repeatRule == .daily,
                       let doneAt = last.doneAt,
                       LocalTime.dayKey(for: doneAt, in: calendar.timeZone) < today
@@ -57,8 +59,8 @@ enum RepeatPlanner {
     }
 
     private static func wasDoneBefore(_ first: Priority, _ second: Priority) -> Bool {
-        let firstDone = first.doneAt ?? .distantPast
-        let secondDone = second.doneAt ?? .distantPast
+        let firstDone = first.doneAt ?? first.deletedAt ?? .distantPast
+        let secondDone = second.doneAt ?? second.deletedAt ?? .distantPast
         if firstDone != secondDone {
             return firstDone < secondDone
         }

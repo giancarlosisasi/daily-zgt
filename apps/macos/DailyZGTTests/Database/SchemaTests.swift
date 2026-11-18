@@ -29,7 +29,7 @@ struct SchemaTests {
             "priority",
             [
                 "id", "title", "note", "level", "list", "due_at", "done_at", "position", "created_at", "updated_at",
-                "repeat_rule", "repeat_series_id",
+                "repeat_rule", "repeat_series_id", "deleted_at",
             ]
         ),
         ("subtask", ["id", "priority_id", "title", "done_at", "position", "created_at"]),
@@ -38,7 +38,7 @@ struct SchemaTests {
         ("priority_event", ["id", "priority_id", "at", "type"]),
         ("app_state", ["key", "value"]),
         ("image", ["id", "mime", "width", "height", "bytes", "created_at"]),
-        ("note_item", ["id", "body", "created_at", "updated_at"]),
+        ("note_item", ["id", "body", "created_at", "updated_at", "deleted_at"]),
     ])
     func tableHasThePlannedColumns(table: String, columns: [String]) throws {
         let database = try AppDatabase.inMemory()

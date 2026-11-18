@@ -37,6 +37,14 @@ struct RestoreDoneButton: View {
     }
 }
 
+struct RestoreDeletedButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        DetailKeyButton(icon: .arrowBack, title: DoneRowKind.deleted.restoreTitle, action: action)
+    }
+}
+
 struct PriorityDetailView: View {
     let priority: Priority
     var titleShowsEditState = false
@@ -50,6 +58,7 @@ struct PriorityDetailView: View {
 
     private var flow: PriorityFlow { panel.priorityFlow }
     private var actions: PriorityDetailActions { PriorityDetailActions(store: store, id: priority.id) }
+    private var isReadOnly: Bool { priority.isDone || priority.isDeleted }
 
     var body: some View {
         let progress = store.subtaskProgress(of: priority.id)
@@ -58,12 +67,12 @@ struct PriorityDetailView: View {
                 PriorityDetailHeader(
                     backLabel: DueFilterLabels.title(panel.filter, store.dueDays),
                     onBack: { panel.backFromDetail() },
-                    onDelete: { flow.delete(priority.id) }
+                    onDelete: priority.isDeleted ? nil : { flow.delete(priority.id) }
                 ) {
                     PriorityDetailTitleField(title: priority.title, showsEditState: titleShowsEditState) { draft in
                         attempt { try actions.commitTitle(draft) } ?? priority.title
                     }
-                    .disabled(priority.isDone)
+                    .disabled(isReadOnly)
                 }
                 if PriorityDetailChips.showsAny(priority: priority, now: store.now()) {
                     TimelineView(.everyMinute) { _ in
@@ -94,11 +103,11 @@ struct PriorityDetailView: View {
                     onRepeat: { rule in attempt { try actions.setRepeat(rule) } }
                 )
             }
-            .disabled(priority.isDone)
+            .disabled(isReadOnly)
             PriorityDetailSubtasksSection(priority: priority, progress: progress)
-                .disabled(priority.isDone)
+                .disabled(isReadOnly)
             PriorityDetailNoteSection(priority: priority)
-                .disabled(priority.isDone)
+                .disabled(isReadOnly)
             VStack(alignment: .leading, spacing: Theme.Detail.headSpacing) {
                 doneControl(progress)
                 if writeFailed || flow.writeFailed {
@@ -119,7 +128,7 @@ struct PriorityDetailView: View {
 
     @ViewBuilder
     private func doneControl(_ progress: SubtaskProgress) -> some View {
-        if !priority.isDone, flow.isConfirming(priority.id) {
+        if !isReadOnly, flow.isConfirming(priority.id) {
             VStack(alignment: .leading, spacing: Theme.Detail.headSpacing) {
                 DoneConfirmationBar(
                     openSubtasksLabel: progress.openSubtasksLabel,
@@ -131,7 +140,9 @@ struct PriorityDetailView: View {
             }
         } else {
             HStack(spacing: Theme.Detail.headSpacing) {
-                if priority.isDone {
+                if priority.isDeleted {
+                    RestoreDeletedButton { panel.restoreDeletedFromDetail() }
+                } else if priority.isDone {
                     RestoreDoneButton { panel.restoreFromDetail() }
                 } else {
                     MarkDoneButton { flow.toggleConfirmation(for: priority.id) }

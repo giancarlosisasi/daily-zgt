@@ -152,9 +152,16 @@ struct AppStorePriorityTests {
         let deleted = try store.deletePriority(removed.id)
 
         #expect(deleted.id == removed.id)
+        #expect(deleted.deletedAt == clock.date)
         #expect(store.priority(id: removed.id) == nil)
-        #expect(store.subtasks(of: removed.id).isEmpty)
         #expect(store.openPriorities(in: .today).map(\.title) == ["Keep"])
+        #expect(store.subtasks(of: removed.id).map(\.title) == ["One", "Two"])
+        #expect(try values("SELECT id FROM alert ORDER BY id", in: store.database) == ["a1", "a2", "a3"])
+
+        try store.deletePriorityForever(removed.id)
+
+        #expect(store.priorityIncludingDeleted(id: removed.id) == nil)
+        #expect(store.subtasks(of: removed.id).isEmpty)
         #expect(try values("SELECT title FROM subtask", in: store.database) == ["Stays"])
         #expect(try values("SELECT id FROM alert", in: store.database) == ["a3"])
     }

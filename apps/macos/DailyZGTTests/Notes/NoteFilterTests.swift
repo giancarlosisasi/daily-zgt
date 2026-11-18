@@ -69,14 +69,6 @@ struct NoteFilterTests {
     }
 
     @Test
-    func theFirstFilterComesFromTheSavedValueThenTheOldNoteScope() {
-        #expect(DueFilter.noteStart(stored: nil, legacyScope: nil) == .today)
-        #expect(DueFilter.noteStart(stored: nil, legacyScope: .day) == .today)
-        #expect(DueFilter.noteStart(stored: nil, legacyScope: .week) == .week)
-        #expect(DueFilter.noteStart(stored: .all, legacyScope: .week) == .all)
-    }
-
-    @Test
     func theHeaderSaysCreadas() {
         #expect(NoteFilterLabels.subtitle(.today, days, count: 2) == "martes 17 nov · creadas hoy")
         #expect(NoteFilterLabels.subtitle(.week, days, count: 2) == "16–22 nov · creadas esta semana")

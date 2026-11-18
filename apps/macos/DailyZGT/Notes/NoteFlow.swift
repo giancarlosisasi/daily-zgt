@@ -32,9 +32,13 @@ final class NoteFlow {
 
     func delete(_ id: NoteItem.ID) {
         do {
+            if let current = store.note(id: id), NoteBody.isEmpty(current.body) {
+                try store.deleteNoteForever(id)
+                writeFailed = false
+                return
+            }
             let deleted = try store.deleteNote(id)
             writeFailed = false
-            guard !NoteBody.isEmpty(deleted.body) else { return }
             startUndo(for: deleted)
         } catch {
             writeFailed = true
@@ -44,9 +48,33 @@ final class NoteFlow {
     func undoDelete() {
         guard let pending = undo else { return }
         do {
-            try store.restoreNote(pending.note)
+            try store.restoreDeletedNote(pending.note.id)
             writeFailed = false
             undo = nil
+        } catch {
+            writeFailed = true
+        }
+    }
+
+    func restoreDeleted(_ id: NoteItem.ID) {
+        do {
+            try store.restoreDeletedNote(id)
+            writeFailed = false
+            if undo?.note.id == id {
+                undo = nil
+            }
+        } catch {
+            writeFailed = true
+        }
+    }
+
+    func deleteForever(_ id: NoteItem.ID) {
+        do {
+            try store.deleteNoteForever(id)
+            writeFailed = false
+            if undo?.note.id == id {
+                undo = nil
+            }
         } catch {
             writeFailed = true
         }

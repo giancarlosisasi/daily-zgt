@@ -53,6 +53,12 @@ struct PriorityListView: View {
             newPriority
             DoneSection(filter: filter)
                 .padding(.top, Theme.Space.group(layout))
+            DeletedSection(
+                entries: store.deletedPriorities.map { DeletedEntry($0) },
+                onOpen: { panel.openDetail($0) },
+                onRestore: { flow.restoreDeleted($0) },
+                onDeleteForever: { flow.deleteForever($0) }
+            )
             if writeFailed || flow.writeFailed {
                 Text("No se pudo guardar el cambio.")
                     .font(Theme.Font.meta)

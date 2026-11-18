@@ -33,11 +33,11 @@ final class PriorityNoteModel {
         self.priorityID = priorityID
         self.debounce = debounce
         self.schedule = schedule
-        text = store.priority(id: priorityID)?.note ?? ""
+        text = store.priorityIncludingDeleted(id: priorityID)?.note ?? ""
     }
 
     var externalNote: String {
-        store.priority(id: priorityID)?.note ?? ""
+        store.priorityIncludingDeleted(id: priorityID)?.note ?? ""
     }
 
     func edit(_ newText: String) {

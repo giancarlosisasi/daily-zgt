@@ -106,6 +106,12 @@ enum Schema {
                 )
             }
         }
+        migrator.registerMigration("005_add_soft_delete") { database in
+            try database.execute(sql: """
+                ALTER TABLE priority ADD COLUMN deleted_at TEXT;
+                ALTER TABLE note_item ADD COLUMN deleted_at TEXT;
+                """)
+        }
         return migrator
     }
 }

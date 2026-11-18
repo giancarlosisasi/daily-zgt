@@ -27,7 +27,7 @@ struct PriorityDetailHeader<Title: View>: View {
     let backLabel: String
     var deleteLabel = "Eliminar prioridad"
     let onBack: () -> Void
-    let onDelete: () -> Void
+    let onDelete: (() -> Void)?
     @ViewBuilder let title: Title
 
     @Environment(\.panelLayout) private var layout
@@ -40,15 +40,17 @@ struct PriorityDetailHeader<Title: View>: View {
             HStack(alignment: .top, spacing: Theme.Detail.headSpacing) {
                 title
                     .frame(maxWidth: .infinity, alignment: .leading)
-                RowIconButton(
-                    icon: .trash,
-                    size: Theme.Detail.deleteIconSize,
-                    width: Theme.Detail.deleteSize,
-                    height: Theme.Detail.deleteSize,
-                    radius: Theme.Detail.deleteRadius,
-                    label: deleteLabel,
-                    action: onDelete
-                )
+                if let onDelete {
+                    RowIconButton(
+                        icon: .trash,
+                        size: Theme.Detail.deleteIconSize,
+                        width: Theme.Detail.deleteSize,
+                        height: Theme.Detail.deleteSize,
+                        radius: Theme.Detail.deleteRadius,
+                        label: deleteLabel,
+                        action: onDelete
+                    )
+                }
             }
         }
     }

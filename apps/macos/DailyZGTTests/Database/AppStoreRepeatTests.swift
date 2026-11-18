@@ -358,7 +358,7 @@ struct AppStoreRepeatTests {
     }
 
     @Test
-    func theDeleteOfTheOpenCopyEndsTheSeries() throws {
+    func theDeleteOfTheOpenCopyStopsTheSeriesAndKeepsTheRule() throws {
         let store = try makeStore(clock)
         let source = try doneDaily(store)
         nextDay()
@@ -370,6 +370,56 @@ struct AppStoreRepeatTests {
 
         clock.advance(minutes: 30)
         try store.deletePriority(third.id)
+
+        #expect(try store.addRepeatCopies().isEmpty)
+        #expect(store.priority(id: source.id)?.repeatRule == .daily)
+        #expect(store.priorityIncludingDeleted(id: third.id)?.repeatRule == .daily)
+        #expect(try types(store, source.id) == eventsBefore)
+        nextDay("2026-10-15T07:00:00")
+        #expect(try store.addRepeatCopies().isEmpty)
+        #expect(RepeatPlanner.copies(
+            of: store.snapshot.open + store.snapshot.done + store.snapshot.deleted,
+            subtasks: store.snapshot.subtasks,
+            now: clock.date
+        ).isEmpty)
+        #expect(store.openPriorities(in: .today).isEmpty)
+    }
+
+    @Test
+    func theRestoreOfTheDeletedCopyLetsTheSeriesGoOn() throws {
+        let store = try makeStore(clock)
+        let source = try doneDaily(store)
+        nextDay()
+        let second = try #require(try store.addRepeatCopies().first)
+        try store.markDone(second.id)
+        nextDay("2026-10-14T07:00:00")
+        let third = try #require(try store.addRepeatCopies().first)
+        try store.deletePriority(third.id)
+
+        try store.restoreDeletedPriority(third.id)
+        #expect(try store.addRepeatCopies().isEmpty)
+        try store.markDone(third.id)
+        nextDay("2026-10-15T07:00:00")
+        let fourth = try store.addRepeatCopies()
+
+        #expect(fourth.map(\.title) == ["Meditar"])
+        #expect(fourth.map(\.seriesID) == [source.id])
+    }
+
+    @Test
+    func theDeleteForEverOfTheOpenCopyEndsTheSeries() throws {
+        let store = try makeStore(clock)
+        let source = try doneDaily(store)
+        nextDay()
+        let second = try #require(try store.addRepeatCopies().first)
+        try store.markDone(second.id)
+        nextDay("2026-10-14T07:00:00")
+        let third = try #require(try store.addRepeatCopies().first)
+        let eventsBefore = try types(store, source.id)
+
+        clock.advance(minutes: 30)
+        try store.deletePriority(third.id)
+        try store.deletePriorityForever(third.id)
 
         #expect(try store.addRepeatCopies().isEmpty)
         #expect(store.priority(id: source.id)?.repeatRule == RepeatRule.none)
@@ -435,7 +485,10 @@ struct AppStoreRepeatTests {
         nextDay()
 
         #expect(try store.addRepeatCopies().isEmpty)
-        #expect(try values("SELECT COUNT(*) FROM priority", in: store.database) == [0])
+        #expect(try values("SELECT COUNT(*) FROM priority WHERE deleted_at IS NULL", in: store.database) == [0])
+
+        try store.restoreDeletedPriority(source.id)
+        #expect(try store.addRepeatCopies().map(\.seriesID) == [source.id])
     }
 
     @Test
