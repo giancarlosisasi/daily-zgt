@@ -19,7 +19,7 @@ extension AppBoot {
     @MainActor
     var menuBarCount: Int? {
         switch self {
-        case let .ready(store, _, _, _): store.openCount(in: .today)
+        case let .ready(store, _, _, _): store.openCount(in: .all)
         case .failed: nil
         }
     }

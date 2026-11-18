@@ -40,7 +40,7 @@ struct MenuBarLabelTests {
     }
 
     @Test
-    func theCountIsTheOpenPrioritiesDueTodayOrBefore() throws {
+    func theCountIsEveryOpenPriorityWhateverItsDueDate() throws {
         let store = try makeStore()
         try store.addPriority(title: "Today open", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.addPriority(title: "Today open too", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
@@ -49,7 +49,7 @@ struct MenuBarLabelTests {
         let done = try store.addPriority(title: "Today done", list: .today, dueAt: localDate("2026-10-12T18:00:00"))
         try store.markDone(done.id)
 
-        #expect(readyBoot(store).menuBarCount == 2)
+        #expect(readyBoot(store).menuBarCount == 4)
     }
 
     @Test(.timeLimit(.minutes(1)))
@@ -73,7 +73,7 @@ struct MenuBarLabelTests {
         #expect(boot.menuBarCount == 2)
 
         try await nextChange(of: store) { try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-14T18:00:00") } }
-        #expect(boot.menuBarCount == 1)
+        #expect(boot.menuBarCount == 2)
 
         try await nextChange(of: store) { try store.editPriority(first.id) { $0.dueAt = localDate("2026-10-12T18:00:00") } }
         #expect(boot.menuBarCount == 2)
